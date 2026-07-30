@@ -82,8 +82,9 @@ const CustomerRouters = () => {
   return (
     <ModalState>
       <Routes>
+        <Route path="/" element={<Navigate to="/home1" replace />} />
         <Route
-          path="/"
+          path="/home1"
           element={
             <WithLayout showLayout={true}>
               <HomePage />

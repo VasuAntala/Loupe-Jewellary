@@ -1,4 +1,4 @@
-﻿import { api } from "../../config/apiConfig"
+import { api } from "../../config/apiConfig"
 import { ADD_REVIEW_TO_PRODUCT_FAILURE } from "../review/ActionType";
 import { ADD_RATING_TO_PRODUCT_REQUEST, ADD_RATING_TO_PRODUCT_SUCCESS, GET_RATING_FAILURE, GET_RATING_REQUEST, GET_RATING_SUCCESSS } from "./ActionType"
 import { API_BASE_URL } from "../../config/apiConfig";

@@ -43,8 +43,10 @@ const ProductSchema = new mongoose.Schema({
     },
     collectionName: {
         type: String,
-        // required: true,
     },
+    tags: [{
+        type: String,
+    }],
     type: {
         type: String,
     },
@@ -62,6 +64,37 @@ const ProductSchema = new mongoose.Schema({
     ringSize: { type: String },
     chainLength: { type: String },
     pendantSize: { type: String },
+    productCode: { type: String },
+    status: { type: String, default: 'active' },
+    priceNote: { type: String },
+    dimensionsList: [
+        {
+            label: { type: String },
+            value: { type: String },
+            unit: { type: String }
+        }
+    ],
+    diamondDetails: [
+        {
+            diamondType: { type: String },
+            diamondSize: { type: String },
+            diamondDiameter: { type: String },
+            weightPerPiece: { type: String },
+            pieces: { type: Number },
+            totalWeight: { type: String }
+        }
+    ],
+    metalDetails: [
+        {
+            metalType: { type: String },
+            purity: { type: String },
+            finalWeight: { type: String },
+            unit: { type: String }
+        }
+    ],
+    includesChain: { type: String, default: 'No' },
+    chainWeight: { type: String },
+    chakiWeight: { type: String },
     dimensions: { type: String },
     totalWeight: { type: Number },
     sizes: [

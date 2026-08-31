@@ -10,7 +10,7 @@ export const addRatingToProduct = (reqData) => async (dispatch) => {
         const { data } = await api.post(`${API_BASE_URL}/api/ratings/create`, reqData);
 
         dispatch({
-            type: ADD_RATING_TO_PRODUCT_SUCCESS, 
+            type: ADD_RATING_TO_PRODUCT_SUCCESS,
             payload: data,
         })
 
@@ -34,7 +34,7 @@ export const getAllRatings = (reqData) => async (dispatch) => {
     const productId = reqData.productId;
 
     try {
-        const { data } = await api.get(`${API_BASE_URL}/api/ratings/product/`+ productId );
+        const { data } = await api.get(`${API_BASE_URL}/api/ratings/product/` + productId);
 
         console.log('getAllRatings action data : ', data);
 

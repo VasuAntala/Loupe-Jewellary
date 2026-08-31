@@ -14,10 +14,11 @@ import { RRContext } from "../../../context/rrBox/rrContext";
 import { toastNotify } from "../../../state/shared/toast";
 import RatingReviewForm from "../MyOrders/RatingReviewForm";
 import { formatPriceINR } from "../../../utils/price";
+import { formatPriceRange, openWhatsApp } from "../../../utils/whatsapp";
 import {
   ChevronRight, ChevronDown, ChevronUp, ShoppingCart,
   Heart, Share2, ShieldCheck, Truck, RefreshCw, Gift,
-  Headset, Video, Minus, Plus, Package, Star,
+  Headset, Video, Minus, Plus, Package, Star, MessageCircle,
 } from "lucide-react";
 
 /* -------------------------------------------
@@ -66,15 +67,13 @@ const STATIC_BEST_SELLERS = {
   "1": {
     _id: "1",
     title: "0.30 POINTER MARQUISE SHAPE DIAMOND RING | Loupe jeweler",
-    price: 33500,
-    discountedPrice: 31150,
-    discountPercent: 7,
+    minPrice: 28000,
+    maxPrice: 35000,
     description: "A breathtaking marquise-shaped diamond centerpiece, meticulously set in a polished gold band. This elegant ring captures the essence of sophisticated charm and timeless beauty. Perfect for engagements or special celebrations.",
     color: "Yellow Gold",
     type: "Diamond Ring",
     metalType: "Gold",
     metalPurity: "18K",
-    stoneWeight: "0.30",
     imageUrls: [
       { imageUrl: "/product/product5.jpeg" },
       { imageUrl: "/product/product4.jpeg" },
@@ -91,15 +90,13 @@ const STATIC_BEST_SELLERS = {
   "2": {
     _id: "2",
     title: "0.50 CARAT LABGROWN DIAMOND ROUND SHAPE RING",
-    price: 38000,
-    discountedPrice: 35901,
-    discountPercent: 5,
+    minPrice: 32000,
+    maxPrice: 40000,
     description: "Modern elegance meets sustainable luxury. This round solitaire lab-grown diamond ring offers brilliance and fire that rivals the finest mined diamonds. A conscious choice for the modern connoisseur.",
     color: "White Gold",
     type: "Lab Grown Diamond",
     metalType: "White Gold",
     metalPurity: "14K",
-    stoneWeight: "0.50",
     imageUrls: [
       { imageUrl: "/product/_.jpeg" },
       { imageUrl: "/product/Necklace.jpeg" },
@@ -116,15 +113,13 @@ const STATIC_BEST_SELLERS = {
   "3": {
     _id: "3",
     title: "0.50 CTW ROUND DIAMOND ENGAGEMENT RING",
-    price: 52000,
-    discountedPrice: 49888,
-    discountPercent: 4,
+    minPrice: 45000,
+    maxPrice: 55000,
     description: "A classic engagement ring featuring a brilliant round center diamond accented by a delicate halo of smaller stones. Symbolizing an eternal bond of love and commitment.",
     color: "Rose Gold",
     type: "Diamond Ring",
     metalType: "Gold",
     metalPurity: "18K",
-    stoneWeight: "0.50",
     imageUrls: [
       { imageUrl: "/product/product 2.png" },
       { imageUrl: "/product/product 3.png" },
@@ -140,15 +135,13 @@ const STATIC_BEST_SELLERS = {
   "4": {
     _id: "4",
     title: "0.50 POINTER CLASSIC STYLE LAB GROWN DIAMOND RING",
-    price: 36000,
-    discountedPrice: 34011,
-    discountPercent: 6,
+    minPrice: 30000,
+    maxPrice: 38000,
     description: "Simple, elegant, and timeless. This classic solitaire ring features a 0.50 pointer lab-grown diamond in a secure six-prong setting, designed to maximize sparkle.",
     color: "Yellow Gold",
     type: "Lab Grown Diamond",
     metalType: "Gold",
     metalPurity: "18K",
-    stoneWeight: "0.50",
     imageUrls: [
       { imageUrl: "/product/product5.jpeg" },
       { imageUrl: "/product/product4.jpeg" },
@@ -164,15 +157,13 @@ const STATIC_BEST_SELLERS = {
   "5": {
     _id: "5",
     title: "0.80 CARAT ROUND SOLITAIRE DIAMOND RING",
-    price: 55000,
-    discountedPrice: 49409,
-    discountPercent: 10,
+    minPrice: 48000,
+    maxPrice: 58000,
     description: "A statement of pure luxury. This impressive 0.80 carat round solitaire diamond ring command attention with its exceptional clarity and breathtaking brilliance.",
     color: "White Gold",
     type: "Diamond Ring",
     metalType: "White Gold",
     metalPurity: "18K",
-    stoneWeight: "0.80",
     imageUrls: [
       { imageUrl: "/product/_.jpeg" },
       { imageUrl: "/product/Necklace.jpeg" },
@@ -221,23 +212,13 @@ export default function ProductDetails() {
     }
   }, [param.productId, products?.product?._id]);
 
-  const handleAddToCart = (buyNow = false) => {
+  const handleAddToCart = () => {
     dispatch(addItemToCart({ productId: param.productId, weight: selectedWeight, size: selectedSize, quantity }));
-    if (buyNow) {
-      navigate("/cart");
-    } else {
-      toastNotify({ type: "success", title: "Added to Cart", description: `${products?.product?.title} added to your cart.` });
-    }
-  };
-
-  const handleBuyNow = () => {
-    dispatch(addItemToCart({ productId: param.productId, weight: selectedWeight, size: selectedSize, quantity }));
-    navigate("/cart");
+    toastNotify({ type: "success", title: "Added to Cart", description: `${products?.product?.title} added to your cart.` });
   };
 
   const handleWhatsApp = () => {
-    const msg = encodeURIComponent(`Hi Loupe Jeweller! I'm interested in: ${products?.product?.title} - ₹${formatPriceINR(products?.product?.discountedPrice)}`);
-    window.open(`https://wa.me/919909109074?text=${msg}`, "_blank");
+    openWhatsApp(product);
   };
 
   const staticProduct = STATIC_BEST_SELLERS[param.productId];
@@ -289,16 +270,7 @@ export default function ProductDetails() {
 
               {/* Main image */}
               <Box sx={{ flex: 1, position: "relative" }}>
-                {product.discountPercent > 0 && (
-                  <Chip
-                    label={`Flat ${product.discountPercent}% Off`}
-                    sx={{
-                      position: "absolute", top: 14, left: 14, zIndex: 1,
-                      bgcolor: "#3c7399", color: "white",
-                      fontWeight: 700, fontSize: "0.7rem", borderRadius: "6px",
-                    }}
-                  />
-                )}
+
                 <Box sx={{ position: "absolute", top: 14, right: 14, zIndex: 1, display: "flex", gap: 1 }}>
                   <IconButton size="small" sx={{ bgcolor: "white", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", "&:hover": { bgcolor: "#f8fafc" } }}>
                     <Heart size={17} color="#3c7399" />
@@ -341,34 +313,24 @@ export default function ProductDetails() {
 
             <Divider sx={{ mb: 2.5 }} />
 
-            {/* Price */}
-            <Box sx={{ mb: 2.5 }}>
-              <Box sx={{ display: "flex", alignItems: "baseline", gap: 2, flexWrap: "wrap" }}>
-                <Typography sx={{ fontSize: "2rem", fontWeight: 800, color: "#1e3545", fontFamily: "'Outfit', sans-serif" }}>
-                  ₹{formatPriceINR(product.discountedPrice)}
+            {/* Approx. Price Range */}
+            <Box sx={{ mb: 2.5, p: 2.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+              <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.15em", mb: 0.5 }}>
+                Approx. Price
+              </Typography>
+              {formatPriceRange(product.minPrice, product.maxPrice) ? (
+                <Typography sx={{ fontSize: "1.8rem", fontWeight: 800, color: "#1e3545", fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>
+                  {formatPriceRange(product.minPrice, product.maxPrice)}
                 </Typography>
-                {product.price > product.discountedPrice && (
-                  <>
-                    <Typography sx={{ fontSize: "1.1rem", color: "#94a3b8", textDecoration: "line-through", fontWeight: 400 }}>
-                      ₹{formatPriceINR(product.price)}
-                    </Typography>
-                    <Chip
-                      label={`${product.discountPercent}% OFF`}
-                      size="small"
-                      sx={{
-                        bgcolor: "rgba(212, 175, 55, 0.08)",
-                        color: "#D4AF37",
-                        fontWeight: 900,
-                        fontSize: "0.75rem",
-                        borderRadius: "6px",
-                        border: "1px solid rgba(212, 175, 55, 0.15)",
-                        px: 0.5
-                      }}
-                    />
-                  </>
-                )}
-              </Box>
-              <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8", mt: 0.5 }}>(MRP inclusive of all taxes)</Typography>
+              ) : (
+                <Typography sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#3c7399", fontStyle: "italic" }}>
+                  Contact us for price
+                </Typography>
+              )}
+              <Typography sx={{ fontSize: "0.72rem", color: "#94a3b8", mt: 1, lineHeight: 1.6 }}>
+                Final price may vary based on the current gold rate and product specifications.
+                Please contact us on WhatsApp for the latest price.
+              </Typography>
             </Box>
 
             {/* Color */}
@@ -378,7 +340,7 @@ export default function ProductDetails() {
               </Typography>
             </Box>
 
-            {/* Material (type + metalPurity/carats) */}
+            {/* Material (type + metalPurity — no stone/gold weight shown to customers) */}
             <Box sx={{ mb: 2 }}>
               <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "#475569", mb: 0.8 }}>
                 Material:{" "}
@@ -387,11 +349,6 @@ export default function ProductDetails() {
                   {product.metalPurity && (
                     <span style={{ color: "#3c7399", marginLeft: 8, fontWeight: 800 }}>
                       {product.metalPurity}
-                    </span>
-                  )}
-                  {product.stoneWeight && (
-                    <span style={{ color: "#94a3b8", marginLeft: 8, fontSize: "0.75rem" }}>
-                      - {product.stoneWeight} Ct
                     </span>
                   )}
                 </span>
@@ -471,57 +428,44 @@ export default function ProductDetails() {
 
             {/* CTA Buttons */}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 2.5 }}>
-              {/* WhatsApp */}
+
+              {/* Primary: WhatsApp CTA */}
               <Button
                 fullWidth
                 onClick={handleWhatsApp}
                 sx={{
-                  py: 1.6, bgcolor: "#25D366", color: "white", borderRadius: "10px",
-                  fontWeight: 700, fontSize: "0.9rem", textTransform: "none",
-                  display: "flex", alignItems: "center", gap: 1,
-                  "&:hover": { bgcolor: "#1ebe5a" },
-                  boxShadow: "0 4px 15px rgba(37,211,102,0.3)",
+                  py: 1.8, bgcolor: "#25D366", color: "white", borderRadius: "12px",
+                  fontWeight: 800, fontSize: "1rem", textTransform: "none",
+                  display: "flex", alignItems: "center", gap: 1.5,
+                  "&:hover": { bgcolor: "#1ebe5a", transform: "translateY(-1px)" },
+                  boxShadow: "0 6px 20px rgba(37,211,102,0.4)",
+                  transition: "all 0.2s ease",
                 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                 </svg>
-                Order via WhatsApp
+                Chat on WhatsApp — Get Current Price
               </Button>
 
-              {/* Add to Cart + Buy Now row */}
-              <Box sx={{ display: "flex", gap: 1.5 }}>
-                <Button
-                  onClick={handleAddToCart}
-                  variant="outlined"
-                  startIcon={<ShoppingCart size={18} />}
-                  sx={{
-                    flex: 1, py: 1.5, borderRadius: "10px",
-                    borderColor: "#3c7399", color: "#3c7399",
-                    fontWeight: 700, fontSize: "0.85rem", textTransform: "none",
-                    "&:hover": { bgcolor: "#f1f5f9", borderColor: "#3c7399" },
-                  }}
-                >
-                  Add to Cart
-                </Button>
-                <Button
-                  onClick={handleBuyNow}
-                  variant="contained"
-                  sx={{
-                    flex: 1, py: 1.5, borderRadius: "10px",
-                    bgcolor: "#3c7399", color: "white",
-                    fontWeight: 700, fontSize: "0.85rem", textTransform: "none",
-                    "&:hover": { bgcolor: "#3c7399" }, boxShadow: "none",
-                  }}
-                >
-                  Buy It Now
-                </Button>
-              </Box>
+              {/* Secondary: Add to Cart */}
+              <Button
+                onClick={handleAddToCart}
+                variant="outlined"
+                startIcon={<ShoppingCart size={18} />}
+                sx={{
+                  py: 1.5, borderRadius: "10px",
+                  borderColor: "#3c7399", color: "#3c7399",
+                  fontWeight: 700, fontSize: "0.85rem", textTransform: "none",
+                  "&:hover": { bgcolor: "#f0f7fb", borderColor: "#3c7399" },
+                }}
+              >
+                Add to Cart
+              </Button>
+
             </Box>
 
-            <Typography sx={{ fontSize: "0.72rem", color: "#94a3b8", mb: 2.5, lineHeight: 1.7 }}>
-              The final product's gold, diamond, and stone weights may vary slightly. If the actual weight is less than the mentioned weight, a refund will be issued. If it is higher, the difference will be payable.
-            </Typography>
+
 
             {/* Certification Logos */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2.5 }}>

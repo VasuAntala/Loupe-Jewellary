@@ -59,6 +59,8 @@ const EditProductForm = () => {
     discountedPrice: 0,
     price: 0,
     discountPercent: 0.0,
+    minPrice: 0,
+    maxPrice: 0,
     description: '',
     details: '',
     occasion: '',
@@ -106,6 +108,8 @@ const EditProductForm = () => {
         discountedPrice: p.discountedPrice || 0,
         price: p.price || 0,
         discountPercent: p.discountPercent || 0,
+        minPrice: p.minPrice || 0,
+        maxPrice: p.maxPrice || 0,
         description: p.description || '',
         details: p.details || '',
         occasion: p.occasion || '',
@@ -682,16 +686,29 @@ const EditProductForm = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
               <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
                 <CardContent sx={{ p: 4 }}>
-                  <SectionHeader icon={<DollarSign size={20} />} title="Pricing" description="Set price and discount details" />
+                  <SectionHeader icon={<DollarSign size={20} />} title="Approximate Price Range" description="Set the approx. price range visible to customers (gold-rate based)" />
                   <Grid container spacing={2.5}>
-                    <Grid item xs={12}>
-                      <StyledTextField label="Original Price (AED)" name="price" type="number" value={productData.price} onChange={handleChange} fullWidth required />
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField label="Min Approx. Price (₹)" name="minPrice" type="number" value={productData.minPrice} onChange={handleChange} fullWidth required helperText="Shown to customers" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField label="Max Approx. Price (₹)" name="maxPrice" type="number" value={productData.maxPrice} onChange={handleChange} fullWidth required helperText="Shown to customers" />
                     </Grid>
                     <Grid item xs={12}>
-                      <StyledTextField label="Discounted Price (AED)" name="discountedPrice" type="number" value={productData.discountedPrice} onChange={handleChange} fullWidth required />
+                      <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '10px', border: '1px solid #bae6fd' }}>
+                        <Typography variant="caption" sx={{ color: '#0369a1', fontWeight: 600 }}>
+                          💡 This range is displayed to customers as "Approx. ₹{Number(productData.minPrice || 0).toLocaleString('en-IN')} – ₹{Number(productData.maxPrice || 0).toLocaleString('en-IN')}". The actual final price is agreed over WhatsApp.
+                        </Typography>
+                      </Box>
                     </Grid>
                     <Grid item xs={12}>
-                      <StyledTextField label="Discount Percentage (%)" name="discountPercent" type="number" value={productData.discountPercent} onChange={handleChange} fullWidth required />
+                      <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Internal Reference (not shown to customers)</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField label="Internal Reference Price" name="price" type="number" value={productData.price} onChange={handleChange} fullWidth />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField label="Internal Sale Price" name="discountedPrice" type="number" value={productData.discountedPrice} onChange={handleChange} fullWidth />
                     </Grid>
                   </Grid>
                 </CardContent>

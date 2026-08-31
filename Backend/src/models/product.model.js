@@ -27,6 +27,12 @@ const ProductSchema = new mongoose.Schema({
     discountPercent: {
         type: Number,
     },
+    minPrice: {
+        type: Number,
+    },
+    maxPrice: {
+        type: Number,
+    },
     quantity: {
         type: Number,
         required: true,

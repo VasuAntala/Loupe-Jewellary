@@ -8,13 +8,14 @@ import "slick-carousel/slick/slick-theme.css";
 const categories = [
     { name: "RINGS", image: "/product/product4.jpeg", id: "rings" },
     { name: "EARRINGS", image: "/product/_.jpeg", id: "earrings" },
-    { name: "NECKLACES & PENDANTS", image: "/product/Necklace.jpeg", id: "necklaces" },
+    { name: "NECKLACES", image: "/product/Necklace.jpeg", id: "necklaces" },
+    { name: "PENDANTS", image: "/product/product7.jpeg", id: "pendants" },
     { name: "BRACELETS", image: "/product/product 2.png", id: "bracelets" },
+    { name: "BANGLES", image: "/product/product 3.png", id: "bangles" },
     { name: "MANGALSUTRA", image: "/product/product5.jpeg", id: "mangalsutra" },
     { name: "CHARMS", image: "/product/product 3.png", id: "charms" },
     { name: "SOLITAIRES", image: "/product/product7.jpeg", id: "solitaires" },
     { name: "GOLD COINS", image: "/product/product5.jpeg", id: "gold-coins" },
-    { name: "KIDS JEWELLERY", image: "/product/product.png", id: "kids-jewellery" }
 ];
 
 const CollectionCircles = () => {

@@ -2,49 +2,63 @@ const Category = require("../models/category.model");
 const Product = require("../models/product.model");
 
 async function createProduct(reqData) {
+    const topLevelName = reqData.topLevelCategory || "diamond";
+    const secondLevelName = reqData.secondLevelCategory || "other";
+    const thirdLevelName = reqData.thirdLevelCategory || secondLevelName;
 
-    let topLevel = await Category.findOne({ name: reqData.topLevelCategory });
+    let topLevel = await Category.findOne({ name: topLevelName });
 
     if (!topLevel) {
         topLevel = new Category({
-            name: reqData.topLevelCategory,
+            name: topLevelName,
             level: 1
-        })
-
+        });
         await topLevel.save();
     }
 
     let secondLevel = await Category.findOne({
-        name: reqData.secondLevelCategory,
+        name: secondLevelName,
         parentCategory: topLevel._id
-    })
+    });
 
     if (!secondLevel) {
         secondLevel = new Category({
-            name: reqData.secondLevelCategory,
+            name: secondLevelName,
             parentCategory: topLevel._id,
             level: 2
-        })
-
+        });
         await secondLevel.save();
     }
 
-    console.log("secondLevel._id:", secondLevel._id);
+    const priceVal = Number(reqData.price || reqData.minPrice || 0);
+    const discountedPriceVal = Number(reqData.discountedPrice || reqData.minPrice || priceVal || 0);
+    let discountPercentVal = 0;
+    if (priceVal > 0 && priceVal > discountedPriceVal) {
+        discountPercentVal = Math.floor(((priceVal - discountedPriceVal) / priceVal) * 100);
+    }
+
+    const titleVal = reqData.title || "Untitled Product";
+    const descriptionVal = reqData.description || titleVal;
+    const detailsVal = reqData.details || descriptionVal;
+    const brandVal = reqData.brand || "Loupe Jeweler";
+    const quantityVal = reqData.quantity !== undefined ? Number(reqData.quantity) : 1;
 
     const product = new Product({
-        title: reqData.title,
-        description: reqData.description,
-        details: reqData.details,
-        occasion: reqData.occasion,
-        type: reqData.type,
-        color: reqData.color,
-        price: reqData.price,
-        discountedPrice: reqData.discountedPrice,
-        discountPercent: Math.floor(((reqData.price - reqData.discountedPrice) / reqData.price) * 100),
-        sizes: reqData.sizes,
-        imageUrls: reqData.imageUrls,
-        brand: reqData.brand,
-        quantity: reqData.quantity,
+        title: titleVal,
+        description: descriptionVal,
+        details: detailsVal,
+        occasion: reqData.occasion || '',
+        type: reqData.type || '',
+        color: reqData.color || [],
+        price: priceVal,
+        discountedPrice: discountedPriceVal,
+        discountPercent: discountPercentVal,
+        minPrice: Number(reqData.minPrice || priceVal),
+        maxPrice: Number(reqData.maxPrice || priceVal),
+        sizes: reqData.sizes || [],
+        imageUrls: reqData.imageUrls || [],
+        brand: brandVal,
+        quantity: quantityVal,
         category: secondLevel._id,
         metalType: reqData.metalType,
         metalPurity: reqData.metalPurity,
@@ -59,7 +73,18 @@ async function createProduct(reqData) {
         pendantSize: reqData.pendantSize,
         dimensions: reqData.dimensions,
         totalWeight: reqData.totalWeight,
-    })
+        productCode: reqData.productCode,
+        status: reqData.status || 'active',
+        priceNote: reqData.priceNote,
+        dimensionsList: reqData.dimensionsList || [],
+        diamondDetails: reqData.diamondDetails || [],
+        metalDetails: reqData.metalDetails || [],
+        includesChain: reqData.includesChain || 'No',
+        chainWeight: reqData.chainWeight,
+        chakiWeight: reqData.chakiWeight,
+        collectionName: reqData.collectionName,
+        tags: reqData.tags || [],
+    });
 
     const savedProduct = await product.save();
     return await Product.findById(savedProduct._id).populate("category");
@@ -175,10 +200,13 @@ async function getAllProducts(reqQuery) {
         query = query.where("occasion").regex(occasionRegex);
     }
 
-    // -------------------- Filter by Collection ---------------
+    // -------------------- Filter by Collection / Tags ---------------
 
     if (collectionName && collectionName !== '' && collectionName !== 'undefined') {
-        query = query.where("collectionName").equals(collectionName);
+        query = query.or([
+            { collectionName: collectionName },
+            { tags: collectionName }
+        ]);
     }
 
     // -------------------- Filter by Price ---------------    

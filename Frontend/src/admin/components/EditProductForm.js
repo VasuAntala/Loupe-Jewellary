@@ -251,31 +251,73 @@ const EditProductForm = () => {
   const prodType = productData.secondLevelCategory;
 
   const stylesByType = {
-    earrings: [
-      { value: 'earring', label: 'Earring' },
-      { value: 'drop', label: 'Drop' },
-      { value: 'hoop', label: 'Hoop' },
-      { value: 'stud', label: 'Studs' },
-      { value: 'jhumka', label: 'Jhumkas' },
-    ],
     rings: [
       { value: 'ring', label: 'Ring' },
       { value: 'engagement-ring', label: 'Engagement Ring' },
+      { value: 'solitaire-ring', label: 'Solitaire Ring' },
+      { value: 'eternity-ring', label: 'Eternity Ring' },
+      { value: 'cocktail-ring', label: 'Cocktail Ring' },
       { value: 'pearl-ring', label: 'Pearl Ring' },
       { value: 'couple-ring', label: 'Couple Rings' },
     ],
-    nacklaces: [
-      { value: 'chain', label: 'Chain' },
-      { value: 'mangal-sutra', label: 'Mangal Sutra' },
-      { value: 'necklace', label: 'Necklace' },
-      { value: 'pendant', label: 'Pendant' },
-      { value: 'locket', label: 'Locket' },
+    earrings: [
+      { value: 'earring', label: 'Earring' },
+      { value: 'stud', label: 'Studs' },
+      { value: 'drop', label: 'Drop & Dangle' },
+      { value: 'hoop', label: 'Hoops & Huggies' },
+      { value: 'jhumka', label: 'Jhumkas' },
+      { value: 'chandelier', label: 'Chandeliers' },
+      { value: 'ear-cuff', label: 'Ear Cuffs' },
     ],
-    wedding: [
-      { value: 'bridal-ring', label: 'Bridal Ring' },
-      { value: 'engagement-ring', label: 'Engagement Ring' },
-      { value: 'couple-ring', label: 'Couple Rings' },
+    necklaces: [
+      { value: 'necklace', label: 'Necklace' },
+      { value: 'choker', label: 'Choker' },
+      { value: 'statement-necklace', label: 'Statement Necklace' },
+      { value: 'layered-necklace', label: 'Layered Necklace' },
+      { value: 'lariat', label: 'Lariat' },
+    ],
+    pendants: [
+      { value: 'pendant', label: 'Pendant' },
+      { value: 'solitaire-pendant', label: 'Solitaire Pendant' },
+      { value: 'gemstone-pendant', label: 'Gemstone Pendant' },
+      { value: 'initial-pendant', label: 'Initial & Alphabet Pendant' },
+    ],
+    mangalsutra: [
       { value: 'mangal-sutra', label: 'Mangal Sutra' },
+      { value: 'solitaire-mangalsutra', label: 'Solitaire Mangalsutra' },
+      { value: 'modern-mangalsutra', label: 'Modern Bracelet Mangalsutra' },
+    ],
+    bracelets: [
+      { value: 'bracelet', label: 'Bracelet' },
+      { value: 'tennis-bracelet', label: 'Tennis Bracelet' },
+      { value: 'chain-bracelet', label: 'Chain Bracelet' },
+      { value: 'cuff-bracelet', label: 'Cuff Bracelet' },
+      { value: 'charm-bracelet', label: 'Charm Bracelet' },
+    ],
+    bangles: [
+      { value: 'bangle', label: 'Bangle' },
+      { value: 'kada', label: 'Kada' },
+      { value: 'stackable-bangle', label: 'Stackable Bangle' },
+    ],
+    chains: [
+      { value: 'chain', label: 'Chain' },
+      { value: 'gold-chain', label: 'Gold Chain' },
+      { value: 'rope-chain', label: 'Rope Chain' },
+    ],
+    lockets: [
+      { value: 'locket', label: 'Locket' },
+      { value: 'photo-locket', label: 'Photo Locket' },
+    ],
+    anklets: [
+      { value: 'anklet', label: 'Anklet' },
+    ],
+    'nose-pins': [
+      { value: 'nose-pin', label: 'Nose Pin' },
+    ],
+    other: [
+      { value: 'brooch', label: 'Brooch' },
+      { value: 'coin', label: 'Gold / Silver Coin' },
+      { value: 'accessory', label: 'Other Accessory' },
     ],
   };
 
@@ -352,8 +394,15 @@ const EditProductForm = () => {
                       <StyledSelect label="Sub Category (Item Type)" name="secondLevelCategory" value={productData.secondLevelCategory} onChange={handleChange}>
                         <MenuItem value="rings">Rings</MenuItem>
                         <MenuItem value="earrings">Earrings</MenuItem>
-                        <MenuItem value="nacklaces">Necklaces & Pendants</MenuItem>
-                        <MenuItem value="bracelets">Bracelets & Bangles</MenuItem>
+                        <MenuItem value="necklaces">Necklaces</MenuItem>
+                        <MenuItem value="pendants">Pendants</MenuItem>
+                        <MenuItem value="mangalsutra">Mangalsutra</MenuItem>
+                        <MenuItem value="bracelets">Bracelets</MenuItem>
+                        <MenuItem value="bangles">Bangles</MenuItem>
+                        <MenuItem value="chains">Chains</MenuItem>
+                        <MenuItem value="lockets">Lockets</MenuItem>
+                        <MenuItem value="anklets">Anklets</MenuItem>
+                        <MenuItem value="nose-pins">Nose Pins</MenuItem>
                         <MenuItem value="other">Other Accessories</MenuItem>
                       </StyledSelect>
                     </FormControl>

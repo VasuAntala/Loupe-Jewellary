@@ -297,31 +297,46 @@ const Admin = () => {
                 sx: {
                   mt: 1.5,
                   borderRadius: '16px',
-                  width: 320,
+                  width: 340,
                   boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
                   border: '1px solid #f1f5f9'
                 }
               }}
             >
-              <Box sx={{ p: 2, borderBottom: '1px solid #f1f5f9' }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>Notifications</Typography>
+              <Box sx={{ p: 2, borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0f172a' }}>
+                  Notifications
+                </Typography>
+                {recentOrders.length > 0 && (
+                  <Typography variant="caption" sx={{ bgcolor: '#e0f2fe', color: '#0369a1', fontWeight: 800, px: 1.2, py: 0.3, borderRadius: '10px' }}>
+                    {recentOrders.length} New
+                  </Typography>
+                )}
               </Box>
               {recentOrders.map((order) => (
-                <MenuItem key={order._id} onClick={() => { navigate('/admin/orders'); handleCloseNotify(); }} sx={{ py: 1.5 }}>
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: '#e0f2f1', color: '#3c7399' }}>
-                      <ShoppingBag size={16} />
+                <MenuItem key={order._id} onClick={() => { navigate('/admin/orders'); handleCloseNotify(); }} sx={{ py: 1.8, px: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 44 }}>
+                    <Avatar sx={{ width: 36, height: 36, bgcolor: '#f0f9ff', color: '#3c7399', border: '1px solid #e0f2fe' }}>
+                      <ShoppingBag size={18} />
                     </Avatar>
                   </ListItemIcon>
                   <ListItemText
-                    primary={<Typography variant="body2" sx={{ fontWeight: 700 }}>New Order #{order._id.slice(-6).toUpperCase()}</Typography>}
-                    secondary={<Typography variant="caption" sx={{ color: '#94a3b8' }}>AED {order.totalPrice} Ã¢â‚¬Â¢ {order.user?.firstName}</Typography>}
+                    primary={
+                      <Typography variant="body2" sx={{ fontWeight: 800, color: '#0f172a' }}>
+                        Order #{order._id?.slice(-6).toUpperCase()}
+                      </Typography>
+                    }
+                    secondary={
+                      <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.3, fontWeight: 600 }}>
+                        ₹{Number(order.totalPrice || 0).toLocaleString('en-IN')} • {order.user?.firstName || 'Customer'} {order.user?.lastName || ''}
+                      </Typography>
+                    }
                   />
                 </MenuItem>
               ))}
               {recentOrders.length === 0 && (
                 <Box sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>No new notifications</Typography>
+                  <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600 }}>No new notifications</Typography>
                 </Box>
               )}
             </Menu>

@@ -29,22 +29,7 @@ async function createProduct(reqData) {
         await secondLevel.save();
     }
 
-    let thirdLevel = await Category.findOne({
-        name: reqData.thirdLevelCategory,
-        parentCategory: secondLevel._id,
-    })
-
-    if (!thirdLevel) {
-        thirdLevel = new Category({
-            name: reqData.thirdLevelCategory,
-            parentCategory: secondLevel._id,
-            level: 3
-        })
-
-        await thirdLevel.save();
-    }
-
-    console.log("thirdLevel._id:", thirdLevel._id)
+    console.log("secondLevel._id:", secondLevel._id);
 
     const product = new Product({
         title: reqData.title,
@@ -60,7 +45,7 @@ async function createProduct(reqData) {
         imageUrls: reqData.imageUrls,
         brand: reqData.brand,
         quantity: reqData.quantity,
-        category: thirdLevel._id,
+        category: secondLevel._id,
         metalType: reqData.metalType,
         metalPurity: reqData.metalPurity,
         metalWeight: reqData.metalWeight,

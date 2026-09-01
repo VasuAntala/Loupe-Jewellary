@@ -68,7 +68,6 @@ const CreateProductForm = () => {
     sizes: initialSizes,
     topLevelCategory: '',
     secondLevelCategory: '',
-    thirdLevelCategory: '',
     metalType: '',
     metalPurity: '',
     metalWeight: '',
@@ -154,75 +153,25 @@ const CreateProductForm = () => {
       minPrice: 0, maxPrice: 0,
       description: '', details: '', occasion: '', quantity: 1,
       collectionName: '', type: '', sizes: initialSizes,
-      topLevelCategory: '', secondLevelCategory: '', thirdLevelCategory: '',
+      topLevelCategory: '', secondLevelCategory: '',
       metalType: '', metalPurity: '', metalWeight: '', hallmarkCertification: '',
       metalColor: '', primaryStoneType: '', stoneShape: '', stoneWeight: '',
       ringSize: '', chainLength: '', pendantSize: '', dimensions: '', totalWeight: '',
     });
   };
 
-  const isFormValid = productData.title !== '' && productData.price > 0 && productData.quantity > 0 && productData.description !== '' && productData.topLevelCategory !== '';
+  const isFormValid = productData.title !== '' && productData.minPrice > 0 && productData.quantity > 0 && productData.description !== '' && productData.topLevelCategory !== '';
 
   const prodType = productData.secondLevelCategory;
-  const specStyle = productData.thirdLevelCategory;
-  const hasCategorySelected = prodType !== '' || specStyle !== '' || productData.topLevelCategory !== '';
+  const hasCategorySelected = prodType !== '' || productData.topLevelCategory !== '';
 
-  const isRing = prodType === 'rings' || prodType === 'wedding' || ['ring', 'engagement-ring', 'pearl-ring', 'bridal-ring', 'couple-ring'].includes(specStyle);
-  const isNecklace = prodType === 'nacklaces' || ['chain', 'mangal-sutra', 'necklace', 'pendant', 'locket'].includes(specStyle);
+  const isRing = prodType === 'rings' || prodType === 'wedding';
+  const isNecklace = prodType === 'nacklaces';
 
   const showRingSize = isRing || (prodType === 'other' || prodType === 'best-sellers') && !isNecklace;
   const showNecklaceFields = isNecklace || (prodType === 'other' || prodType === 'best-sellers') && !isRing;
 
-  const stylesByType = {
-    earrings: [
-      { value: 'earring', label: 'Earring' },
-      { value: 'drop', label: 'Drop' },
-      { value: 'hoop', label: 'Hoop' },
-      { value: 'stud', label: 'Studs' },
-      { value: 'jhumka', label: 'Jhumkas' },
-    ],
-    rings: [
-      { value: 'ring', label: 'Ring' },
-      { value: 'engagement-ring', label: 'Engagement Ring' },
-      { value: 'pearl-ring', label: 'Pearl Ring' },
-      { value: 'couple-ring', label: 'Couple Rings' },
-    ],
-    nacklaces: [
-      { value: 'chain', label: 'Chain' },
-      { value: 'mangal-sutra', label: 'Mangal Sutra' },
-      { value: 'necklace', label: 'Necklace' },
-      { value: 'pendant', label: 'Pendant' },
-      { value: 'locket', label: 'Locket' },
-    ],
-    wedding: [
-      { value: 'bridal-ring', label: 'Bridal Ring' },
-      { value: 'engagement-ring', label: 'Engagement Ring' },
-      { value: 'couple-ring', label: 'Couple Rings' },
-      { value: 'mangal-sutra', label: 'Mangal Sutra' },
-    ],
-  };
 
-  const allStyles = [
-    { value: 'bangle', label: 'Bangle' },
-    { value: 'bracelet', label: 'Bracelet' },
-    { value: 'chain', label: 'Chain' },
-    { value: 'earring', label: 'Earring' },
-    { value: 'mangal-sutra', label: 'Mangal Sutra' },
-    { value: 'necklace', label: 'Necklace' },
-    { value: 'pendant', label: 'Pendant' },
-    { value: 'locket', label: 'Locket' },
-    { value: 'ring', label: 'Ring' },
-    { value: 'drop', label: 'Drop' },
-    { value: 'hoop', label: 'Hoop' },
-    { value: 'stud', label: 'Studs' },
-    { value: 'jhumka', label: 'Jhumkas' },
-    { value: 'engagement-ring', label: 'Engagement Ring' },
-    { value: 'pearl-ring', label: 'Pearl Ring' },
-    { value: 'bridal-ring', label: 'Bridal Ring' },
-    { value: 'couple-ring', label: 'Couple Rings' },
-  ];
-
-  const filteredStyles = stylesByType[prodType] || allStyles;
 
   return (
     <Box sx={{ p: { xs: 2, md: 0 }, bgcolor: '#f8fafc', minHeight: '100vh' }}>
@@ -505,21 +454,6 @@ const CreateProductForm = () => {
                         </StyledSelect>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ fontWeight: 600 }}>Specific Style</InputLabel>
-                        <StyledSelect label="Specific Style" name="thirdLevelCategory" value={productData.thirdLevelCategory} onChange={handleChange} disabled={!prodType}>
-                          {filteredStyles.map((s) => (
-                            <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>
-                          ))}
-                        </StyledSelect>
-                      </FormControl>
-                      {!prodType && (
-                        <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 600, mt: 0.5, display: 'block' }}>
-                          Select a Product Type first
-                        </Typography>
-                      )}
-                    </Grid>
                   </Grid>
                 </CardContent>
               </Card>
@@ -654,15 +588,6 @@ const CreateProductForm = () => {
                           💡 This range is displayed to customers as "Approx. ₹{Number(productData.minPrice || 0).toLocaleString('en-IN')} – ₹{Number(productData.maxPrice || 0).toLocaleString('en-IN')}". The actual final price is agreed over WhatsApp.
                         </Typography>
                       </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Internal Reference (not shown to customers)</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <StyledTextField label="Internal Reference Price" name="price" type="number" value={productData.price} onChange={handleChange} fullWidth />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <StyledTextField label="Internal Sale Price" name="discountedPrice" type="number" value={productData.discountedPrice} onChange={handleChange} fullWidth />
                     </Grid>
                   </Grid>
                 </CardContent>

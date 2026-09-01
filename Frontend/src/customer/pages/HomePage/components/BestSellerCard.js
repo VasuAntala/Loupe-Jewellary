@@ -12,13 +12,25 @@ const BestSellerCard = ({ product }) => {
     const [wishlisted, setWishlisted] = useState(false);
     const navigate = useNavigate();
 
+    // Determine category name to navigate to (Option B)
+    const categoryName = product?.category?.name || product?.secondLevelCategory || 'jewellery';
+
+    // Extract image URL safely
+    const mainImage = Array.isArray(product?.imageUrls) && product.imageUrls.length > 0
+        ? product.imageUrls[0]?.imageUrl
+        : (product?.imageUrl || product?.image || '/product/product4.jpeg');
+
     const colorOptions = product.colors || [
-        { colorName: 'Yellow Gold', colorCode: '#eab308', image: product.image },
-        { colorName: 'Rose Gold', colorCode: '#da8a8a', image: product.image },
-        { colorName: 'White Gold', colorCode: '#f1f5f9', image: product.image }
+        { colorName: 'Yellow Gold', colorCode: '#eab308', image: mainImage },
+        { colorName: 'Rose Gold', colorCode: '#da8a8a', image: mainImage },
+        { colorName: 'White Gold', colorCode: '#f1f5f9', image: mainImage }
     ];
 
-    const currentImage = colorOptions[selectedColorIndex]?.image || product.image;
+    const currentImage = colorOptions[selectedColorIndex]?.image || mainImage;
+
+    const handleNavigate = () => {
+        navigate(`/all-jewellery/category/${categoryName}`);
+    };
 
     return (
         <motion.div
@@ -30,7 +42,7 @@ const BestSellerCard = ({ product }) => {
             {/* 1. Luxury Image Frame */}
             <Box
                 className="relative aspect-square w-full mb-8 overflow-hidden rounded-[32px] bg-gradient-to-br from-[#fcfcfc] to-[#f3f4f6]/30 border border-gray-100/50 transition-all duration-700 group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] group-hover:-translate-y-2 flex items-center justify-center cursor-pointer"
-                onClick={() => navigate(`/product/${product.id || ''}`)}
+                onClick={handleNavigate}
             >
                 {/* Floating "New Tier" Badge */}
                 <div className="absolute top-5 left-5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
@@ -51,7 +63,7 @@ const BestSellerCard = ({ product }) => {
                         transition={{ duration: 0.5, ease: "easeOut" }}
                         className="w-full h-full object-cover drop-shadow-[0_20px_40px_rgba(0,0,0,0.05)] group-hover:scale-110 group-hover:rotate-1"
                         onError={(e) => {
-                            e.target.src = "";
+                            e.target.src = "/product/product4.jpeg";
                         }}
                     />
                 </AnimatePresence>
@@ -80,11 +92,12 @@ const BestSellerCard = ({ product }) => {
                     >
                         <MessageCircle size={16} />
                     </IconButton>
-                    <button className="flex-1 bg-white text-[#1e293b] text-[10px] font-black tracking-widest uppercase rounded-full shadow-lg hover:bg-[#1e293b] hover:text-white transition-all duration-300 transform active:scale-95 border border-white">
+                    <button onClick={handleNavigate} className="flex-1 bg-white text-[#1e293b] text-[10px] font-black tracking-widest uppercase rounded-full shadow-lg hover:bg-[#1e293b] hover:text-white transition-all duration-300 transform active:scale-95 border border-white">
                         Discovery
                     </button>
                     <IconButton
                         sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#1e293b', color: 'white' }, transition: 'all 0.3s', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}
+                        onClick={handleNavigate}
                     >
                         <ShoppingBag size={16} />
                     </IconButton>
@@ -104,11 +117,11 @@ const BestSellerCard = ({ product }) => {
                         textAlign: 'left'
                     }}
                 >
-                    Premium Selection
+                    {product.brand || "Premium Selection"}
                 </Typography>
 
                 <Typography
-                    onClick={() => navigate(`/product/${product.id || ''}`)}
+                    onClick={handleNavigate}
                     className="text-[#1e293b] font-medium leading-relaxed mb-4 group-hover:text-[#97c2d5] transition-colors duration-300 cursor-pointer"
                     sx={{
                         fontSize: '0.9rem',
@@ -127,7 +140,15 @@ const BestSellerCard = ({ product }) => {
                     <div className="flex flex-col">
                         <span className="text-gray-300 text-[9px] font-bold tracking-widest uppercase mb-0.5">Value Est.</span>
                         <div className="flex items-baseline gap-2">
-                            <span className="text-[#1e293b] font-serif italic text-xl">₹{formatPriceINR(product.discountedPrice || product.price)}</span>
+                            {product.minPrice && product.maxPrice ? (
+                                <span className="text-[#1e293b] font-serif italic text-sm">
+                                    ₹{formatPriceINR(product.minPrice)} - ₹{formatPriceINR(product.maxPrice)}
+                                </span>
+                            ) : (
+                                <span className="text-[#1e293b] font-serif italic text-xl">
+                                    ₹{formatPriceINR(product.discountedPrice || product.price || 0)}
+                                </span>
+                            )}
                         </div>
                     </div>
 

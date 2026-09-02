@@ -13,9 +13,9 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    occasion: {
+    occasion: [{
         type: String,
-    },
+    }],
     price: {
         type: Number,
         default: 0,
@@ -80,6 +80,7 @@ const ProductSchema = new mongoose.Schema({
     diamondDetails: [
         {
             diamondType: { type: String },
+            diamondName: { type: String },
             diamondSize: { type: String },
             diamondDiameter: { type: String },
             weightPerPiece: { type: String },

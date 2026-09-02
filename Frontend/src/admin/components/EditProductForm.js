@@ -57,7 +57,7 @@ const SectionHeader = ({ step, icon, title, description }) => (
 
 const initialSizes = [{ weight: 'g', size: 'MM', stock: 0 }];
 const initialDimension = { label: '', value: '', unit: 'mm' };
-const initialDiamond = { diamondType: '', diamondSize: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
+const initialDiamond = { diamondType: '', diamondName: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
 const initialMetal = { metalType: 'Gold', purity: '18K', finalWeight: '', unit: 'g' };
 
 const EditProductForm = () => {
@@ -81,7 +81,7 @@ const EditProductForm = () => {
     status: 'active',
     brand: 'Loupe Jeweler',
     quantity: 1,
-    occasion: '',
+    occasion: [],
     collectionName: '',
     tags: [],
     color: [],
@@ -124,7 +124,7 @@ const EditProductForm = () => {
         status: p.status || 'active',
         brand: p.brand || 'Loupe Jeweler',
         quantity: p.quantity || 1,
-        occasion: p.occasion || '',
+        occasion: Array.isArray(p.occasion) ? p.occasion : (p.occasion ? [p.occasion] : []),
         collectionName: p.collectionName || '',
         tags: Array.isArray(p.tags) ? p.tags : [],
         color: Array.isArray(p.color) ? p.color : [],
@@ -418,7 +418,37 @@ const EditProductForm = () => {
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Occasion</InputLabel>
-                      <StyledSelect label="Occasion" name="occasion" value={productData.occasion} onChange={handleChange}>
+                      <StyledSelect
+                        multiple
+                        label="Occasion"
+                        name="occasion"
+                        value={Array.isArray(productData.occasion) ? productData.occasion : (productData.occasion ? [productData.occasion] : [])}
+                        onChange={(e) => {
+                          const { value } = e.target;
+                          setProductData((prev) => ({
+                            ...prev,
+                            occasion: typeof value === 'string' ? value.split(',') : value,
+                          }));
+                        }}
+                        renderValue={(selected) => {
+                          const labelsMap = {
+                            'bridal': 'Bridal Wear',
+                            'casual': 'Casual Wear',
+                            'engagement': 'Engagement',
+                            'modern': 'Modern Wear',
+                            'office': 'Office Wear',
+                            'traditional-ethenic': 'Traditional & Ethnic Wear'
+                          };
+                          const selectedArr = Array.isArray(selected) ? selected : [selected];
+                          return (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selectedArr.map((val) => (
+                                <Chip key={val} label={labelsMap[val] || val} size="small" sx={{ bgcolor: BRAND_LIGHT, color: BRAND, fontWeight: 700 }} />
+                              ))}
+                            </Box>
+                          );
+                        }}
+                      >
                         <MenuItem value="bridal">Bridal Wear</MenuItem>
                         <MenuItem value="casual">Casual Wear</MenuItem>
                         <MenuItem value="engagement">Engagement</MenuItem>
@@ -565,7 +595,7 @@ const EditProductForm = () => {
                         <StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth />
                       </Grid>
                       <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Size" value={dia.diamondSize} onChange={(e) => handleDiamondChange(idx, 'diamondSize', e.target.value)} fullWidth />
+                        <StyledTextField label="Diamond Name" value={dia.diamondName || dia.diamondSize || ''} onChange={(e) => handleDiamondChange(idx, 'diamondName', e.target.value)} fullWidth placeholder="e.g. Marquise, Round Brilliant, Solitaire" />
                       </Grid>
                       <Grid item xs={12} sm={4}>
                         <StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth />

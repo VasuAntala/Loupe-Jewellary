@@ -46,7 +46,7 @@ async function createProduct(reqData) {
         title: titleVal,
         description: descriptionVal,
         details: detailsVal,
-        occasion: reqData.occasion || '',
+        occasion: reqData.occasion || [],
         type: reqData.type || '',
         color: reqData.color || [],
         price: priceVal,
@@ -212,7 +212,8 @@ async function getAllProducts(reqQuery) {
     // -------------------- Filter by Occasion ---------------
 
     if (occasion && occasion !== '' && occasion !== 'undefined') {
-        const occasionSet = new Set(occasion.split(",").map(occasion => occasion.trim().toLowerCase()));
+        const occasionArr = Array.isArray(occasion) ? occasion : String(occasion).split(",");
+        const occasionSet = new Set(occasionArr.map(occ => String(occ).trim().toLowerCase()));
 
         const occasionRegex = occasionSet.size > 0 ? new RegExp([...occasionSet].join("|"), "i") : null;
 

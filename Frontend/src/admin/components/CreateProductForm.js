@@ -66,20 +66,11 @@ const CreateProductForm = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const [productData, setProductData] = useState({
-    // 1. Basic Info
     title: '',
     productCode: '',
     topLevelCategory: 'diamond',
     secondLevelCategory: '',
-    metalType: '',
-    metalPurity: '',
-    metalWeight: '',
-    hallmarkCertification: '',
-    metalColor: '',
-    primaryStoneType: '',
-    stoneShape: '',
-    stoneWeight: '',
-    ringSize: '',
+    thirdLevelCategory: '',
     description: '',
     details: '',
     imageUrls: [],
@@ -88,15 +79,14 @@ const CreateProductForm = () => {
     quantity: 1,
     occasion: '',
     collectionName: '',
+    tags: [],
     color: [],
     sizes: initialSizes,
-
     minPrice: 0,
     maxPrice: 0,
     priceNote: 'Price varies according to daily gold rate and diamond specifications.',
     price: 0,
     discountedPrice: 0,
-
     dimensionsList: [initialDimension],
     diamondDetails: [initialDiamond],
     metalDetails: [initialMetal],
@@ -104,9 +94,8 @@ const CreateProductForm = () => {
     chainLength: '',
     chainWeight: '',
     chakiWeight: '',
-    chainLength: '',
-    chainWeight: '',
-    chakiWeight: '',
+    ringSize: '',
+    pendantSize: '',
   });
 
   const dispatch = useDispatch();
@@ -200,33 +189,6 @@ const CreateProductForm = () => {
   // Submit Handler
   const handleSubmit = (e) => {
     e.preventDefault();
-<<<<<<< HEAD
-    dispatch(createProduct(productData));
-    setProductData({
-      imageUrls: [], title: '', brand: 'Loupe Jeweler', color: [],
-      discountedPrice: 0, price: 0, discountPercent: 0.0,
-      minPrice: 0, maxPrice: 0,
-      description: '', details: '', occasion: '', quantity: 1,
-      collectionName: '', type: '', sizes: initialSizes,
-      topLevelCategory: '', secondLevelCategory: '',
-      metalType: '', metalPurity: '', metalWeight: '', hallmarkCertification: '',
-      metalColor: '', primaryStoneType: '', stoneShape: '', stoneWeight: '',
-      ringSize: '', chainLength: '', pendantSize: '', dimensions: '', totalWeight: '',
-    });
-  };
-
-  const isFormValid = productData.title !== '' && productData.minPrice > 0 && productData.quantity > 0 && productData.description !== '' && productData.topLevelCategory !== '';
-
-  const prodType = productData.secondLevelCategory;
-  const hasCategorySelected = prodType !== '' || productData.topLevelCategory !== '';
-
-  const isRing = prodType === 'rings' || prodType === 'wedding';
-  const isNecklace = prodType === 'nacklaces';
-
-  const showRingSize = isRing || (prodType === 'other' || prodType === 'best-sellers') && !isNecklace;
-  const showNecklaceFields = isNecklace || (prodType === 'other' || prodType === 'best-sellers') && !isRing;
-
-=======
     const finalData = {
       ...productData,
       price: productData.minPrice || productData.price,
@@ -237,11 +199,47 @@ const CreateProductForm = () => {
       primaryStoneType: productData.diamondDetails[0]?.diamondType || 'Diamond',
     };
     dispatch(createProduct(finalData));
+    setProductData({
+      title: '',
+      productCode: '',
+      topLevelCategory: 'diamond',
+      secondLevelCategory: '',
+      thirdLevelCategory: '',
+      description: '',
+      details: '',
+      imageUrls: [],
+      status: 'active',
+      brand: 'Loupe Jeweler',
+      quantity: 1,
+      occasion: '',
+      collectionName: '',
+      tags: [],
+      color: [],
+      sizes: initialSizes,
+      minPrice: 0,
+      maxPrice: 0,
+      priceNote: 'Price varies according to daily gold rate and diamond specifications.',
+      price: 0,
+      discountedPrice: 0,
+      dimensionsList: [initialDimension],
+      diamondDetails: [initialDiamond],
+      metalDetails: [initialMetal],
+      includesChain: 'No',
+      chainLength: '',
+      chainWeight: '',
+      chakiWeight: '',
+      ringSize: '',
+      pendantSize: '',
+    });
   };
 
   const isFormValid = productData.title !== '' && productData.minPrice > 0 && productData.topLevelCategory !== '';
-
   const prodType = productData.secondLevelCategory;
+
+  // Conditional field visibility based on sub-category
+  const isRing = ['rings', 'bangles'].includes(prodType);
+  const hasChain = ['necklaces', 'pendants', 'mangalsutra', 'chains', 'lockets', 'anklets'].includes(prodType);
+  const hasPendantSize = ['pendants', 'mangalsutra', 'lockets'].includes(prodType);
 
   const stylesByType = {
     rings: [
@@ -282,10 +280,10 @@ const CreateProductForm = () => {
     ],
     bracelets: [
       { value: 'bracelet', label: 'Bracelet' },
-      { value: 'tennis-bracelet', label: 'Tennis Bracelet' },
-      { value: 'chain-bracelet', label: 'Chain Bracelet' },
-      { value: 'cuff-bracelet', label: 'Cuff Bracelet' },
-      { value: 'charm-bracelet', label: 'Charm Bracelet' },
+      { value: 'tennis-bracelets', label: 'Tennis Bracelets' },
+      { value: 'chain-bracelets', label: 'Chain Bracelets' },
+      { value: 'cuff-bracelets', label: 'Cuff Bracelets' },
+      { value: 'charm-bracelets', label: 'Charm Bracelets' },
     ],
     bangles: [
       { value: 'bangle', label: 'Bangle' },
@@ -313,7 +311,8 @@ const CreateProductForm = () => {
       { value: 'accessory', label: 'Other Accessory' },
     ],
   };
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
+
+  const filteredStyles = stylesByType[prodType] || [];
 
 
   return (
@@ -388,8 +387,6 @@ const CreateProductForm = () => {
                         </StyledSelect>
                       </FormControl>
                     </Grid>
-<<<<<<< HEAD
-=======
 
                     <Grid item xs={12} sm={4}>
                       <FormControl fullWidth disabled={!prodType}>
@@ -513,7 +510,7 @@ const CreateProductForm = () => {
                         </Grid>
                       )}
                     </Grid>
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
+
                   </Grid>
                 </CardContent>
               </Card>
@@ -699,10 +696,42 @@ const CreateProductForm = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.6 }}>
               <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                 <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                  <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="CHAIN / COMPONENT DETAILS" description="Chain inclusions, lengths, chain weight & chaki weight" />
+                  <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="SIZE & COMPONENT DETAILS" description="Ring/Bangle size, chain details, pendant size — shown based on product type" />
 
                   <Grid container spacing={2.5}>
-                    <Grid item xs={12} sm={3}>
+
+                    {/* Ring / Bangle Size — only for rings and bangles */}
+                    {isRing && (
+                      <Grid item xs={12} sm={6}>
+                        <StyledTextField
+                          label={prodType === 'bangles' ? 'Bangle Size / Diameter' : 'Ring Size (e.g. 16, 17, 18)'}
+                          name="ringSize"
+                          value={productData.ringSize}
+                          onChange={handleChange}
+                          fullWidth
+                          placeholder={prodType === 'bangles' ? 'e.g. 2.6 inches / 58 mm' : 'e.g. 16 or 17 or Free Size'}
+                          helperText={prodType === 'bangles' ? 'Inner diameter of bangle' : 'Standard ring size number'}
+                        />
+                      </Grid>
+                    )}
+
+                    {/* Pendant / Locket Size — only for pendants, mangalsutra, lockets */}
+                    {hasPendantSize && (
+                      <Grid item xs={12} sm={6}>
+                        <StyledTextField
+                          label="Pendant / Piece Size"
+                          name="pendantSize"
+                          value={productData.pendantSize || ''}
+                          onChange={handleChange}
+                          fullWidth
+                          placeholder="e.g. 15mm x 10mm"
+                          helperText="Height × Width of the pendant/piece"
+                        />
+                      </Grid>
+                    )}
+
+                    {/* Chain details — only for items that typically have chains */}
+                    <Grid item xs={12} sm={hasChain ? 3 : 4}>
                       <FormControl fullWidth>
                         <InputLabel sx={{ fontWeight: 600 }}>Includes Chain</InputLabel>
                         <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain} onChange={handleChange}>
@@ -712,15 +741,20 @@ const CreateProductForm = () => {
                         </StyledSelect>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <StyledTextField label="Chain Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches / 45 cm" />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
+
+                    {hasChain && (
+                      <Grid item xs={12} sm={3}>
+                        <StyledTextField label="Chain / Piece Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches / 45 cm" />
+                      </Grid>
+                    )}
+
+                    <Grid item xs={12} sm={hasChain ? 3 : 4}>
                       <StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" />
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={hasChain ? 3 : 4}>
                       <StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" />
                     </Grid>
+
                   </Grid>
                 </CardContent>
               </Card>

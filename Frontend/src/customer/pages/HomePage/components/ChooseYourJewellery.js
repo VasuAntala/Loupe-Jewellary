@@ -19,7 +19,7 @@ const categories = [
     title: "Necklaces",
     subtitle: "Graceful & statement",
     image: "https://res.cloudinary.com/deq0hxr3t/image/upload/v1707742460/45_eqespc.jpg",
-    categoryParam: "nacklaces"
+    categoryParam: "necklaces"
   },
   {
     id: "earrings",
@@ -35,15 +35,15 @@ const categories = [
     title: "Bracelets",
     subtitle: "Classic & delicate",
     image: "https://res.cloudinary.com/deq0hxr3t/image/upload/v1711731943/fod-bracelet_um6zoo.webp",
-    categoryParam: "bracelet"
+    categoryParam: "bracelets"
   },
   {
-    id: "watches",
+    id: "mangalsutra",
     tag: "05",
-    title: "Watches",
-    subtitle: "Timeless luxury",
+    title: "Mangalsutra",
+    subtitle: "Timeless tradition",
     image: "https://res.cloudinary.com/deq0hxr3t/image/upload/v1711731879/fod-bangle_bsxfzl.webp",
-    categoryParam: "wedding"
+    categoryParam: "mangalsutra"
   }
 ];
 

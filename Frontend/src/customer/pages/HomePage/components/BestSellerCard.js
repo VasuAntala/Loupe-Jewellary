@@ -37,11 +37,11 @@ const BestSellerCard = ({ product }) => {
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="group relative bg-white px-2 py-8 transition-all duration-500"
+            className="group relative bg-white px-2 py-4 transition-all duration-500"
         >
             {/* 1. Luxury Image Frame */}
             <Box
-                className="relative aspect-square w-full mb-8 overflow-hidden rounded-[32px] bg-gradient-to-br from-[#fcfcfc] to-[#f3f4f6]/30 border border-gray-100/50 transition-all duration-700 group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] group-hover:-translate-y-2 flex items-center justify-center cursor-pointer"
+                className="relative aspect-square w-full mb-4 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#fcfcfc] to-[#f3f4f6]/30 border border-gray-100/50 transition-all duration-700 group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] group-hover:-translate-y-2 flex items-center justify-center cursor-pointer"
                 onClick={handleNavigate}
             >
                 {/* Floating "New Tier" Badge */}

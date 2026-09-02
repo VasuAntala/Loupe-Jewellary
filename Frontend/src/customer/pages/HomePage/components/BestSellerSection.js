@@ -112,7 +112,7 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                     variant="contained"
                     onClick={() => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                        navigate('/product-catalogue');
+                        navigate('/best-sellers/jewellery/jewellery');
                     }}
                     sx={{
                         bgcolor: '#3c7399', // Primary Slate

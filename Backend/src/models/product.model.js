@@ -67,6 +67,9 @@ const ProductSchema = new mongoose.Schema({
     productCode: { type: String },
     status: { type: String, default: 'active' },
     priceNote: { type: String },
+    topLevelCategory: { type: String },
+    secondLevelCategory: { type: String },
+    thirdLevelCategory: { type: String },
     dimensionsList: [
         {
             label: { type: String },

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import { formatPriceINR } from "../../../../utils/price";
@@ -48,8 +48,8 @@ const stories = [
 
 const StyleStory = () => {
     return (
-        <Box sx={{ py: { xs: 10, md: 16 }, bgcolor: '#ffffff' }}>
-            <Box sx={{ textAlign: 'center', mb: 10 }}>
+        <Box sx={{ pt: { xs: 4, md: 5 }, pb: { xs: 8, md: 12 }, bgcolor: '#ffffff' }}>
+            <Box sx={{ textAlign: 'center', mb: 5 }}>
                 <Typography
                     sx={{
                         fontSize: { xs: '0.7rem', md: '0.8rem' },

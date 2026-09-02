@@ -232,7 +232,13 @@ const ProductsTable = () => {
                       )}
                       <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 0.3 }}>
                         {item.occasion && (
-                          <Chip label={item.occasion} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 18, textTransform: 'capitalize', color: '#7c3aed', borderColor: '#ddd6fe' }} />
+                          Array.isArray(item.occasion) ? (
+                            item.occasion.map((occ) => (
+                              <Chip key={occ} label={occ} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 18, textTransform: 'capitalize', color: '#7c3aed', borderColor: '#ddd6fe' }} />
+                            ))
+                          ) : (
+                            <Chip label={item.occasion} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 18, textTransform: 'capitalize', color: '#7c3aed', borderColor: '#ddd6fe' }} />
+                          )
                         )}
                         {item.collectionName && (
                           <Chip label={item.collectionName} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 18, textTransform: 'capitalize', color: '#059669', borderColor: '#a7f3d0' }} />
@@ -512,7 +518,7 @@ const ProductsTable = () => {
                       <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #f1f5f9', height: '100%' }}>
                         <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Classification & Theme</Typography>
                         <Typography variant="caption" sx={{ color: '#475569', display: 'block', mt: 0.5 }}>
-                          Occasion: {renderVal(selectedProduct.occasion)}
+                          Occasion: {Array.isArray(selectedProduct.occasion) ? (selectedProduct.occasion.length > 0 ? selectedProduct.occasion.join(', ') : 'N/A') : renderVal(selectedProduct.occasion)}
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#475569', display: 'block' }}>
                           Collection: {renderVal(selectedProduct.collectionName)}

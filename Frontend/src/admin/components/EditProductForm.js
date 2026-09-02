@@ -57,51 +57,14 @@ const SectionHeader = ({ step, icon, title, description }) => (
 
 const initialSizes = [{ weight: 'g', size: 'MM', stock: 0 }];
 const initialDimension = { label: '', value: '', unit: 'mm' };
-const initialDiamond = { diamondType: '', diamondSize: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
+const initialDiamond = { diamondType: '', diamondName: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
 const initialMetal = { metalType: 'Gold', purity: '18K', finalWeight: '', unit: 'g' };
 
 const EditProductForm = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-<<<<<<< HEAD
-
-  const [productData, setProductData] = useState({
-    imageUrls: [],
-    title: '',
-    brand: 'Loupe Jeweler',
-    color: [],
-    discountedPrice: 0,
-    price: 0,
-    discountPercent: 0.0,
-    minPrice: 0,
-    maxPrice: 0,
-    description: '',
-    details: '',
-    occasion: '',
-    quantity: 1,
-    collectionName: '',
-    type: '',
-    sizes: initialSizes,
-    topLevelCategory: '',
-    secondLevelCategory: '',
-    metalType: '',
-    metalPurity: '',
-    metalWeight: '',
-    hallmarkCertification: '',
-    metalColor: '',
-    primaryStoneType: '',
-    stoneShape: '',
-    stoneWeight: '',
-    ringSize: '',
-    chainLength: '',
-    pendantSize: '',
-    dimensions: '',
-    totalWeight: '',
-  });
-=======
   const dispatch = useDispatch();
   const { products } = useSelector((store) => store);
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
 
   const [imageUploading, setImageUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -118,25 +81,25 @@ const EditProductForm = () => {
     status: 'active',
     brand: 'Loupe Jeweler',
     quantity: 1,
-    occasion: '',
+    occasion: [],
     collectionName: '',
+    tags: [],
     color: [],
     sizes: initialSizes,
-
     minPrice: 0,
     maxPrice: 0,
     priceNote: 'Price varies according to daily gold rate and diamond specifications.',
     price: 0,
     discountedPrice: 0,
-
     dimensionsList: [initialDimension],
     diamondDetails: [initialDiamond],
     metalDetails: [initialMetal],
-
     includesChain: 'No',
     chainLength: '',
     chainWeight: '',
     chakiWeight: '',
+    ringSize: '',
+    pendantSize: '',
   });
 
   useEffect(() => {
@@ -151,46 +114,35 @@ const EditProductForm = () => {
       setProductData({
         title: p.title || '',
         productCode: p.productCode || '',
-        topLevelCategory: p.category?.parentCategory?.parentCategory?.name || p.topLevelCategory || 'diamond',
-        secondLevelCategory: p.category?.parentCategory?.name || p.secondLevelCategory || '',
-<<<<<<< HEAD
-        metalType: p.metalType || '',
-        metalPurity: p.metalPurity || '',
-        metalWeight: p.metalWeight || '',
-        hallmarkCertification: p.hallmarkCertification || '',
-        metalColor: p.metalColor || '',
-        primaryStoneType: p.primaryStoneType || '',
-        stoneShape: p.stoneShape || '',
-        stoneWeight: p.stoneWeight || '',
-        ringSize: p.ringSize || '',
-=======
-        thirdLevelCategory: p.category?.name || p.thirdLevelCategory || '',
+        // Prioritize flat stored fields; fall back to category hierarchy
+        topLevelCategory: p.topLevelCategory || p.category?.parentCategory?.parentCategory?.name || 'diamond',
+        secondLevelCategory: p.secondLevelCategory || p.category?.parentCategory?.name || '',
+        thirdLevelCategory: p.thirdLevelCategory || p.category?.name || '',
         description: p.description || '',
         details: p.details || '',
         imageUrls: Array.isArray(p.imageUrls) ? p.imageUrls : [],
         status: p.status || 'active',
         brand: p.brand || 'Loupe Jeweler',
         quantity: p.quantity || 1,
-        occasion: p.occasion || '',
+        occasion: Array.isArray(p.occasion) ? p.occasion : (p.occasion ? [p.occasion] : []),
         collectionName: p.collectionName || '',
+        tags: Array.isArray(p.tags) ? p.tags : [],
         color: Array.isArray(p.color) ? p.color : [],
         sizes: Array.isArray(p.sizes) && p.sizes.length > 0 ? p.sizes : initialSizes,
-
         minPrice: p.minPrice || 0,
         maxPrice: p.maxPrice || 0,
         priceNote: p.priceNote || 'Price varies according to daily gold rate and diamond specifications.',
         price: p.price || 0,
         discountedPrice: p.discountedPrice || 0,
-
         dimensionsList: Array.isArray(p.dimensionsList) && p.dimensionsList.length > 0 ? p.dimensionsList : [initialDimension],
         diamondDetails: Array.isArray(p.diamondDetails) && p.diamondDetails.length > 0 ? p.diamondDetails : [initialDiamond],
         metalDetails: Array.isArray(p.metalDetails) && p.metalDetails.length > 0 ? p.metalDetails : [initialMetal],
-
         includesChain: p.includesChain || 'No',
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
         chainLength: p.chainLength || '',
         chainWeight: p.chainWeight || '',
         chakiWeight: p.chakiWeight || '',
+        ringSize: p.ringSize || '',
+        pendantSize: p.pendantSize || '',
       });
     }
   }, [products?.product, productId]);
@@ -296,21 +248,13 @@ const EditProductForm = () => {
     }, 1200);
   };
 
-<<<<<<< HEAD
-  const isFormValid = productData.title !== '' && productData.minPrice > 0 && productData.quantity > 0 && productData.description !== '' && productData.topLevelCategory !== '';
-
-  const prodType = productData.secondLevelCategory;
-  const hasCategorySelected = prodType !== '' || productData.topLevelCategory !== '';
-
-  const isRing = prodType === 'rings' || prodType === 'wedding';
-  const isNecklace = prodType === 'nacklaces';
-
-  const showRingSize = isRing || (prodType === 'other' || prodType === 'best-sellers') && !isNecklace;
-  const showNecklaceFields = isNecklace || (prodType === 'other' || prodType === 'best-sellers') && !isRing;
-
-=======
   const isFormValid = productData.title !== '' && productData.minPrice > 0;
   const prodType = productData.secondLevelCategory;
+
+  // Conditional field visibility based on sub-category
+  const isRing = ['rings', 'bangles'].includes(prodType);
+  const hasChain = ['necklaces', 'pendants', 'mangalsutra', 'chains', 'lockets', 'anklets'].includes(prodType);
+  const hasPendantSize = ['pendants', 'mangalsutra', 'lockets'].includes(prodType);
 
   const stylesByType = {
     rings: [
@@ -382,7 +326,8 @@ const EditProductForm = () => {
       { value: 'accessory', label: 'Other Accessory' },
     ],
   };
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
+
+  const filteredStyles = stylesByType[prodType] || [];
 
 
   return (
@@ -473,7 +418,37 @@ const EditProductForm = () => {
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Occasion</InputLabel>
-                      <StyledSelect label="Occasion" name="occasion" value={productData.occasion} onChange={handleChange}>
+                      <StyledSelect
+                        multiple
+                        label="Occasion"
+                        name="occasion"
+                        value={Array.isArray(productData.occasion) ? productData.occasion : (productData.occasion ? [productData.occasion] : [])}
+                        onChange={(e) => {
+                          const { value } = e.target;
+                          setProductData((prev) => ({
+                            ...prev,
+                            occasion: typeof value === 'string' ? value.split(',') : value,
+                          }));
+                        }}
+                        renderValue={(selected) => {
+                          const labelsMap = {
+                            'bridal': 'Bridal Wear',
+                            'casual': 'Casual Wear',
+                            'engagement': 'Engagement',
+                            'modern': 'Modern Wear',
+                            'office': 'Office Wear',
+                            'traditional-ethenic': 'Traditional & Ethnic Wear'
+                          };
+                          const selectedArr = Array.isArray(selected) ? selected : [selected];
+                          return (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selectedArr.map((val) => (
+                                <Chip key={val} label={labelsMap[val] || val} size="small" sx={{ bgcolor: BRAND_LIGHT, color: BRAND, fontWeight: 700 }} />
+                              ))}
+                            </Box>
+                          );
+                        }}
+                      >
                         <MenuItem value="bridal">Bridal Wear</MenuItem>
                         <MenuItem value="casual">Casual Wear</MenuItem>
                         <MenuItem value="engagement">Engagement</MenuItem>
@@ -546,173 +521,6 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-<<<<<<< HEAD
-          {/* RIGHT COLUMN */}
-          <Grid item xs={12} lg={5}>
-
-            {/* Category Section */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }}>
-              <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                <CardContent sx={{ p: 4 }}>
-                  <SectionHeader icon={<BarChart3 size={20} />} title="Category Hierarchy" description="Map product into the correct category" />
-                  <Grid container spacing={2.5}>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ fontWeight: 600 }}>Main Category (Material)</InputLabel>
-                        <StyledSelect label="Main Category (Material)" name="topLevelCategory" value={productData.topLevelCategory} onChange={handleChange}>
-                          <MenuItem value="diamond">Diamond Jewelry</MenuItem>
-                        </StyledSelect>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ fontWeight: 600 }}>Product Type (e.g., Rings, Earrings)</InputLabel>
-                        <StyledSelect label="Product Type (e.g., Rings, Earrings)" name="secondLevelCategory" value={productData.secondLevelCategory} onChange={handleChange}>
-                          <MenuItem value="earrings">Earring</MenuItem>
-                          <MenuItem value="rings">Ring</MenuItem>
-                          <MenuItem value="nacklaces">Necklace</MenuItem>
-                          <MenuItem value="best-sellers">Best Sellers</MenuItem>
-                          <MenuItem value="wedding">Wedding</MenuItem>
-                          <MenuItem value="other">Others</MenuItem>
-                        </StyledSelect>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Metal Details Section */}
-            {hasCategorySelected && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }}>
-                <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <SectionHeader icon={<Award size={20} />} title="Metal Details" description="Define metal properties" />
-                    <Grid container spacing={2.5}>
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Metal Type</InputLabel>
-                          <StyledSelect label="Metal Type" name="metalType" value={productData.metalType} onChange={handleChange}>
-                            <MenuItem value="Gold">Gold</MenuItem>
-                            <MenuItem value="Silver">Silver</MenuItem>
-                            <MenuItem value="Platinum">Platinum</MenuItem>
-                            <MenuItem value="Rose Gold">Rose Gold</MenuItem>
-                            <MenuItem value="White Gold">White Gold</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <StyledTextField label="Metal Purity (e.g. 18K, 22K)" name="metalPurity" value={productData.metalPurity} onChange={handleChange} fullWidth />
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        <StyledTextField label="Hallmark / Certification" name="hallmarkCertification" value={productData.hallmarkCertification} onChange={handleChange} fullWidth />
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Gemstone Details Section */}
-            {hasCategorySelected && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.5 }}>
-                <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <SectionHeader icon={<Gem size={20} />} title="Gemstone Details" description="Information about primary stones" />
-                    <Grid container spacing={2.5}>
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Stone Type</InputLabel>
-                          <StyledSelect label="Stone Type" name="primaryStoneType" value={productData.primaryStoneType} onChange={handleChange}>
-                            <MenuItem value="Diamond">Diamond</MenuItem>
-                            <MenuItem value="Ruby">Ruby</MenuItem>
-                            <MenuItem value="Emerald">Emerald</MenuItem>
-                            <MenuItem value="Moissanite">Moissanite</MenuItem>
-                            <MenuItem value="Sapphire">Sapphire</MenuItem>
-                            <MenuItem value="None">None</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Stone Shape</InputLabel>
-                          <StyledSelect label="Stone Shape" name="stoneShape" value={productData.stoneShape} onChange={handleChange}>
-                            <MenuItem value="Round">Round</MenuItem>
-                            <MenuItem value="Princess">Princess</MenuItem>
-                            <MenuItem value="Oval">Oval</MenuItem>
-                            <MenuItem value="Pear">Pear</MenuItem>
-                            <MenuItem value="Cushion">Cushion</MenuItem>
-                            <MenuItem value="None">None</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Classification Section */}
-            {hasCategorySelected && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
-                <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <SectionHeader icon={<Tag size={20} />} title="Classification" description="Occasion, collection and metal type" />
-                    <Grid container spacing={2.5}>
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Occasion</InputLabel>
-                          <StyledSelect label="Occasion" name="occasion" value={productData.occasion} onChange={handleChange}>
-                            <MenuItem value="bridal">Bridal Wear</MenuItem>
-                            <MenuItem value="casual">Casual Wear</MenuItem>
-                            <MenuItem value="engagement">Engagement</MenuItem>
-                            <MenuItem value="modern">Modern Wear</MenuItem>
-                            <MenuItem value="office">Office Wear</MenuItem>
-                            <MenuItem value="traditional-ethenic">Traditional & Ethnic Wear</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Collection</InputLabel>
-                          <StyledSelect label="Collection" name="collectionName" value={productData.collectionName} onChange={handleChange}>
-                            <MenuItem value="best-sellers">Best Sellers</MenuItem>
-                            <MenuItem value="reccomanded">Recommended</MenuItem>
-                            <MenuItem value="new-arrival">New Arrivals</MenuItem>
-                            <MenuItem value="dharohar">Dharohar</MenuItem>
-                            <MenuItem value="aksharam">Aksharam</MenuItem>
-                            <MenuItem value="loupe">Loupe</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Pricing Section */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
-              <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                <CardContent sx={{ p: 4 }}>
-                  <SectionHeader icon={<DollarSign size={20} />} title="Approximate Price Range" description="Set the approx. price range visible to customers (gold-rate based)" />
-                  <Grid container spacing={2.5}>
-                    <Grid item xs={12} sm={6}>
-                      <StyledTextField label="Min Approx. Price (₹)" name="minPrice" type="number" value={productData.minPrice} onChange={handleChange} fullWidth required helperText="Shown to customers" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <StyledTextField label="Max Approx. Price (₹)" name="maxPrice" type="number" value={productData.maxPrice} onChange={handleChange} fullWidth required helperText="Shown to customers" />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '10px', border: '1px solid #bae6fd' }}>
-                        <Typography variant="caption" sx={{ color: '#0369a1', fontWeight: 600 }}>
-                          💡 This range is displayed to customers as "Approx. ₹{Number(productData.minPrice || 0).toLocaleString('en-IN')} – ₹{Number(productData.maxPrice || 0).toLocaleString('en-IN')}". The actual final price is agreed over WhatsApp.
-                        </Typography>
-                      </Box>
-                    </Grid>
-=======
           {/* 2. APPROXIMATE PRICING */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
@@ -724,7 +532,6 @@ const EditProductForm = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <StyledTextField label="Maximum Approx. Price (₹)" name="maxPrice" type="number" value={productData.maxPrice} onChange={handleChange} fullWidth required />
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
                   </Grid>
                   <Grid item xs={12}>
                     <StyledTextField label="Price Note" name="priceNote" value={productData.priceNote} onChange={handleChange} fullWidth multiline rows={2} />
@@ -788,7 +595,7 @@ const EditProductForm = () => {
                         <StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth />
                       </Grid>
                       <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Size" value={dia.diamondSize} onChange={(e) => handleDiamondChange(idx, 'diamondSize', e.target.value)} fullWidth />
+                        <StyledTextField label="Diamond Name" value={dia.diamondName || dia.diamondSize || ''} onChange={(e) => handleDiamondChange(idx, 'diamondName', e.target.value)} fullWidth placeholder="e.g. Marquise, Round Brilliant, Solitaire" />
                       </Grid>
                       <Grid item xs={12} sm={4}>
                         <StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth />
@@ -856,13 +663,44 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-          {/* 6. CHAIN / COMPONENT DETAILS */}
+          {/* 6. SIZE & COMPONENT DETAILS */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="CHAIN / COMPONENT DETAILS" description="Chain length, weight & chaki weight" />
+                <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="SIZE & COMPONENT DETAILS" description="Ring/Bangle size, chain details, pendant size — shown based on product type" />
                 <Grid container spacing={2.5}>
-                  <Grid item xs={12} sm={3}>
+
+                  {/* Ring / Bangle Size — only for rings and bangles */}
+                  {isRing && (
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField
+                        label={prodType === 'bangles' ? 'Bangle Size / Diameter' : 'Ring Size (e.g. 16, 17, 18)'}
+                        name="ringSize"
+                        value={productData.ringSize || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        placeholder={prodType === 'bangles' ? 'e.g. 2.6 inches / 58 mm' : 'e.g. 16 or 17 or Free Size'}
+                        helperText={prodType === 'bangles' ? 'Inner diameter of bangle' : 'Standard ring size number'}
+                      />
+                    </Grid>
+                  )}
+
+                  {/* Pendant / Locket Size — only for pendants, mangalsutra, lockets */}
+                  {hasPendantSize && (
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField
+                        label="Pendant / Piece Size"
+                        name="pendantSize"
+                        value={productData.pendantSize || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        placeholder="e.g. 15mm x 10mm"
+                        helperText="Height × Width of the pendant/piece"
+                      />
+                    </Grid>
+                  )}
+
+                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Includes Chain</InputLabel>
                       <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain} onChange={handleChange}>
@@ -872,15 +710,20 @@ const EditProductForm = () => {
                       </StyledSelect>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <StyledTextField label="Chain Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
+
+                  {hasChain && (
+                    <Grid item xs={12} sm={3}>
+                      <StyledTextField label="Chain / Piece Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches / 45 cm" />
+                    </Grid>
+                  )}
+
+                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
                     <StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth />
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
                     <StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth />
                   </Grid>
+
                 </Grid>
               </CardContent>
             </Card>

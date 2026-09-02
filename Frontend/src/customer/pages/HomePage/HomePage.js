@@ -23,10 +23,9 @@ const HomePage = () => {
   const { products } = useSelector((store) => store);
 
   useEffect(() => {
-    // Fetch Gold Products dynamically from backend
+    // Fetch all active jewellery products for homepage display
     const reqData = {
       category: 'jewellery',
-      type: 'gold',
       color: '',
       minPrice: 0,
       maxPrice: 1000000,
@@ -36,6 +35,8 @@ const HomePage = () => {
       pageNumber: 1,
       pageSize: 50,
       occasion: '',
+      type: '',
+      collectionName: '',
     };
     dispatch(findProducts(reqData));
   }, [dispatch]);
@@ -61,26 +62,15 @@ const HomePage = () => {
     ? products.products.content
     : (Array.isArray(products?.products) ? products.products : []);
 
-  // Filter products to ensure they are Gold products (by type or metalType)
-  const goldProducts = allProductsList.filter(
+  // Best Sellers: products with 'best-sellers' in tags or collectionName
+  const bestSellerProducts = allProductsList.filter(
     (p) =>
-      p.type?.toLowerCase() === 'gold' ||
-      p.metalType?.toLowerCase() === 'gold' ||
-      !p.metalType // fallback to show products if metalType is unset
+      (Array.isArray(p.tags) && p.tags.includes('best-sellers')) ||
+      p.collectionName === 'best-sellers'
   );
 
-  // Group Gold Products by category / product type
-  const productsByCategory = goldProducts.reduce((acc, product) => {
-    const categoryName = product.category?.name || product.secondLevelCategory || 'Featured Gold';
-    const formattedName = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-    if (!acc[formattedName]) {
-      acc[formattedName] = [];
-    }
-    acc[formattedName].push(product);
-    return acc;
-  }, {});
-
-  const categoryEntries = Object.entries(productsByCategory);
+  // Show all products if no best-sellers tagged, as fallback
+  const displayBestSellers = bestSellerProducts.length > 0 ? bestSellerProducts : allProductsList;
 
   return (
     <div
@@ -112,19 +102,10 @@ const HomePage = () => {
       </section>
 
 
-      {/* 3. Main Best Sellers Section (Design Preserved with Real Data) */}
+      {/* 3. Main Best Sellers Section */}
       <section className="reveal">
-        <BestSellerSection title="Best Sellers" products={goldProducts.length > 0 ? goldProducts : allProductsList} />
+        <BestSellerSection title="Best Sellers" products={displayBestSellers} />
       </section>
-
-      {/* Additional Gold Category Sliders (if available) */}
-      {categoryEntries.length > 1 &&
-        categoryEntries.map(([catTitle, catProducts]) => (
-          <section key={catTitle} className="reveal">
-            <BestSellerSection title={`Gold ${catTitle}`} products={catProducts} />
-          </section>
-        ))
-      }
 
       {/* Style Stories - Lifestyle Grid */}
       <section className="reveal">

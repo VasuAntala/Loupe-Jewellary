@@ -56,9 +56,9 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
 
     const settings = {
         dots: false,
-        infinite: products.length > 4,
+        infinite: products.length > 3,
         speed: 500,
-        slidesToShow: products.length > 0 ? Math.min(4, products.length) : 4,
+        slidesToShow: products.length > 0 ? Math.min(3, products.length) : 3,
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 5000,
@@ -71,18 +71,22 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
             },
             {
                 breakpoint: 1024,
+                settings: { slidesToShow: Math.min(3, products.length) }
+            },
+            {
+                breakpoint: 768,
                 settings: { slidesToShow: Math.min(2, products.length) }
             },
             {
-                breakpoint: 640,
-                settings: { slidesToShow: 1 }
+                breakpoint: 480,
+                settings: { slidesToShow: Math.min(2, products.length) }
             }
         ]
     };
 
     return (
-        <Box sx={{ py: 8, bgcolor: '#ffffff' }}>
-            <Box sx={{ textAlign: 'center', mb: 6 }}>
+        <Box sx={{ pt: 6, pb: 3, bgcolor: '#ffffff' }}>
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
                 <Typography
                     sx={{
                         fontSize: { xs: '1.5rem', md: '2.2rem' },
@@ -99,7 +103,7 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                 <div className="w-16 h-[2px] bg-[#3c7399] mx-auto opacity-50" />
             </Box>
 
-            <div className="max-w-[1400px] mx-auto px-10 relative">
+            <div className="max-w-[1150px] mx-auto px-10 relative">
                 <Slider {...settings}>
                     {products.map((product, idx) => (
                         <BestSellerCard key={product._id || product.id || idx} product={product} />
@@ -107,12 +111,12 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                 </Slider>
             </div>
 
-            <Box sx={{ textAlign: 'center', mt: 8 }}>
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
                 <Button
                     variant="contained"
                     onClick={() => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                        navigate('/product-catalogue');
+                        navigate('/best-sellers/jewellery/jewellery');
                     }}
                     sx={{
                         bgcolor: '#3c7399', // Primary Slate

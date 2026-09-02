@@ -13,9 +13,9 @@ const categories = [
     { name: "BRACELETS", image: "/product/product 2.png", id: "bracelets" },
     { name: "BANGLES", image: "/product/product 3.png", id: "bangles" },
     { name: "MANGALSUTRA", image: "/product/product5.jpeg", id: "mangalsutra" },
-    { name: "CHARMS", image: "/product/product 3.png", id: "charms" },
-    { name: "SOLITAIRES", image: "/product/product7.jpeg", id: "solitaires" },
-    { name: "GOLD COINS", image: "/product/product5.jpeg", id: "gold-coins" },
+    { name: "CHAINS", image: "/product/product 3.png", id: "chains" },
+    { name: "LOCKETS", image: "/product/product7.jpeg", id: "lockets" },
+    { name: "ANKLETS", image: "/product/product5.jpeg", id: "anklets" },
 ];
 
 const CollectionCircles = () => {

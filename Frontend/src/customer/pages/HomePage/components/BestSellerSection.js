@@ -81,8 +81,8 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
     };
 
     return (
-        <Box sx={{ py: 8, bgcolor: '#ffffff' }}>
-            <Box sx={{ textAlign: 'center', mb: 6 }}>
+        <Box sx={{ pt: 6, pb: 3, bgcolor: '#ffffff' }}>
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
                 <Typography
                     sx={{
                         fontSize: { xs: '1.5rem', md: '2.2rem' },
@@ -107,7 +107,7 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                 </Slider>
             </div>
 
-            <Box sx={{ textAlign: 'center', mt: 8 }}>
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
                 <Button
                     variant="contained"
                     onClick={() => {

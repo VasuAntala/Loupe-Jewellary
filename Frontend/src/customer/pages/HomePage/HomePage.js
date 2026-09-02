@@ -72,19 +72,6 @@ const HomePage = () => {
   // Show all products if no best-sellers tagged, as fallback
   const displayBestSellers = bestSellerProducts.length > 0 ? bestSellerProducts : allProductsList;
 
-  // Group all products by sub-category for category sliders
-  const productsByCategory = allProductsList.reduce((acc, product) => {
-    const categoryName = product.secondLevelCategory || product.category?.name || 'Featured';
-    const formattedName = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-    if (!acc[formattedName]) {
-      acc[formattedName] = [];
-    }
-    acc[formattedName].push(product);
-    return acc;
-  }, {});
-
-  const categoryEntries = Object.entries(productsByCategory);
-
   return (
     <div
       ref={containerRef}
@@ -119,15 +106,6 @@ const HomePage = () => {
       <section className="reveal">
         <BestSellerSection title="Best Sellers" products={displayBestSellers} />
       </section>
-
-      {/* Category Sliders by sub-category */}
-      {categoryEntries.length > 1 &&
-        categoryEntries.map(([catTitle, catProducts]) => (
-          <section key={catTitle} className="reveal">
-            <BestSellerSection title={catTitle} products={catProducts} />
-          </section>
-        ))
-      }
 
       {/* Style Stories - Lifestyle Grid */}
       <section className="reveal">

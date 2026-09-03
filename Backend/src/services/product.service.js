@@ -4,30 +4,29 @@ const Product = require("../models/product.model");
 async function createProduct(reqData) {
     const topLevelName = reqData.topLevelCategory || "diamond";
     const secondLevelName = reqData.secondLevelCategory || "other";
-    const thirdLevelName = reqData.thirdLevelCategory || secondLevelName;
+    const thirdLevelName = reqData.thirdLevelCategory || '';
 
     let topLevel = await Category.findOne({ name: topLevelName });
-
     if (!topLevel) {
-        topLevel = new Category({
-            name: topLevelName,
-            level: 1
-        });
+        topLevel = new Category({ name: topLevelName, level: 1 });
         await topLevel.save();
     }
 
-    let secondLevel = await Category.findOne({
-        name: secondLevelName,
-        parentCategory: topLevel._id
-    });
-
+    let secondLevel = await Category.findOne({ name: secondLevelName, parentCategory: topLevel._id });
     if (!secondLevel) {
-        secondLevel = new Category({
-            name: secondLevelName,
-            parentCategory: topLevel._id,
-            level: 2
-        });
+        secondLevel = new Category({ name: secondLevelName, parentCategory: topLevel._id, level: 2 });
         await secondLevel.save();
+    }
+
+    // thirdLevel (specific style) if provided
+    let leafCategory = secondLevel;
+    if (thirdLevelName) {
+        let thirdLevel = await Category.findOne({ name: thirdLevelName, parentCategory: secondLevel._id });
+        if (!thirdLevel) {
+            thirdLevel = new Category({ name: thirdLevelName, parentCategory: secondLevel._id, level: 3 });
+            await thirdLevel.save();
+        }
+        leafCategory = thirdLevel;
     }
 
     const priceVal = Number(reqData.price || reqData.minPrice || 0);
@@ -47,7 +46,7 @@ async function createProduct(reqData) {
         title: titleVal,
         description: descriptionVal,
         details: detailsVal,
-        occasion: reqData.occasion || '',
+        occasion: reqData.occasion || [],
         type: reqData.type || '',
         color: reqData.color || [],
         price: priceVal,
@@ -59,7 +58,11 @@ async function createProduct(reqData) {
         imageUrls: reqData.imageUrls || [],
         brand: brandVal,
         quantity: quantityVal,
-        category: secondLevel._id,
+        category: leafCategory._id,
+        // Store flat category strings for easy retrieval
+        topLevelCategory: topLevelName,
+        secondLevelCategory: secondLevelName,
+        thirdLevelCategory: thirdLevelName,
         metalType: reqData.metalType,
         metalPurity: reqData.metalPurity,
         metalWeight: reqData.metalWeight,
@@ -106,7 +109,9 @@ async function deleteProduct(productId) {
 }
 
 async function updateProduct(productId, reqData) {
-    return await Product.findByIdAndUpdate(productId, reqData);
+    // Also update flat category strings if provided
+    const updateData = { ...reqData };
+    return await Product.findByIdAndUpdate(productId, updateData, { new: true });
 }
 
 async function findProductById(id) {
@@ -161,17 +166,31 @@ async function getAllProducts(reqQuery) {
     // -------------------- Filter by Category ---------------
 
     if (category !== 'jewellery') {
-        const existCategories = await Category.find({ name: category })
-
-        const categoryIds = existCategories.map(cat => cat._id);
-
-        if (existCategories.length > 0) {
-            query = query.where("category").in(categoryIds);
+        const existCategories = await Category.find({ name: category });
+        
+        let allCategoryIds = existCategories.map(cat => cat._id);
+        
+        if (allCategoryIds.length > 0) {
+            // Find children categories (e.g. specific styles under a sub-category)
+            const childCategories = await Category.find({ parentCategory: { $in: allCategoryIds } });
+            const childIds = childCategories.map(c => c._id);
+            allCategoryIds = [...allCategoryIds, ...childIds];
+            
+            // Find grandchildren just in case
+            if (childIds.length > 0) {
+                const grandChildCategories = await Category.find({ parentCategory: { $in: childIds } });
+                allCategoryIds = [...allCategoryIds, ...grandChildCategories.map(c => c._id)];
+            }
         }
-        else {
-            console.log("No such category!", category);
-            return { content: [], currentPage: 1, totalPages: 0 }
-        }
+
+        query = query.and([{
+            $or: [
+                { category: { $in: allCategoryIds } },
+                { topLevelCategory: category },
+                { secondLevelCategory: category },
+                { thirdLevelCategory: category }
+            ]
+        }]);
     }
 
     // -------------------- Filter by Type ---------------
@@ -197,7 +216,8 @@ async function getAllProducts(reqQuery) {
     // -------------------- Filter by Occasion ---------------
 
     if (occasion && occasion !== '' && occasion !== 'undefined') {
-        const occasionSet = new Set(occasion.split(",").map(occasion => occasion.trim().toLowerCase()));
+        const occasionArr = Array.isArray(occasion) ? occasion : String(occasion).split(",");
+        const occasionSet = new Set(occasionArr.map(occ => String(occ).trim().toLowerCase()));
 
         const occasionRegex = occasionSet.size > 0 ? new RegExp([...occasionSet].join("|"), "i") : null;
 
@@ -207,10 +227,12 @@ async function getAllProducts(reqQuery) {
     // -------------------- Filter by Collection / Tags ---------------
 
     if (collectionName && collectionName !== '' && collectionName !== 'undefined') {
-        query = query.or([
-            { collectionName: collectionName },
-            { tags: collectionName }
-        ]);
+        query = query.and([{
+            $or: [
+                { collectionName: collectionName },
+                { tags: collectionName }
+            ]
+        }]);
     }
 
     // -------------------- Filter by Price ---------------    

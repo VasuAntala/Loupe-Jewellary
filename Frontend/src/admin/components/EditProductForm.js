@@ -58,7 +58,7 @@ const SectionHeader = ({ step, icon, title, description }) => (
 );
 
 const initialDimension = { label: '', value: '', unit: 'mm' };
-const initialDiamond = { diamondType: '', diamondSize: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
+const initialDiamond = { diamondType: '', diamondName: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
 const initialMetal = { metalType: 'Gold', purity: '18K', finalWeight: '', unit: 'g' };
 const initialSpec = { label: '', value: '' };
 
@@ -83,31 +83,47 @@ const EditProductForm = () => {
     status: 'active',
     brand: 'Loupe Jeweler',
     quantity: 1,
-    occasion: '',
+    occasion: [],
     collectionName: '',
+    tags: [],
     color: [],
+<<<<<<< HEAD
     tags: [],
 
+=======
+    sizes: initialSizes,
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
     minPrice: 0,
     maxPrice: 0,
     priceNote: 'Price varies according to daily gold rate and diamond specifications.',
     price: 0,
     discountedPrice: 0,
+<<<<<<< HEAD
 
     dimensionsList: [{ ...initialDimension }],
     diamondDetails: [{ ...initialDiamond }],
     metalDetails: [{ ...initialMetal }],
 
+=======
+    dimensionsList: [initialDimension],
+    diamondDetails: [initialDiamond],
+    metalDetails: [initialMetal],
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
     includesChain: 'No',
     chainLength: '',
     chainWeight: '',
     chakiWeight: '',
+<<<<<<< HEAD
 
     additionalSpecifications: [],
 
     showDiamondDetails: false,
     showMetalDetails: false,
     showWeightDetails: false,
+=======
+    ringSize: '',
+    pendantSize: '',
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
   });
 
   // Load product when component mounts
@@ -124,39 +140,62 @@ const EditProductForm = () => {
       setProductData({
         title: p.title || '',
         productCode: p.productCode || '',
+<<<<<<< HEAD
         topLevelCategory: p.category?.parentCategory?.parentCategory?.name || p.topLevelCategory || 'diamond',
         secondLevelCategory: p.category?.parentCategory?.name || p.secondLevelCategory || '',
+=======
+        // Prioritize flat stored fields; fall back to category hierarchy
+        topLevelCategory: p.topLevelCategory || p.category?.parentCategory?.parentCategory?.name || 'diamond',
+        secondLevelCategory: p.secondLevelCategory || p.category?.parentCategory?.name || '',
+        thirdLevelCategory: p.thirdLevelCategory || p.category?.name || '',
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
         description: p.description || '',
         details: p.details || '',
         imageUrls: Array.isArray(p.imageUrls) ? p.imageUrls : [],
         status: p.status || 'active',
         brand: p.brand || 'Loupe Jeweler',
         quantity: p.quantity || 1,
-        occasion: p.occasion || '',
+        occasion: Array.isArray(p.occasion) ? p.occasion : (p.occasion ? [p.occasion] : []),
         collectionName: p.collectionName || '',
+        tags: Array.isArray(p.tags) ? p.tags : [],
         color: Array.isArray(p.color) ? p.color : [],
+<<<<<<< HEAD
         tags: Array.isArray(p.tags) ? p.tags : [],
 
+=======
+        sizes: Array.isArray(p.sizes) && p.sizes.length > 0 ? p.sizes : initialSizes,
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
         minPrice: p.minPrice || 0,
         maxPrice: p.maxPrice || 0,
         priceNote: p.priceNote || 'Price varies according to daily gold rate and diamond specifications.',
         price: p.price || 0,
         discountedPrice: p.discountedPrice || 0,
+<<<<<<< HEAD
 
         dimensionsList: Array.isArray(p.dimensionsList) && p.dimensionsList.length > 0 ? p.dimensionsList : [{ ...initialDimension }],
         diamondDetails: Array.isArray(p.diamondDetails) && p.diamondDetails.length > 0 ? p.diamondDetails : [{ ...initialDiamond }],
         metalDetails: Array.isArray(p.metalDetails) && p.metalDetails.length > 0 ? p.metalDetails : [{ ...initialMetal }],
 
+=======
+        dimensionsList: Array.isArray(p.dimensionsList) && p.dimensionsList.length > 0 ? p.dimensionsList : [initialDimension],
+        diamondDetails: Array.isArray(p.diamondDetails) && p.diamondDetails.length > 0 ? p.diamondDetails : [initialDiamond],
+        metalDetails: Array.isArray(p.metalDetails) && p.metalDetails.length > 0 ? p.metalDetails : [initialMetal],
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
         includesChain: p.includesChain || 'No',
         chainLength: p.chainLength || '',
         chainWeight: p.chainWeight || '',
         chakiWeight: p.chakiWeight || '',
+<<<<<<< HEAD
 
         additionalSpecifications: Array.isArray(p.additionalSpecifications) ? p.additionalSpecifications : [],
 
         showDiamondDetails: p.showDiamondDetails || false,
         showMetalDetails: p.showMetalDetails || false,
         showWeightDetails: p.showWeightDetails || false,
+=======
+        ringSize: p.ringSize || '',
+        pendantSize: p.pendantSize || '',
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
       });
       setLoaded(true);
     }
@@ -269,7 +308,90 @@ const EditProductForm = () => {
     setTimeout(() => navigate('/admin/products'), 1200);
   };
 
+<<<<<<< HEAD
   const isFormValid = productData.title.trim() !== '' && productData.topLevelCategory !== '';
+=======
+  const isFormValid = productData.title !== '' && productData.minPrice > 0;
+  const prodType = productData.secondLevelCategory;
+
+  // Conditional field visibility based on sub-category
+  const isRing = ['rings', 'bangles'].includes(prodType);
+  const hasChain = ['necklaces', 'pendants', 'mangalsutra', 'chains', 'lockets', 'anklets'].includes(prodType);
+  const hasPendantSize = ['pendants', 'mangalsutra', 'lockets'].includes(prodType);
+
+  const stylesByType = {
+    rings: [
+      { value: 'ring', label: 'Ring' },
+      { value: 'engagement-ring', label: 'Engagement Ring' },
+      { value: 'solitaire-ring', label: 'Solitaire Ring' },
+      { value: 'eternity-ring', label: 'Eternity Ring' },
+      { value: 'cocktail-ring', label: 'Cocktail Ring' },
+      { value: 'pearl-ring', label: 'Pearl Ring' },
+      { value: 'couple-ring', label: 'Couple Rings' },
+    ],
+    earrings: [
+      { value: 'earring', label: 'Earring' },
+      { value: 'stud', label: 'Studs' },
+      { value: 'drop', label: 'Drop & Dangle' },
+      { value: 'hoop', label: 'Hoops & Huggies' },
+      { value: 'jhumka', label: 'Jhumkas' },
+      { value: 'chandelier', label: 'Chandeliers' },
+      { value: 'ear-cuff', label: 'Ear Cuffs' },
+    ],
+    necklaces: [
+      { value: 'necklace', label: 'Necklace' },
+      { value: 'choker', label: 'Choker' },
+      { value: 'statement-necklace', label: 'Statement Necklace' },
+      { value: 'layered-necklace', label: 'Layered Necklace' },
+      { value: 'lariat', label: 'Lariat' },
+    ],
+    pendants: [
+      { value: 'pendant', label: 'Pendant' },
+      { value: 'solitaire-pendant', label: 'Solitaire Pendant' },
+      { value: 'gemstone-pendant', label: 'Gemstone Pendant' },
+      { value: 'initial-pendant', label: 'Initial & Alphabet Pendant' },
+    ],
+    mangalsutra: [
+      { value: 'mangal-sutra', label: 'Mangal Sutra' },
+      { value: 'solitaire-mangalsutra', label: 'Solitaire Mangalsutra' },
+      { value: 'modern-mangalsutra', label: 'Modern Bracelet Mangalsutra' },
+    ],
+    bracelets: [
+      { value: 'bracelet', label: 'Bracelet' },
+      { value: 'tennis-bracelet', label: 'Tennis Bracelet' },
+      { value: 'chain-bracelet', label: 'Chain Bracelet' },
+      { value: 'cuff-bracelet', label: 'Cuff Bracelet' },
+      { value: 'charm-bracelet', label: 'Charm Bracelet' },
+    ],
+    bangles: [
+      { value: 'bangle', label: 'Bangle' },
+      { value: 'kada', label: 'Kada' },
+      { value: 'stackable-bangle', label: 'Stackable Bangle' },
+    ],
+    chains: [
+      { value: 'chain', label: 'Chain' },
+      { value: 'gold-chain', label: 'Gold Chain' },
+      { value: 'rope-chain', label: 'Rope Chain' },
+    ],
+    lockets: [
+      { value: 'locket', label: 'Locket' },
+      { value: 'photo-locket', label: 'Photo Locket' },
+    ],
+    anklets: [
+      { value: 'anklet', label: 'Anklet' },
+    ],
+    'nose-pins': [
+      { value: 'nose-pin', label: 'Nose Pin' },
+    ],
+    other: [
+      { value: 'brooch', label: 'Brooch' },
+      { value: 'coin', label: 'Gold / Silver Coin' },
+      { value: 'accessory', label: 'Other Accessory' },
+    ],
+  };
+
+  const filteredStyles = stylesByType[prodType] || [];
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
 
   // Show loader while product is being fetched
   if (!loaded && products?.loading) {
@@ -369,7 +491,37 @@ const EditProductForm = () => {
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Occasion</InputLabel>
-                      <StyledSelect label="Occasion" name="occasion" value={productData.occasion} onChange={handleChange}>
+                      <StyledSelect
+                        multiple
+                        label="Occasion"
+                        name="occasion"
+                        value={Array.isArray(productData.occasion) ? productData.occasion : (productData.occasion ? [productData.occasion] : [])}
+                        onChange={(e) => {
+                          const { value } = e.target;
+                          setProductData((prev) => ({
+                            ...prev,
+                            occasion: typeof value === 'string' ? value.split(',') : value,
+                          }));
+                        }}
+                        renderValue={(selected) => {
+                          const labelsMap = {
+                            'bridal': 'Bridal Wear',
+                            'casual': 'Casual Wear',
+                            'engagement': 'Engagement',
+                            'modern': 'Modern Wear',
+                            'office': 'Office Wear',
+                            'traditional-ethenic': 'Traditional & Ethnic Wear'
+                          };
+                          const selectedArr = Array.isArray(selected) ? selected : [selected];
+                          return (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selectedArr.map((val) => (
+                                <Chip key={val} label={labelsMap[val] || val} size="small" sx={{ bgcolor: BRAND_LIGHT, color: BRAND, fontWeight: 700 }} />
+                              ))}
+                            </Box>
+                          );
+                        }}
+                      >
                         <MenuItem value="bridal">Bridal Wear</MenuItem>
                         <MenuItem value="casual">Casual Wear</MenuItem>
                         <MenuItem value="engagement">Engagement</MenuItem>
@@ -459,7 +611,11 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
+<<<<<<< HEAD
           {/* ===== 2. APPROXIMATE PRICING ===== */}
+=======
+          {/* 2. APPROXIMATE PRICING */}
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
@@ -469,7 +625,11 @@ const EditProductForm = () => {
                     <StyledTextField label="Minimum Approx. Price (₹)" name="minPrice" type="number" inputProps={{ min: 0 }} value={productData.minPrice} onChange={handleChange} fullWidth helperText="Displayed as lower range" />
                   </Grid>
                   <Grid item xs={12} sm={6}>
+<<<<<<< HEAD
                     <StyledTextField label="Maximum Approx. Price (₹)" name="maxPrice" type="number" inputProps={{ min: 0 }} value={productData.maxPrice} onChange={handleChange} fullWidth helperText="Displayed as upper range" />
+=======
+                    <StyledTextField label="Maximum Approx. Price (₹)" name="maxPrice" type="number" value={productData.maxPrice} onChange={handleChange} fullWidth required />
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
                   </Grid>
                   <Grid item xs={12}>
                     <StyledTextField label="Price Note" name="priceNote" value={productData.priceNote} onChange={handleChange} fullWidth multiline rows={2} />
@@ -546,12 +706,33 @@ const EditProductForm = () => {
                       </IconButton>
                     </Box>
                     <Grid container spacing={2}>
+<<<<<<< HEAD
                       <Grid item xs={12} sm={4}><StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth /></Grid>
                       <Grid item xs={12} sm={4}><StyledTextField label="Diamond Size" value={dia.diamondSize} onChange={(e) => handleDiamondChange(idx, 'diamondSize', e.target.value)} fullWidth /></Grid>
                       <Grid item xs={12} sm={4}><StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth /></Grid>
                       <Grid item xs={12} sm={4}><StyledTextField label="Weight / Piece (Carat)" value={dia.weightPerPiece} onChange={(e) => handleDiamondChange(idx, 'weightPerPiece', e.target.value)} fullWidth /></Grid>
                       <Grid item xs={12} sm={4}><StyledTextField label="Number of Pieces" type="number" inputProps={{ min: 1 }} value={dia.pieces} onChange={(e) => handleDiamondChange(idx, 'pieces', e.target.value)} fullWidth /></Grid>
                       <Grid item xs={12} sm={4}><StyledTextField label="Total Diamond Weight (Carat)" value={dia.totalWeight} onChange={(e) => handleDiamondChange(idx, 'totalWeight', e.target.value)} fullWidth /></Grid>
+=======
+                      <Grid item xs={12} sm={4}>
+                        <StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <StyledTextField label="Diamond Name" value={dia.diamondName || dia.diamondSize || ''} onChange={(e) => handleDiamondChange(idx, 'diamondName', e.target.value)} fullWidth placeholder="e.g. Marquise, Round Brilliant, Solitaire" />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <StyledTextField label="Diamond Weight / Piece" value={dia.weightPerPiece} onChange={(e) => handleDiamondChange(idx, 'weightPerPiece', e.target.value)} fullWidth />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <StyledTextField label="Diamond Pieces" type="number" value={dia.pieces} onChange={(e) => handleDiamondChange(idx, 'pieces', e.target.value)} fullWidth />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <StyledTextField label="Total Diamond Weight" value={dia.totalWeight} onChange={(e) => handleDiamondChange(idx, 'totalWeight', e.target.value)} fullWidth />
+                      </Grid>
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
                     </Grid>
                   </Paper>
                 ))}
@@ -606,13 +787,52 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
+<<<<<<< HEAD
           {/* ===== 6. CHAIN / CHAKI INFORMATION ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
                 <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="CHAIN / CHAKI INFORMATION" description="Chain inclusions, lengths and component weights" />
+=======
+          {/* 6. SIZE & COMPONENT DETAILS */}
+          <Grid item xs={12}>
+            <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
+                <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="SIZE & COMPONENT DETAILS" description="Ring/Bangle size, chain details, pendant size — shown based on product type" />
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
                 <Grid container spacing={2.5}>
-                  <Grid item xs={12} sm={3}>
+
+                  {/* Ring / Bangle Size — only for rings and bangles */}
+                  {isRing && (
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField
+                        label={prodType === 'bangles' ? 'Bangle Size / Diameter' : 'Ring Size (e.g. 16, 17, 18)'}
+                        name="ringSize"
+                        value={productData.ringSize || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        placeholder={prodType === 'bangles' ? 'e.g. 2.6 inches / 58 mm' : 'e.g. 16 or 17 or Free Size'}
+                        helperText={prodType === 'bangles' ? 'Inner diameter of bangle' : 'Standard ring size number'}
+                      />
+                    </Grid>
+                  )}
+
+                  {/* Pendant / Locket Size — only for pendants, mangalsutra, lockets */}
+                  {hasPendantSize && (
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField
+                        label="Pendant / Piece Size"
+                        name="pendantSize"
+                        value={productData.pendantSize || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        placeholder="e.g. 15mm x 10mm"
+                        helperText="Height × Width of the pendant/piece"
+                      />
+                    </Grid>
+                  )}
+
+                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Includes Chain</InputLabel>
                       <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain} onChange={handleChange}>
@@ -622,9 +842,26 @@ const EditProductForm = () => {
                       </StyledSelect>
                     </FormControl>
                   </Grid>
+<<<<<<< HEAD
                   <Grid item xs={12} sm={3}><StyledTextField label="Chain Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches" /></Grid>
                   <Grid item xs={12} sm={3}><StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" /></Grid>
                   <Grid item xs={12} sm={3}><StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" /></Grid>
+=======
+
+                  {hasChain && (
+                    <Grid item xs={12} sm={3}>
+                      <StyledTextField label="Chain / Piece Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches / 45 cm" />
+                    </Grid>
+                  )}
+
+                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
+                    <StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth />
+                  </Grid>
+                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
+                    <StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth />
+                  </Grid>
+
+>>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
                 </Grid>
               </CardContent>
             </Card>

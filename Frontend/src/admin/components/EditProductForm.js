@@ -5,12 +5,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box, Grid, TextField, Button, Typography, FormControl,
   InputLabel, Select, MenuItem, Card, CardContent, Avatar,
-  Chip, IconButton, CircularProgress, LinearProgress, Paper
+  Chip, IconButton, CircularProgress, LinearProgress, Paper,
+  Switch, FormControlLabel,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   Upload, Plus, Trash2, Package, DollarSign,
-  ChevronRight, Gem, Ruler, Award, Link as LinkIcon, Info
+  ChevronRight, Gem, Ruler, Award, Link as LinkIcon,
+  Info, Tag, Eye,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { uploadMultipleImagesViaBackend, deleteAssetViaBackend, getOptimizedCloudinaryUrl } from '../../utils/cloudinaryUtils';
@@ -55,63 +57,26 @@ const SectionHeader = ({ step, icon, title, description }) => (
   </Box>
 );
 
-const initialSizes = [{ weight: 'g', size: 'MM', stock: 0 }];
 const initialDimension = { label: '', value: '', unit: 'mm' };
 const initialDiamond = { diamondType: '', diamondSize: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
 const initialMetal = { metalType: 'Gold', purity: '18K', finalWeight: '', unit: 'g' };
+const initialSpec = { label: '', value: '' };
 
 const EditProductForm = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-<<<<<<< HEAD
-
-  const [productData, setProductData] = useState({
-    imageUrls: [],
-    title: '',
-    brand: 'Loupe Jeweler',
-    color: [],
-    discountedPrice: 0,
-    price: 0,
-    discountPercent: 0.0,
-    minPrice: 0,
-    maxPrice: 0,
-    description: '',
-    details: '',
-    occasion: '',
-    quantity: 1,
-    collectionName: '',
-    type: '',
-    sizes: initialSizes,
-    topLevelCategory: '',
-    secondLevelCategory: '',
-    metalType: '',
-    metalPurity: '',
-    metalWeight: '',
-    hallmarkCertification: '',
-    metalColor: '',
-    primaryStoneType: '',
-    stoneShape: '',
-    stoneWeight: '',
-    ringSize: '',
-    chainLength: '',
-    pendantSize: '',
-    dimensions: '',
-    totalWeight: '',
-  });
-=======
   const dispatch = useDispatch();
   const { products } = useSelector((store) => store);
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
 
   const [imageUploading, setImageUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
   const [productData, setProductData] = useState({
     title: '',
     productCode: '',
     topLevelCategory: 'diamond',
     secondLevelCategory: '',
-    thirdLevelCategory: '',
     description: '',
     details: '',
     imageUrls: [],
@@ -121,7 +86,7 @@ const EditProductForm = () => {
     occasion: '',
     collectionName: '',
     color: [],
-    sizes: initialSizes,
+    tags: [],
 
     minPrice: 0,
     maxPrice: 0,
@@ -129,42 +94,38 @@ const EditProductForm = () => {
     price: 0,
     discountedPrice: 0,
 
-    dimensionsList: [initialDimension],
-    diamondDetails: [initialDiamond],
-    metalDetails: [initialMetal],
+    dimensionsList: [{ ...initialDimension }],
+    diamondDetails: [{ ...initialDiamond }],
+    metalDetails: [{ ...initialMetal }],
 
     includesChain: 'No',
     chainLength: '',
     chainWeight: '',
     chakiWeight: '',
+
+    additionalSpecifications: [],
+
+    showDiamondDetails: false,
+    showMetalDetails: false,
+    showWeightDetails: false,
   });
 
+  // Load product when component mounts
   useEffect(() => {
     if (productId) {
       dispatch(findProductById({ productId }));
     }
   }, [productId, dispatch]);
 
+  // Populate form when product data arrives
   useEffect(() => {
-    if (products?.product && products.product._id === productId) {
+    if (products?.product && products.product._id === productId && !loaded) {
       const p = products.product;
       setProductData({
         title: p.title || '',
         productCode: p.productCode || '',
         topLevelCategory: p.category?.parentCategory?.parentCategory?.name || p.topLevelCategory || 'diamond',
         secondLevelCategory: p.category?.parentCategory?.name || p.secondLevelCategory || '',
-<<<<<<< HEAD
-        metalType: p.metalType || '',
-        metalPurity: p.metalPurity || '',
-        metalWeight: p.metalWeight || '',
-        hallmarkCertification: p.hallmarkCertification || '',
-        metalColor: p.metalColor || '',
-        primaryStoneType: p.primaryStoneType || '',
-        stoneShape: p.stoneShape || '',
-        stoneWeight: p.stoneWeight || '',
-        ringSize: p.ringSize || '',
-=======
-        thirdLevelCategory: p.category?.name || p.thirdLevelCategory || '',
         description: p.description || '',
         details: p.details || '',
         imageUrls: Array.isArray(p.imageUrls) ? p.imageUrls : [],
@@ -174,7 +135,7 @@ const EditProductForm = () => {
         occasion: p.occasion || '',
         collectionName: p.collectionName || '',
         color: Array.isArray(p.color) ? p.color : [],
-        sizes: Array.isArray(p.sizes) && p.sizes.length > 0 ? p.sizes : initialSizes,
+        tags: Array.isArray(p.tags) ? p.tags : [],
 
         minPrice: p.minPrice || 0,
         maxPrice: p.maxPrice || 0,
@@ -182,31 +143,40 @@ const EditProductForm = () => {
         price: p.price || 0,
         discountedPrice: p.discountedPrice || 0,
 
-        dimensionsList: Array.isArray(p.dimensionsList) && p.dimensionsList.length > 0 ? p.dimensionsList : [initialDimension],
-        diamondDetails: Array.isArray(p.diamondDetails) && p.diamondDetails.length > 0 ? p.diamondDetails : [initialDiamond],
-        metalDetails: Array.isArray(p.metalDetails) && p.metalDetails.length > 0 ? p.metalDetails : [initialMetal],
+        dimensionsList: Array.isArray(p.dimensionsList) && p.dimensionsList.length > 0 ? p.dimensionsList : [{ ...initialDimension }],
+        diamondDetails: Array.isArray(p.diamondDetails) && p.diamondDetails.length > 0 ? p.diamondDetails : [{ ...initialDiamond }],
+        metalDetails: Array.isArray(p.metalDetails) && p.metalDetails.length > 0 ? p.metalDetails : [{ ...initialMetal }],
 
         includesChain: p.includesChain || 'No',
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
         chainLength: p.chainLength || '',
         chainWeight: p.chainWeight || '',
         chakiWeight: p.chakiWeight || '',
+
+        additionalSpecifications: Array.isArray(p.additionalSpecifications) ? p.additionalSpecifications : [],
+
+        showDiamondDetails: p.showDiamondDetails || false,
+        showMetalDetails: p.showMetalDetails || false,
+        showWeightDetails: p.showWeightDetails || false,
       });
+      setLoaded(true);
     }
-  }, [products?.product, productId]);
+  }, [products?.product, productId, loaded]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setProductData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
+  const handleSwitchChange = (name) => (e) => {
+    setProductData((prev) => ({ ...prev, [name]: e.target.checked }));
+  };
+
+  // Image Upload
   const handleImageUpload = async (e) => {
     const { files } = e.target;
     if (!files || files.length === 0) return;
-
     const selectedFiles = Array.from(files).filter((f) => f.type?.startsWith('image/')).slice(0, 4);
     if (selectedFiles.length === 0) return;
-
     setImageUploading(true);
     setUploadProgress(0);
     try {
@@ -245,12 +215,8 @@ const EditProductForm = () => {
     updated[index] = { ...updated[index], [field]: value };
     setProductData((prev) => ({ ...prev, dimensionsList: updated }));
   };
-  const handleAddDimension = () => {
-    setProductData((prev) => ({ ...prev, dimensionsList: [...prev.dimensionsList, { label: '', value: '', unit: 'mm' }] }));
-  };
-  const handleRemoveDimension = (index) => {
-    setProductData((prev) => ({ ...prev, dimensionsList: prev.dimensionsList.filter((_, i) => i !== index) }));
-  };
+  const handleAddDimension = () => setProductData((prev) => ({ ...prev, dimensionsList: [...prev.dimensionsList, { ...initialDimension }] }));
+  const handleRemoveDimension = (index) => setProductData((prev) => ({ ...prev, dimensionsList: prev.dimensionsList.filter((_, i) => i !== index) }));
 
   // Diamonds
   const handleDiamondChange = (index, field, value) => {
@@ -258,12 +224,8 @@ const EditProductForm = () => {
     updated[index] = { ...updated[index], [field]: value };
     setProductData((prev) => ({ ...prev, diamondDetails: updated }));
   };
-  const handleAddDiamond = () => {
-    setProductData((prev) => ({ ...prev, diamondDetails: [...prev.diamondDetails, { ...initialDiamond }] }));
-  };
-  const handleRemoveDiamond = (index) => {
-    setProductData((prev) => ({ ...prev, diamondDetails: prev.diamondDetails.filter((_, i) => i !== index) }));
-  };
+  const handleAddDiamond = () => setProductData((prev) => ({ ...prev, diamondDetails: [...prev.diamondDetails, { ...initialDiamond }] }));
+  const handleRemoveDiamond = (index) => setProductData((prev) => ({ ...prev, diamondDetails: prev.diamondDetails.filter((_, i) => i !== index) }));
 
   // Metals
   const handleMetalChange = (index, field, value) => {
@@ -271,19 +233,32 @@ const EditProductForm = () => {
     updated[index] = { ...updated[index], [field]: value };
     setProductData((prev) => ({ ...prev, metalDetails: updated }));
   };
-  const handleAddMetal = () => {
-    setProductData((prev) => ({ ...prev, metalDetails: [...prev.metalDetails, { ...initialMetal }] }));
+  const handleAddMetal = () => setProductData((prev) => ({ ...prev, metalDetails: [...prev.metalDetails, { ...initialMetal }] }));
+  const handleRemoveMetal = (index) => setProductData((prev) => ({ ...prev, metalDetails: prev.metalDetails.filter((_, i) => i !== index) }));
+
+  // Additional Specs
+  const handleSpecChange = (index, field, value) => {
+    const updated = [...productData.additionalSpecifications];
+    updated[index] = { ...updated[index], [field]: value };
+    setProductData((prev) => ({ ...prev, additionalSpecifications: updated }));
   };
-  const handleRemoveMetal = (index) => {
-    setProductData((prev) => ({ ...prev, metalDetails: prev.metalDetails.filter((_, i) => i !== index) }));
-  };
+  const handleAddSpec = () => setProductData((prev) => ({ ...prev, additionalSpecifications: [...prev.additionalSpecifications, { ...initialSpec }] }));
+  const handleRemoveSpec = (index) => setProductData((prev) => ({ ...prev, additionalSpecifications: prev.additionalSpecifications.filter((_, i) => i !== index) }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const min = Number(productData.minPrice);
+    const max = Number(productData.maxPrice);
+    if (min > 0 && max > 0 && min > max) {
+      alert('Minimum price cannot be greater than maximum price.');
+      return;
+    }
+
     const finalData = {
       ...productData,
-      price: productData.minPrice || productData.price,
-      discountedPrice: productData.minPrice || productData.discountedPrice,
+      price: min || productData.price,
+      discountedPrice: min || productData.discountedPrice,
       metalType: productData.metalDetails[0]?.metalType || 'Gold',
       metalPurity: productData.metalDetails[0]?.purity || '18K',
       metalWeight: parseFloat(productData.metalDetails[0]?.finalWeight || 0),
@@ -291,102 +266,23 @@ const EditProductForm = () => {
     };
 
     await dispatch(updateProduct({ productId, updates: finalData }));
-    setTimeout(() => {
-      navigate('/admin/products');
-    }, 1200);
+    setTimeout(() => navigate('/admin/products'), 1200);
   };
 
-<<<<<<< HEAD
-  const isFormValid = productData.title !== '' && productData.minPrice > 0 && productData.quantity > 0 && productData.description !== '' && productData.topLevelCategory !== '';
+  const isFormValid = productData.title.trim() !== '' && productData.topLevelCategory !== '';
 
-  const prodType = productData.secondLevelCategory;
-  const hasCategorySelected = prodType !== '' || productData.topLevelCategory !== '';
-
-  const isRing = prodType === 'rings' || prodType === 'wedding';
-  const isNecklace = prodType === 'nacklaces';
-
-  const showRingSize = isRing || (prodType === 'other' || prodType === 'best-sellers') && !isNecklace;
-  const showNecklaceFields = isNecklace || (prodType === 'other' || prodType === 'best-sellers') && !isRing;
-
-=======
-  const isFormValid = productData.title !== '' && productData.minPrice > 0;
-  const prodType = productData.secondLevelCategory;
-
-  const stylesByType = {
-    rings: [
-      { value: 'ring', label: 'Ring' },
-      { value: 'engagement-ring', label: 'Engagement Ring' },
-      { value: 'solitaire-ring', label: 'Solitaire Ring' },
-      { value: 'eternity-ring', label: 'Eternity Ring' },
-      { value: 'cocktail-ring', label: 'Cocktail Ring' },
-      { value: 'pearl-ring', label: 'Pearl Ring' },
-      { value: 'couple-ring', label: 'Couple Rings' },
-    ],
-    earrings: [
-      { value: 'earring', label: 'Earring' },
-      { value: 'stud', label: 'Studs' },
-      { value: 'drop', label: 'Drop & Dangle' },
-      { value: 'hoop', label: 'Hoops & Huggies' },
-      { value: 'jhumka', label: 'Jhumkas' },
-      { value: 'chandelier', label: 'Chandeliers' },
-      { value: 'ear-cuff', label: 'Ear Cuffs' },
-    ],
-    necklaces: [
-      { value: 'necklace', label: 'Necklace' },
-      { value: 'choker', label: 'Choker' },
-      { value: 'statement-necklace', label: 'Statement Necklace' },
-      { value: 'layered-necklace', label: 'Layered Necklace' },
-      { value: 'lariat', label: 'Lariat' },
-    ],
-    pendants: [
-      { value: 'pendant', label: 'Pendant' },
-      { value: 'solitaire-pendant', label: 'Solitaire Pendant' },
-      { value: 'gemstone-pendant', label: 'Gemstone Pendant' },
-      { value: 'initial-pendant', label: 'Initial & Alphabet Pendant' },
-    ],
-    mangalsutra: [
-      { value: 'mangal-sutra', label: 'Mangal Sutra' },
-      { value: 'solitaire-mangalsutra', label: 'Solitaire Mangalsutra' },
-      { value: 'modern-mangalsutra', label: 'Modern Bracelet Mangalsutra' },
-    ],
-    bracelets: [
-      { value: 'bracelet', label: 'Bracelet' },
-      { value: 'tennis-bracelet', label: 'Tennis Bracelet' },
-      { value: 'chain-bracelet', label: 'Chain Bracelet' },
-      { value: 'cuff-bracelet', label: 'Cuff Bracelet' },
-      { value: 'charm-bracelet', label: 'Charm Bracelet' },
-    ],
-    bangles: [
-      { value: 'bangle', label: 'Bangle' },
-      { value: 'kada', label: 'Kada' },
-      { value: 'stackable-bangle', label: 'Stackable Bangle' },
-    ],
-    chains: [
-      { value: 'chain', label: 'Chain' },
-      { value: 'gold-chain', label: 'Gold Chain' },
-      { value: 'rope-chain', label: 'Rope Chain' },
-    ],
-    lockets: [
-      { value: 'locket', label: 'Locket' },
-      { value: 'photo-locket', label: 'Photo Locket' },
-    ],
-    anklets: [
-      { value: 'anklet', label: 'Anklet' },
-    ],
-    'nose-pins': [
-      { value: 'nose-pin', label: 'Nose Pin' },
-    ],
-    other: [
-      { value: 'brooch', label: 'Brooch' },
-      { value: 'coin', label: 'Gold / Silver Coin' },
-      { value: 'accessory', label: 'Other Accessory' },
-    ],
-  };
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
-
+  // Show loader while product is being fetched
+  if (!loaded && products?.loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+        <CircularProgress sx={{ color: BRAND }} />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: '#f8fafc', minHeight: '100vh' }}>
+      {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <Box sx={{ mb: 4, pb: 3, borderBottom: '1px solid #e2e8f0' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
@@ -401,24 +297,30 @@ const EditProductForm = () => {
           <Typography variant="h4" sx={{ fontWeight: 900, color: '#0f172a', letterSpacing: '-1px' }}>
             EDIT PRODUCT DETAILS
           </Typography>
+          {productData.productCode && (
+            <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, mt: 0.5 }}>
+              Product Code: <strong style={{ color: BRAND }}>{productData.productCode}</strong>
+            </Typography>
+          )}
         </Box>
       </motion.div>
 
       <form onSubmit={handleSubmit}>
         <Grid container spacing={3.5}>
 
-          {/* 1. BASIC INFORMATION */}
+          {/* ===== 1. BASIC INFORMATION ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <SectionHeader step="1" icon={<Package size={20} color={BRAND} />} title="BASIC INFORMATION" description="Product title, SKU code, category & images" />
+                <SectionHeader step="1" icon={<Package size={20} color={BRAND} />} title="BASIC INFORMATION" description="Product name, code, category, description, images and status" />
                 <Grid container spacing={2.5}>
                   <Grid item xs={12} sm={8}>
-                    <StyledTextField label="Product Name" name="title" value={productData.title} onChange={handleChange} fullWidth required />
+                    <StyledTextField label="Product Name *" name="title" value={productData.title} onChange={handleChange} fullWidth required />
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <StyledTextField label="Product Code / SKU" name="productCode" value={productData.productCode} onChange={handleChange} fullWidth />
                   </Grid>
+
                   <Grid item xs={12} sm={4}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Category (Material)</InputLabel>
@@ -427,9 +329,11 @@ const EditProductForm = () => {
                         <MenuItem value="gold">Gold Jewelry</MenuItem>
                         <MenuItem value="platinum">Platinum Jewelry</MenuItem>
                         <MenuItem value="gemstone">Gemstone Jewelry</MenuItem>
+                        <MenuItem value="silver">Silver Jewelry</MenuItem>
                       </StyledSelect>
                     </FormControl>
                   </Grid>
+
                   <Grid item xs={12} sm={4}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Sub Category (Item Type)</InputLabel>
@@ -449,27 +353,19 @@ const EditProductForm = () => {
                       </StyledSelect>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth disabled={!prodType}>
-                      <InputLabel sx={{ fontWeight: 600 }}>Specific Style</InputLabel>
-                      <StyledSelect label="Specific Style" name="thirdLevelCategory" value={productData.thirdLevelCategory} onChange={handleChange}>
-                        {filteredStyles.map((s) => (
-                          <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>
-                        ))}
-                      </StyledSelect>
-                    </FormControl>
-                  </Grid>
+
                   <Grid item xs={12} sm={4}>
                     <FormControl fullWidth>
-                      <InputLabel sx={{ fontWeight: 600 }}>Status</InputLabel>
-                      <StyledSelect label="Status" name="status" value={productData.status} onChange={handleChange}>
+                      <InputLabel sx={{ fontWeight: 600 }}>Product Status</InputLabel>
+                      <StyledSelect label="Product Status" name="status" value={productData.status} onChange={handleChange}>
                         <MenuItem value="active">Active (Visible in Store)</MenuItem>
-                        <MenuItem value="draft">Draft</MenuItem>
+                        <MenuItem value="draft">Draft (Hidden)</MenuItem>
                         <MenuItem value="inactive">Inactive</MenuItem>
                         <MenuItem value="out_of_stock">Out of Stock</MenuItem>
                       </StyledSelect>
                     </FormControl>
                   </Grid>
+
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Occasion</InputLabel>
@@ -479,13 +375,14 @@ const EditProductForm = () => {
                         <MenuItem value="engagement">Engagement</MenuItem>
                         <MenuItem value="modern">Modern Wear</MenuItem>
                         <MenuItem value="office">Office Wear</MenuItem>
-                        <MenuItem value="traditional-ethenic">Traditional & Ethnic Wear</MenuItem>
+                        <MenuItem value="traditional-ethenic">Traditional &amp; Ethnic Wear</MenuItem>
                       </StyledSelect>
                     </FormControl>
                   </Grid>
+
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                      <InputLabel sx={{ fontWeight: 600 }}>Tags & Featured Collections</InputLabel>
+                      <InputLabel sx={{ fontWeight: 600 }}>Tags &amp; Featured Collections</InputLabel>
                       <StyledSelect
                         multiple
                         label="Tags & Featured Collections"
@@ -496,18 +393,18 @@ const EditProductForm = () => {
                           setProductData((prev) => ({
                             ...prev,
                             tags: selected,
-                            collectionName: selected.includes('best-sellers') ? 'best-sellers' : (selected[0] || '')
+                            collectionName: selected.includes('best-sellers') ? 'best-sellers' : (selected[0] || ''),
                           }));
                         }}
                         renderValue={(selected) => (
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                             {selected.map((val) => (
-                              <Chip key={val} label={val === 'best-sellers' ? 'Best Seller' : val === 'wedding' ? 'Wedding Collection' : val} size="small" sx={{ bgcolor: BRAND_LIGHT, color: BRAND, fontWeight: 700 }} />
+                              <Chip key={val} label={val} size="small" sx={{ bgcolor: BRAND_LIGHT, color: BRAND, fontWeight: 700 }} />
                             ))}
                           </Box>
                         )}
                       >
-                        <MenuItem value="best-sellers">🔥 Best Seller (Appears in Shop + Best Sellers section)</MenuItem>
+                        <MenuItem value="best-sellers">🔥 Best Seller</MenuItem>
                         <MenuItem value="wedding">💍 Wedding Collection</MenuItem>
                         <MenuItem value="recommended">⭐ Recommended</MenuItem>
                         <MenuItem value="new-arrival">✨ New Arrival</MenuItem>
@@ -516,23 +413,39 @@ const EditProductForm = () => {
                       </StyledSelect>
                     </FormControl>
                   </Grid>
+
                   <Grid item xs={12}>
-                    <StyledTextField label="Description" name="description" value={productData.description} onChange={handleChange} fullWidth multiline rows={3} />
+                    <StyledTextField label="Product Description" name="description" value={productData.description} onChange={handleChange} fullWidth multiline rows={3} />
                   </Grid>
+
+                  {/* Images */}
                   <Grid item xs={12}>
                     <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#334155', mb: 1.5 }}>Product Images</Typography>
-                    <Box component="label" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 3, border: `2px dashed ${BRAND}`, borderRadius: '16px', bgcolor: BRAND_LIGHT, cursor: 'pointer' }}>
+                    <Box
+                      component="label"
+                      sx={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        p: 3, border: `2px dashed ${BRAND}`, borderRadius: '16px', bgcolor: BRAND_LIGHT, cursor: 'pointer',
+                        '&:hover': { bgcolor: '#e0f2fe' },
+                      }}
+                    >
                       <Upload size={22} color={BRAND} />
-                      <Typography variant="body2" sx={{ fontWeight: 800, mt: 1 }}>Upload / Change Images</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 800, mt: 1 }}>Upload / Replace Images</Typography>
+                      <Typography variant="caption" sx={{ color: '#64748b' }}>PNG, JPG, WEBP (up to 4 images)</Typography>
                       <input type="file" accept="image/*" multiple hidden onChange={handleImageUpload} />
                     </Box>
+                    {imageUploading && (
+                      <Box sx={{ mt: 1.5 }}>
+                        <LinearProgress variant="indeterminate" sx={{ borderRadius: 4, height: 6, bgcolor: '#e2e8f0', '& .MuiLinearProgress-bar': { bgcolor: BRAND } }} />
+                      </Box>
+                    )}
                     {productData.imageUrls.length > 0 && (
                       <Grid container spacing={2} sx={{ mt: 1 }}>
                         {productData.imageUrls.map((image, index) => (
                           <Grid item xs={6} sm={3} key={index}>
                             <Box sx={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: `2px solid ${BRAND}40` }}>
-                              <img src={getOptimizedCloudinaryUrl(image.imageUrl, 'image')} alt="" style={{ width: '100%', height: 110, objectFit: 'cover' }} />
-                              <IconButton size="small" onClick={() => handleRemoveImage(index)} sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(244,63,94,0.9)', color: '#fff' }}>
+                              <img src={getOptimizedCloudinaryUrl(image.imageUrl, 'image')} alt="" style={{ width: '100%', height: 110, objectFit: 'cover', display: 'block' }} />
+                              <IconButton size="small" onClick={() => handleRemoveImage(index)} sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(244,63,94,0.9)', color: '#fff', width: 24, height: 24, '&:hover': { bgcolor: '#f43f5e' } }}>
                                 <Trash2 size={13} />
                               </IconButton>
                             </Box>
@@ -546,201 +459,43 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-<<<<<<< HEAD
-          {/* RIGHT COLUMN */}
-          <Grid item xs={12} lg={5}>
-
-            {/* Category Section */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }}>
-              <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                <CardContent sx={{ p: 4 }}>
-                  <SectionHeader icon={<BarChart3 size={20} />} title="Category Hierarchy" description="Map product into the correct category" />
-                  <Grid container spacing={2.5}>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ fontWeight: 600 }}>Main Category (Material)</InputLabel>
-                        <StyledSelect label="Main Category (Material)" name="topLevelCategory" value={productData.topLevelCategory} onChange={handleChange}>
-                          <MenuItem value="diamond">Diamond Jewelry</MenuItem>
-                        </StyledSelect>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ fontWeight: 600 }}>Product Type (e.g., Rings, Earrings)</InputLabel>
-                        <StyledSelect label="Product Type (e.g., Rings, Earrings)" name="secondLevelCategory" value={productData.secondLevelCategory} onChange={handleChange}>
-                          <MenuItem value="earrings">Earring</MenuItem>
-                          <MenuItem value="rings">Ring</MenuItem>
-                          <MenuItem value="nacklaces">Necklace</MenuItem>
-                          <MenuItem value="best-sellers">Best Sellers</MenuItem>
-                          <MenuItem value="wedding">Wedding</MenuItem>
-                          <MenuItem value="other">Others</MenuItem>
-                        </StyledSelect>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Metal Details Section */}
-            {hasCategorySelected && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }}>
-                <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <SectionHeader icon={<Award size={20} />} title="Metal Details" description="Define metal properties" />
-                    <Grid container spacing={2.5}>
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Metal Type</InputLabel>
-                          <StyledSelect label="Metal Type" name="metalType" value={productData.metalType} onChange={handleChange}>
-                            <MenuItem value="Gold">Gold</MenuItem>
-                            <MenuItem value="Silver">Silver</MenuItem>
-                            <MenuItem value="Platinum">Platinum</MenuItem>
-                            <MenuItem value="Rose Gold">Rose Gold</MenuItem>
-                            <MenuItem value="White Gold">White Gold</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <StyledTextField label="Metal Purity (e.g. 18K, 22K)" name="metalPurity" value={productData.metalPurity} onChange={handleChange} fullWidth />
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        <StyledTextField label="Hallmark / Certification" name="hallmarkCertification" value={productData.hallmarkCertification} onChange={handleChange} fullWidth />
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Gemstone Details Section */}
-            {hasCategorySelected && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.5 }}>
-                <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <SectionHeader icon={<Gem size={20} />} title="Gemstone Details" description="Information about primary stones" />
-                    <Grid container spacing={2.5}>
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Stone Type</InputLabel>
-                          <StyledSelect label="Stone Type" name="primaryStoneType" value={productData.primaryStoneType} onChange={handleChange}>
-                            <MenuItem value="Diamond">Diamond</MenuItem>
-                            <MenuItem value="Ruby">Ruby</MenuItem>
-                            <MenuItem value="Emerald">Emerald</MenuItem>
-                            <MenuItem value="Moissanite">Moissanite</MenuItem>
-                            <MenuItem value="Sapphire">Sapphire</MenuItem>
-                            <MenuItem value="None">None</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Stone Shape</InputLabel>
-                          <StyledSelect label="Stone Shape" name="stoneShape" value={productData.stoneShape} onChange={handleChange}>
-                            <MenuItem value="Round">Round</MenuItem>
-                            <MenuItem value="Princess">Princess</MenuItem>
-                            <MenuItem value="Oval">Oval</MenuItem>
-                            <MenuItem value="Pear">Pear</MenuItem>
-                            <MenuItem value="Cushion">Cushion</MenuItem>
-                            <MenuItem value="None">None</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Classification Section */}
-            {hasCategorySelected && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
-                <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <SectionHeader icon={<Tag size={20} />} title="Classification" description="Occasion, collection and metal type" />
-                    <Grid container spacing={2.5}>
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Occasion</InputLabel>
-                          <StyledSelect label="Occasion" name="occasion" value={productData.occasion} onChange={handleChange}>
-                            <MenuItem value="bridal">Bridal Wear</MenuItem>
-                            <MenuItem value="casual">Casual Wear</MenuItem>
-                            <MenuItem value="engagement">Engagement</MenuItem>
-                            <MenuItem value="modern">Modern Wear</MenuItem>
-                            <MenuItem value="office">Office Wear</MenuItem>
-                            <MenuItem value="traditional-ethenic">Traditional & Ethnic Wear</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel sx={{ fontWeight: 600 }}>Collection</InputLabel>
-                          <StyledSelect label="Collection" name="collectionName" value={productData.collectionName} onChange={handleChange}>
-                            <MenuItem value="best-sellers">Best Sellers</MenuItem>
-                            <MenuItem value="reccomanded">Recommended</MenuItem>
-                            <MenuItem value="new-arrival">New Arrivals</MenuItem>
-                            <MenuItem value="dharohar">Dharohar</MenuItem>
-                            <MenuItem value="aksharam">Aksharam</MenuItem>
-                            <MenuItem value="loupe">Loupe</MenuItem>
-                          </StyledSelect>
-                        </FormControl>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Pricing Section */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
-              <Card sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', mb: 3 }}>
-                <CardContent sx={{ p: 4 }}>
-                  <SectionHeader icon={<DollarSign size={20} />} title="Approximate Price Range" description="Set the approx. price range visible to customers (gold-rate based)" />
-                  <Grid container spacing={2.5}>
-                    <Grid item xs={12} sm={6}>
-                      <StyledTextField label="Min Approx. Price (₹)" name="minPrice" type="number" value={productData.minPrice} onChange={handleChange} fullWidth required helperText="Shown to customers" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <StyledTextField label="Max Approx. Price (₹)" name="maxPrice" type="number" value={productData.maxPrice} onChange={handleChange} fullWidth required helperText="Shown to customers" />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '10px', border: '1px solid #bae6fd' }}>
-                        <Typography variant="caption" sx={{ color: '#0369a1', fontWeight: 600 }}>
-                          💡 This range is displayed to customers as "Approx. ₹{Number(productData.minPrice || 0).toLocaleString('en-IN')} – ₹{Number(productData.maxPrice || 0).toLocaleString('en-IN')}". The actual final price is agreed over WhatsApp.
-                        </Typography>
-                      </Box>
-                    </Grid>
-=======
-          {/* 2. APPROXIMATE PRICING */}
+          {/* ===== 2. APPROXIMATE PRICING ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <SectionHeader step="2" icon={<DollarSign size={20} color={BRAND} />} title="APPROXIMATE PRICING" description="Estimated price range shown to customers" />
+                <SectionHeader step="2" icon={<DollarSign size={20} color={BRAND} />} title="APPROXIMATE PRICING" description="Price range shown to customers — never an exact selling price" />
                 <Grid container spacing={2.5}>
                   <Grid item xs={12} sm={6}>
-                    <StyledTextField label="Minimum Approx. Price (₹)" name="minPrice" type="number" value={productData.minPrice} onChange={handleChange} fullWidth required />
+                    <StyledTextField label="Minimum Approx. Price (₹)" name="minPrice" type="number" inputProps={{ min: 0 }} value={productData.minPrice} onChange={handleChange} fullWidth helperText="Displayed as lower range" />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <StyledTextField label="Maximum Approx. Price (₹)" name="maxPrice" type="number" value={productData.maxPrice} onChange={handleChange} fullWidth required />
->>>>>>> 9d38ca553fd403f39876387fd09ee76afb65441a
+                    <StyledTextField label="Maximum Approx. Price (₹)" name="maxPrice" type="number" inputProps={{ min: 0 }} value={productData.maxPrice} onChange={handleChange} fullWidth helperText="Displayed as upper range" />
                   </Grid>
                   <Grid item xs={12}>
                     <StyledTextField label="Price Note" name="priceNote" value={productData.priceNote} onChange={handleChange} fullWidth multiline rows={2} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '12px', border: '1px solid #bae6fd', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Info size={20} color="#0284c7" />
+                      <Typography variant="body2" sx={{ color: '#0369a1', fontWeight: 600 }}>
+                        Customer sees: <strong>Approx. ₹{Number(productData.minPrice || 0).toLocaleString('en-IN')} – ₹{Number(productData.maxPrice || 0).toLocaleString('en-IN')}</strong>
+                      </Typography>
+                    </Box>
                   </Grid>
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
 
-          {/* 3. PRODUCT DIMENSIONS */}
+          {/* ===== 3. PRODUCT DIMENSIONS ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <SectionHeader step="3" icon={<Ruler size={20} color={BRAND} />} title="PRODUCT DIMENSIONS" description="Measurements (Label | Value | Unit)" />
-                  <Button onClick={handleAddDimension} startIcon={<Plus size={16} />} variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 800, borderColor: BRAND, color: BRAND }}>Add Dimension</Button>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                  <SectionHeader step="3" icon={<Ruler size={20} color={BRAND} />} title="PRODUCT DIMENSIONS" description="Height, Width, Inner Diameter, Thickness, etc." />
+                  <Button onClick={handleAddDimension} startIcon={<Plus size={16} />} variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 800, borderColor: BRAND, color: BRAND, '&:hover': { bgcolor: BRAND_LIGHT }, flexShrink: 0 }}>
+                    Add Dimension
+                  </Button>
                 </Box>
                 {productData.dimensionsList.map((dim, idx) => (
                   <Grid container spacing={2} key={idx} alignItems="center" sx={{ mb: 2 }}>
@@ -754,14 +509,17 @@ const EditProductForm = () => {
                       <FormControl fullWidth>
                         <InputLabel sx={{ fontWeight: 600 }}>Unit</InputLabel>
                         <StyledSelect label="Unit" value={dim.unit} onChange={(e) => handleDimensionChange(idx, 'unit', e.target.value)}>
-                          <MenuItem value="mm">mm</MenuItem>
+                          <MenuItem value="mm">MM</MenuItem>
                           <MenuItem value="cm">cm</MenuItem>
                           <MenuItem value="inch">inch</MenuItem>
+                          <MenuItem value="g">g</MenuItem>
                         </StyledSelect>
                       </FormControl>
                     </Grid>
                     <Grid item xs={1} sm={1}>
-                      <IconButton onClick={() => handleRemoveDimension(idx)} disabled={productData.dimensionsList.length === 1} sx={{ color: '#f43f5e' }}><Trash2 size={18} /></IconButton>
+                      <IconButton onClick={() => handleRemoveDimension(idx)} disabled={productData.dimensionsList.length === 1} sx={{ color: '#f43f5e' }}>
+                        <Trash2 size={18} />
+                      </IconButton>
                     </Grid>
                   </Grid>
                 ))}
@@ -769,39 +527,31 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-          {/* 4. DIAMOND DETAILS */}
+          {/* ===== 4. DIAMOND SPECIFICATIONS ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <SectionHeader step="4" icon={<Gem size={20} color={BRAND} />} title="DIAMOND DETAILS" description="Diamond specifications & stone count" />
-                  <Button onClick={handleAddDiamond} startIcon={<Plus size={16} />} variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 800, borderColor: BRAND, color: BRAND }}>Add Diamond</Button>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                  <SectionHeader step="4" icon={<Gem size={20} color={BRAND} />} title="DIAMOND SPECIFICATIONS" description="Center solitaire, halo stones, baguettes, accent diamonds" />
+                  <Button onClick={handleAddDiamond} startIcon={<Plus size={16} />} variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 800, borderColor: BRAND, color: BRAND, '&:hover': { bgcolor: BRAND_LIGHT }, flexShrink: 0 }}>
+                    Add Diamond
+                  </Button>
                 </Box>
                 {productData.diamondDetails.map((dia, idx) => (
                   <Paper key={idx} variant="outlined" sx={{ p: 2.5, mb: 2.5, borderRadius: '14px', bgcolor: '#fafafa' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                      <Chip label={`Diamond Component #${idx + 1}`} size="small" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800 }} />
-                      <IconButton onClick={() => handleRemoveDiamond(idx)} disabled={productData.diamondDetails.length === 1} sx={{ color: '#f43f5e' }}><Trash2 size={16} /></IconButton>
+                      <Chip label={`Diamond #${idx + 1}`} size="small" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800 }} />
+                      <IconButton onClick={() => handleRemoveDiamond(idx)} disabled={productData.diamondDetails.length === 1} sx={{ color: '#f43f5e' }}>
+                        <Trash2 size={16} />
+                      </IconButton>
                     </Box>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Size" value={dia.diamondSize} onChange={(e) => handleDiamondChange(idx, 'diamondSize', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Weight / Piece" value={dia.weightPerPiece} onChange={(e) => handleDiamondChange(idx, 'weightPerPiece', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Pieces" type="number" value={dia.pieces} onChange={(e) => handleDiamondChange(idx, 'pieces', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Total Diamond Weight" value={dia.totalWeight} onChange={(e) => handleDiamondChange(idx, 'totalWeight', e.target.value)} fullWidth />
-                      </Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Size" value={dia.diamondSize} onChange={(e) => handleDiamondChange(idx, 'diamondSize', e.target.value)} fullWidth /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Weight / Piece (Carat)" value={dia.weightPerPiece} onChange={(e) => handleDiamondChange(idx, 'weightPerPiece', e.target.value)} fullWidth /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Number of Pieces" type="number" inputProps={{ min: 1 }} value={dia.pieces} onChange={(e) => handleDiamondChange(idx, 'pieces', e.target.value)} fullWidth /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Total Diamond Weight (Carat)" value={dia.totalWeight} onChange={(e) => handleDiamondChange(idx, 'totalWeight', e.target.value)} fullWidth /></Grid>
                     </Grid>
                   </Paper>
                 ))}
@@ -809,13 +559,15 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-          {/* 5. METAL DETAILS */}
+          {/* ===== 5. METAL SPECIFICATIONS ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <SectionHeader step="5" icon={<Award size={20} color={BRAND} />} title="METAL DETAILS" description="Metal composition & final weight" />
-                  <Button onClick={handleAddMetal} startIcon={<Plus size={16} />} variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 800, borderColor: BRAND, color: BRAND }}>Add Metal</Button>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                  <SectionHeader step="5" icon={<Award size={20} color={BRAND} />} title="METAL SPECIFICATIONS" description="Metal composition, purity and final crafted weight" />
+                  <Button onClick={handleAddMetal} startIcon={<Plus size={16} />} variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 800, borderColor: BRAND, color: BRAND, '&:hover': { bgcolor: BRAND_LIGHT }, flexShrink: 0 }}>
+                    Add Metal
+                  </Button>
                 </Box>
                 {productData.metalDetails.map((met, idx) => (
                   <Grid container spacing={2} key={idx} alignItems="center" sx={{ mb: 2 }}>
@@ -831,24 +583,22 @@ const EditProductForm = () => {
                         </StyledSelect>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <StyledTextField label="Purity" value={met.purity} onChange={(e) => handleMetalChange(idx, 'purity', e.target.value)} fullWidth />
-                    </Grid>
-                    <Grid item xs={8} sm={3}>
-                      <StyledTextField label="Final Weight" value={met.finalWeight} onChange={(e) => handleMetalChange(idx, 'finalWeight', e.target.value)} fullWidth />
-                    </Grid>
+                    <Grid item xs={12} sm={3}><StyledTextField label="Purity (e.g. 18KT)" value={met.purity} onChange={(e) => handleMetalChange(idx, 'purity', e.target.value)} fullWidth /></Grid>
+                    <Grid item xs={8} sm={3}><StyledTextField label="Final Weight" value={met.finalWeight} onChange={(e) => handleMetalChange(idx, 'finalWeight', e.target.value)} fullWidth placeholder="e.g. 3.68" /></Grid>
                     <Grid item xs={3} sm={2}>
                       <FormControl fullWidth>
                         <InputLabel sx={{ fontWeight: 600 }}>Unit</InputLabel>
                         <StyledSelect label="Unit" value={met.unit} onChange={(e) => handleMetalChange(idx, 'unit', e.target.value)}>
-                          <MenuItem value="g">g (Grams)</MenuItem>
+                          <MenuItem value="g">GM</MenuItem>
                           <MenuItem value="mg">mg</MenuItem>
                           <MenuItem value="oz">oz</MenuItem>
                         </StyledSelect>
                       </FormControl>
                     </Grid>
                     <Grid item xs={1} sm={1}>
-                      <IconButton onClick={() => handleRemoveMetal(idx)} disabled={productData.metalDetails.length === 1} sx={{ color: '#f43f5e' }}><Trash2 size={18} /></IconButton>
+                      <IconButton onClick={() => handleRemoveMetal(idx)} disabled={productData.metalDetails.length === 1} sx={{ color: '#f43f5e' }}>
+                        <Trash2 size={18} />
+                      </IconButton>
                     </Grid>
                   </Grid>
                 ))}
@@ -856,11 +606,11 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-          {/* 6. CHAIN / COMPONENT DETAILS */}
+          {/* ===== 6. CHAIN / CHAKI INFORMATION ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="CHAIN / COMPONENT DETAILS" description="Chain length, weight & chaki weight" />
+                <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="CHAIN / CHAKI INFORMATION" description="Chain inclusions, lengths and component weights" />
                 <Grid container spacing={2.5}>
                   <Grid item xs={12} sm={3}>
                     <FormControl fullWidth>
@@ -872,21 +622,87 @@ const EditProductForm = () => {
                       </StyledSelect>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <StyledTextField label="Chain Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth />
-                  </Grid>
+                  <Grid item xs={12} sm={3}><StyledTextField label="Chain Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches" /></Grid>
+                  <Grid item xs={12} sm={3}><StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" /></Grid>
+                  <Grid item xs={12} sm={3}><StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" /></Grid>
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
 
-          {/* SAVE CHANGES BUTTON */}
+          {/* ===== 7. ADDITIONAL SPECIFICATIONS ===== */}
+          <Grid item xs={12}>
+            <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                  <SectionHeader step="7" icon={<Tag size={20} color={BRAND} />} title="ADDITIONAL SPECIFICATIONS" description="Flexible key-value pairs for any extra product information" />
+                  <Button onClick={handleAddSpec} startIcon={<Plus size={16} />} variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 800, borderColor: BRAND, color: BRAND, '&:hover': { bgcolor: BRAND_LIGHT }, flexShrink: 0 }}>
+                    Add Specification
+                  </Button>
+                </Box>
+                {productData.additionalSpecifications.length === 0 && (
+                  <Typography variant="body2" sx={{ color: '#94a3b8', fontStyle: 'italic', textAlign: 'center', py: 2 }}>
+                    No additional specifications added.
+                  </Typography>
+                )}
+                {productData.additionalSpecifications.map((spec, idx) => (
+                  <Grid container spacing={2} key={idx} alignItems="center" sx={{ mb: 2 }}>
+                    <Grid item xs={12} sm={5}>
+                      <StyledTextField label="Specification Name" value={spec.label} onChange={(e) => handleSpecChange(idx, 'label', e.target.value)} fullWidth placeholder="e.g. Setting Type" />
+                    </Grid>
+                    <Grid item xs={11} sm={6}>
+                      <StyledTextField label="Specification Value" value={spec.value} onChange={(e) => handleSpecChange(idx, 'value', e.target.value)} fullWidth placeholder="e.g. Prong Set" />
+                    </Grid>
+                    <Grid item xs={1} sm={1}>
+                      <IconButton onClick={() => handleRemoveSpec(idx)} sx={{ color: '#f43f5e' }}>
+                        <Trash2 size={18} />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                ))}
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* ===== 8. CUSTOMER VISIBILITY ===== */}
+          <Grid item xs={12}>
+            <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
+                <SectionHeader step="8" icon={<Eye size={20} color={BRAND} />} title="CUSTOMER VISIBILITY" description="Control which technical details appear on the customer product page" />
+                <Box sx={{ p: 2, bgcolor: '#fffbeb', borderRadius: '12px', border: '1px solid #fde68a', mb: 3, display: 'flex', gap: 1.5 }}>
+                  <Info size={18} color="#d97706" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <Typography variant="body2" sx={{ color: '#92400e', fontWeight: 600 }}>
+                    By default, diamond weight and metal weight are hidden from customers. Enable below to show these on the product details page.
+                  </Typography>
+                </Box>
+                <Grid container spacing={2}>
+                  {[
+                    { key: 'showDiamondDetails', label: 'Show Diamond Details', desc: 'Diamond type, size, pieces visible to customers' },
+                    { key: 'showMetalDetails', label: 'Show Metal Details', desc: 'Metal type and purity visible to customers' },
+                    { key: 'showWeightDetails', label: 'Show Weight Details', desc: 'Final weights (gold/diamond) visible to customers' },
+                  ].map(({ key, label, desc }) => (
+                    <Grid item xs={12} sm={4} key={key}>
+                      <Box sx={{ p: 2.5, border: '1px solid #e2e8f0', borderRadius: '14px', bgcolor: productData[key] ? '#f0f9ff' : '#fafafa' }}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={productData[key]}
+                              onChange={handleSwitchChange(key)}
+                              sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: BRAND }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: BRAND } }}
+                            />
+                          }
+                          label={<Typography sx={{ fontWeight: 700, color: '#334155', fontSize: '0.9rem' }}>{label}</Typography>}
+                        />
+                        <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>{desc}</Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* ===== SAVE BUTTON ===== */}
           <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, mb: 6 }}>
             <Box sx={{ width: '100%', maxWidth: 450 }}>
               <Button
@@ -895,15 +711,19 @@ const EditProductForm = () => {
                 size="large"
                 disabled={!isFormValid || products?.loading}
                 sx={{
-                  width: '100%', py: 1.8, borderRadius: '14px', bgcolor: BRAND, color: '#fff',
-                  fontWeight: 900, fontSize: '1.1rem', letterSpacing: '0.5px',
+                  width: '100%', py: 1.8, borderRadius: '14px',
+                  bgcolor: BRAND, color: '#fff', fontWeight: 900,
+                  fontSize: '1.1rem', letterSpacing: '0.5px',
                   boxShadow: `0 10px 30px ${BRAND}50`,
                   '&:hover': { bgcolor: BRAND_DARK, transform: 'translateY(-2px)' },
-                  transition: 'all 0.25s ease'
+                  transition: 'all 0.25s ease',
                 }}
               >
-                {products?.loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'SAVE CHANGES'}
+                {products?.loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : '✅ SAVE CHANGES'}
               </Button>
+              <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 1.5, color: '#64748b', fontWeight: 600 }}>
+                All changes will be saved and reflected on the customer product page immediately.
+              </Typography>
             </Box>
           </Grid>
 

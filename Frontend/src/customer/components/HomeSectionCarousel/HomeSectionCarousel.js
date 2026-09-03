@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import HomeSectionCard from "../Section_card/HomeSectionCard";
 import Slider from "react-slick";
 import "./style1.css";
@@ -44,7 +44,7 @@ const HomeSectionCarousel = ({
                     collectionName: collection || ""
                 });
 
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5455'}/api/products?${params.toString()}`);
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455'}/api/products?${params.toString()}`);
                 const data = await response.json();
                 setLocalProducts(data);
             } catch (error) {

@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Avatar, Button,
@@ -6,7 +6,7 @@ import {
   Typography, IconButton, Tooltip, Chip, alpha
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { Trash2, Mail, Users, Shields, Shield, User, ChevronRight, Phone } from "lucide-react";
+import { Trash2, Mail, Users, Shield, User, ChevronRight, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import Swal from 'sweetalert2';
 import { store } from "../../state/store";

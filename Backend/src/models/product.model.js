@@ -67,6 +67,8 @@ const ProductSchema = new mongoose.Schema({
     productCode: { type: String },
     status: { type: String, default: 'active' },
     priceNote: { type: String },
+
+    // --- Repeatable Dimensions ---
     dimensionsList: [
         {
             label: { type: String },
@@ -74,6 +76,8 @@ const ProductSchema = new mongoose.Schema({
             unit: { type: String }
         }
     ],
+
+    // --- Repeatable Diamond Specifications ---
     diamondDetails: [
         {
             diamondType: { type: String },
@@ -84,6 +88,8 @@ const ProductSchema = new mongoose.Schema({
             totalWeight: { type: String }
         }
     ],
+
+    // --- Repeatable Metal Specifications ---
     metalDetails: [
         {
             metalType: { type: String },
@@ -92,9 +98,27 @@ const ProductSchema = new mongoose.Schema({
             unit: { type: String }
         }
     ],
+
+    // --- Chain / Chaki Information ---
     includesChain: { type: String, default: 'No' },
     chainWeight: { type: String },
     chakiWeight: { type: String },
+
+    // --- Additional Flexible Specifications ---
+    additionalSpecifications: [
+        {
+            label: { type: String },
+            value: { type: String }
+        }
+    ],
+
+    // --- Customer Visibility Flags ---
+    // Admin can toggle whether technical weight data appears on the customer page
+    showDiamondDetails: { type: Boolean, default: false },
+    showMetalDetails: { type: Boolean, default: false },
+    showWeightDetails: { type: Boolean, default: false },
+
+    // --- Legacy / other fields ---
     dimensions: { type: String },
     totalWeight: { type: Number },
     sizes: [
@@ -106,7 +130,8 @@ const ProductSchema = new mongoose.Schema({
     ],
     imageUrls: [
         {
-            imageUrl: { type: String }
+            imageUrl: { type: String },
+            publicId: { type: String },
         }
     ],
     ratings: [

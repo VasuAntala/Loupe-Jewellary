@@ -84,6 +84,10 @@ async function createProduct(reqData) {
         chakiWeight: reqData.chakiWeight,
         collectionName: reqData.collectionName,
         tags: reqData.tags || [],
+        additionalSpecifications: reqData.additionalSpecifications || [],
+        showDiamondDetails: reqData.showDiamondDetails || false,
+        showMetalDetails: reqData.showMetalDetails || false,
+        showWeightDetails: reqData.showWeightDetails || false,
     });
 
     const savedProduct = await product.save();

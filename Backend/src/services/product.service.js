@@ -74,6 +74,7 @@ async function createProduct(reqData) {
         ringSize: reqData.ringSize,
         chainLength: reqData.chainLength,
         pendantSize: reqData.pendantSize,
+        braceletLength: reqData.braceletLength,
         dimensions: reqData.dimensions,
         totalWeight: reqData.totalWeight,
         productCode: reqData.productCode,
@@ -166,7 +167,49 @@ async function getAllProducts(reqQuery) {
     // -------------------- Filter by Category ---------------
 
     if (category !== 'jewellery') {
-        const existCategories = await Category.find({ name: category });
+        const CATEGORY_ALIASES = {
+            'diamond-studs': ['diamond-studs', 'stud', 'studs'],
+            'studs': ['diamond-studs', 'stud', 'studs'],
+            'stud': ['diamond-studs', 'stud', 'studs'],
+            'hoops-huggies': ['hoops-huggies', 'hoop', 'hoops', 'huggies'],
+            'hoop': ['hoops-huggies', 'hoop', 'hoops', 'huggies'],
+            'dangle-drops': ['dangle-drops', 'drop', 'drops', 'dangle'],
+            'drop': ['dangle-drops', 'drop', 'drops', 'dangle'],
+            'climbers': ['climbers', 'climber', 'ear-climber'],
+            'cuffs': ['cuffs', 'ear-cuff', 'ear-cuffs', 'cuff-bracelets'],
+            'ear-cuff': ['cuffs', 'ear-cuff', 'ear-cuffs', 'cuff-bracelets'],
+            'chandeliers': ['chandeliers', 'chandelier'],
+            'chandelier': ['chandeliers', 'chandelier'],
+            'jhumka': ['jhumka', 'jhumkas'],
+            'jhumkas': ['jhumka', 'jhumkas'],
+            'engagement': ['engagement', 'engagement-ring', 'engagement-rings'],
+            'engagement-ring': ['engagement', 'engagement-ring', 'engagement-rings'],
+            'wedding-bands': ['wedding-bands', 'wedding-band', 'couple-ring'],
+            'eternity': ['eternity', 'eternity-ring', 'eternity-rings'],
+            'eternity-ring': ['eternity', 'eternity-ring', 'eternity-rings'],
+            'cocktail': ['cocktail', 'cocktail-ring', 'cocktail-rings'],
+            'cocktail-ring': ['cocktail', 'cocktail-ring', 'cocktail-rings'],
+            'solitaire': ['solitaire', 'solitaire-ring', 'solitaire-rings', 'solitaire-pendant', 'solitaire-mangalsutra'],
+            'solitaire-ring': ['solitaire', 'solitaire-ring', 'solitaire-rings'],
+            'tennis-bracelets': ['tennis-bracelets', 'tennis-bracelet'],
+            'chain-bracelets': ['chain-bracelets', 'chain-bracelet'],
+            'charms': ['charms', 'charm-bracelets', 'charm-bracelet'],
+            'charm-bracelets': ['charms', 'charm-bracelets', 'charm-bracelet'],
+            'bangles': ['bangles', 'bangle', 'bangle-bracelets', 'kada'],
+            'bangle': ['bangles', 'bangle', 'bangle-bracelets', 'kada'],
+            'chokers': ['chokers', 'choker'],
+            'choker': ['chokers', 'choker'],
+            'statement': ['statement', 'statement-necklace', 'statement-necklaces'],
+            'statement-necklace': ['statement', 'statement-necklace', 'statement-necklaces'],
+            'lariats': ['lariats', 'lariat'],
+            'lariat': ['lariats', 'lariat'],
+            'mangalsutra': ['mangalsutra', 'mangal-sutra', 'solitaire-mangalsutra', 'modern-mangalsutra'],
+            'mangal-sutra': ['mangalsutra', 'mangal-sutra', 'solitaire-mangalsutra', 'modern-mangalsutra'],
+        };
+
+        const targetCategories = CATEGORY_ALIASES[category] || [category];
+
+        const existCategories = await Category.find({ name: { $in: targetCategories } });
         
         let allCategoryIds = existCategories.map(cat => cat._id);
         
@@ -186,9 +229,9 @@ async function getAllProducts(reqQuery) {
         query = query.and([{
             $or: [
                 { category: { $in: allCategoryIds } },
-                { topLevelCategory: category },
-                { secondLevelCategory: category },
-                { thirdLevelCategory: category }
+                { topLevelCategory: { $in: targetCategories } },
+                { secondLevelCategory: { $in: targetCategories } },
+                { thirdLevelCategory: { $in: targetCategories } }
             ]
         }]);
     }

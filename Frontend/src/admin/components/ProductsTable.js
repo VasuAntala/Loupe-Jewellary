@@ -195,7 +195,7 @@ const ProductsTable = () => {
                       <Avatar
                         variant="rounded"
                         sx={{ width: 52, height: 52, mr: 2, borderRadius: '12px', border: '1px solid #e2e8f0' }}
-                        src={item.imageUrls?.[0]?.imageUrl}
+                        src={item.imageUrls?.[0]?.imageUrl || (typeof item.imageUrls?.[0] === 'string' ? item.imageUrls[0] : item.imageUrl)}
                       />
                       <Box>
                         <Typography variant="body2" sx={{ fontWeight: 800, textTransform: 'capitalize', color: '#0f172a' }}>
@@ -284,6 +284,9 @@ const ProductsTable = () => {
                       )}
                       {item.pendantSize && (
                         <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569' }}>Pendant: {item.pendantSize}</Typography>
+                      )}
+                      {item.braceletLength && (
+                        <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569' }}>Bracelet Length: {item.braceletLength}</Typography>
                       )}
                       {item.dimensions && (
                         <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569' }}>Dim: {item.dimensions}</Typography>
@@ -396,19 +399,22 @@ const ProductsTable = () => {
                     Product Images ({selectedProduct.imageUrls?.length || 0})
                   </Typography>
                   <Box sx={{ width: '100%', height: 300, borderRadius: '16px', overflow: 'hidden', bgcolor: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {selectedProduct.imageUrls?.[0]?.imageUrl ? (
-                      <img src={selectedProduct.imageUrls[0].imageUrl} alt={selectedProduct.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    {selectedProduct.imageUrls?.[0] ? (
+                      <img src={selectedProduct.imageUrls[0]?.imageUrl || (typeof selectedProduct.imageUrls[0] === 'string' ? selectedProduct.imageUrls[0] : selectedProduct.imageUrl)} alt={selectedProduct.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <Typography sx={{ color: '#94a3b8' }}>No Image Available</Typography>
                     )}
                   </Box>
                   {selectedProduct.imageUrls?.length > 1 && (
                     <Box sx={{ display: 'flex', gap: 1, mt: 2, overflowX: 'auto', pb: 1 }}>
-                      {selectedProduct.imageUrls.map((img, i) => (
-                        <Box key={i} sx={{ width: 64, height: 64, borderRadius: '10px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0 }}>
-                          <img src={img.imageUrl} alt={`view-${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </Box>
-                      ))}
+                      {selectedProduct.imageUrls.map((img, i) => {
+                        const src = typeof img === 'string' ? img : img?.imageUrl;
+                        return (
+                          <Box key={i} sx={{ width: 64, height: 64, borderRadius: '10px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0 }}>
+                            <img src={src} alt={`view-${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </Box>
+                        );
+                      })}
                     </Box>
                   )}
                 </Grid>
@@ -503,6 +509,9 @@ const ProductsTable = () => {
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#475569', display: 'block' }}>
                           Pendant Size: {renderVal(selectedProduct.pendantSize)}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#475569', display: 'block' }}>
+                          Bracelet Length: {renderVal(selectedProduct.braceletLength)}
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#475569', display: 'block' }}>
                           Dimensions: {renderVal(selectedProduct.dimensions)}

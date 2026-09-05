@@ -77,6 +77,7 @@ const EditProductForm = () => {
     productCode: '',
     topLevelCategory: 'diamond',
     secondLevelCategory: '',
+    thirdLevelCategory: '',
     description: '',
     details: '',
     imageUrls: [],
@@ -87,43 +88,25 @@ const EditProductForm = () => {
     collectionName: '',
     tags: [],
     color: [],
-<<<<<<< HEAD
-    tags: [],
-
-=======
-    sizes: initialSizes,
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
     minPrice: 0,
     maxPrice: 0,
     priceNote: 'Price varies according to daily gold rate and diamond specifications.',
     price: 0,
     discountedPrice: 0,
-<<<<<<< HEAD
-
     dimensionsList: [{ ...initialDimension }],
     diamondDetails: [{ ...initialDiamond }],
     metalDetails: [{ ...initialMetal }],
-
-=======
-    dimensionsList: [initialDimension],
-    diamondDetails: [initialDiamond],
-    metalDetails: [initialMetal],
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
     includesChain: 'No',
     chainLength: '',
     chainWeight: '',
     chakiWeight: '',
-<<<<<<< HEAD
-
     additionalSpecifications: [],
-
     showDiamondDetails: false,
     showMetalDetails: false,
     showWeightDetails: false,
-=======
     ringSize: '',
     pendantSize: '',
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
+    braceletLength: '',
   });
 
   // Load product when component mounts
@@ -140,15 +123,9 @@ const EditProductForm = () => {
       setProductData({
         title: p.title || '',
         productCode: p.productCode || '',
-<<<<<<< HEAD
-        topLevelCategory: p.category?.parentCategory?.parentCategory?.name || p.topLevelCategory || 'diamond',
-        secondLevelCategory: p.category?.parentCategory?.name || p.secondLevelCategory || '',
-=======
-        // Prioritize flat stored fields; fall back to category hierarchy
         topLevelCategory: p.topLevelCategory || p.category?.parentCategory?.parentCategory?.name || 'diamond',
         secondLevelCategory: p.secondLevelCategory || p.category?.parentCategory?.name || '',
         thirdLevelCategory: p.thirdLevelCategory || p.category?.name || '',
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
         description: p.description || '',
         details: p.details || '',
         imageUrls: Array.isArray(p.imageUrls) ? p.imageUrls : [],
@@ -159,43 +136,25 @@ const EditProductForm = () => {
         collectionName: p.collectionName || '',
         tags: Array.isArray(p.tags) ? p.tags : [],
         color: Array.isArray(p.color) ? p.color : [],
-<<<<<<< HEAD
-        tags: Array.isArray(p.tags) ? p.tags : [],
-
-=======
-        sizes: Array.isArray(p.sizes) && p.sizes.length > 0 ? p.sizes : initialSizes,
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
         minPrice: p.minPrice || 0,
         maxPrice: p.maxPrice || 0,
         priceNote: p.priceNote || 'Price varies according to daily gold rate and diamond specifications.',
         price: p.price || 0,
         discountedPrice: p.discountedPrice || 0,
-<<<<<<< HEAD
-
         dimensionsList: Array.isArray(p.dimensionsList) && p.dimensionsList.length > 0 ? p.dimensionsList : [{ ...initialDimension }],
         diamondDetails: Array.isArray(p.diamondDetails) && p.diamondDetails.length > 0 ? p.diamondDetails : [{ ...initialDiamond }],
         metalDetails: Array.isArray(p.metalDetails) && p.metalDetails.length > 0 ? p.metalDetails : [{ ...initialMetal }],
-
-=======
-        dimensionsList: Array.isArray(p.dimensionsList) && p.dimensionsList.length > 0 ? p.dimensionsList : [initialDimension],
-        diamondDetails: Array.isArray(p.diamondDetails) && p.diamondDetails.length > 0 ? p.diamondDetails : [initialDiamond],
-        metalDetails: Array.isArray(p.metalDetails) && p.metalDetails.length > 0 ? p.metalDetails : [initialMetal],
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
         includesChain: p.includesChain || 'No',
         chainLength: p.chainLength || '',
         chainWeight: p.chainWeight || '',
         chakiWeight: p.chakiWeight || '',
-<<<<<<< HEAD
-
         additionalSpecifications: Array.isArray(p.additionalSpecifications) ? p.additionalSpecifications : [],
-
         showDiamondDetails: p.showDiamondDetails || false,
         showMetalDetails: p.showMetalDetails || false,
         showWeightDetails: p.showWeightDetails || false,
-=======
         ringSize: p.ringSize || '',
         pendantSize: p.pendantSize || '',
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
+        braceletLength: p.braceletLength || '',
       });
       setLoaded(true);
     }
@@ -308,14 +267,12 @@ const EditProductForm = () => {
     setTimeout(() => navigate('/admin/products'), 1200);
   };
 
-<<<<<<< HEAD
   const isFormValid = productData.title.trim() !== '' && productData.topLevelCategory !== '';
-=======
-  const isFormValid = productData.title !== '' && productData.minPrice > 0;
   const prodType = productData.secondLevelCategory;
 
   // Conditional field visibility based on sub-category
   const isRing = ['rings', 'bangles'].includes(prodType);
+  const isBracelet = prodType === 'bracelets';
   const hasChain = ['necklaces', 'pendants', 'mangalsutra', 'chains', 'lockets', 'anklets'].includes(prodType);
   const hasPendantSize = ['pendants', 'mangalsutra', 'lockets'].includes(prodType);
 
@@ -330,13 +287,14 @@ const EditProductForm = () => {
       { value: 'couple-ring', label: 'Couple Rings' },
     ],
     earrings: [
-      { value: 'earring', label: 'Earring' },
-      { value: 'stud', label: 'Studs' },
-      { value: 'drop', label: 'Drop & Dangle' },
-      { value: 'hoop', label: 'Hoops & Huggies' },
+      { value: 'earring', label: 'Earring (General)' },
+      { value: 'diamond-studs', label: 'Diamond Studs / Studs' },
+      { value: 'hoops-huggies', label: 'Hoops & Huggies' },
+      { value: 'dangle-drops', label: 'Dangle & Drops' },
+      { value: 'chandeliers', label: 'Chandeliers' },
+      { value: 'cuffs', label: 'Ear Cuffs' },
+      { value: 'climbers', label: 'Ear Climbers' },
       { value: 'jhumka', label: 'Jhumkas' },
-      { value: 'chandelier', label: 'Chandeliers' },
-      { value: 'ear-cuff', label: 'Ear Cuffs' },
     ],
     necklaces: [
       { value: 'necklace', label: 'Necklace' },
@@ -391,7 +349,6 @@ const EditProductForm = () => {
   };
 
   const filteredStyles = stylesByType[prodType] || [];
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
 
   // Show loader while product is being fetched
   if (!loaded && products?.loading) {
@@ -472,6 +429,17 @@ const EditProductForm = () => {
                         <MenuItem value="anklets">Anklets</MenuItem>
                         <MenuItem value="nose-pins">Nose Pins</MenuItem>
                         <MenuItem value="other">Other Accessories</MenuItem>
+                      </StyledSelect>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={4}>
+                    <FormControl fullWidth disabled={!prodType}>
+                      <InputLabel sx={{ fontWeight: 600 }}>Specific Style</InputLabel>
+                      <StyledSelect label="Specific Style" name="thirdLevelCategory" value={productData.thirdLevelCategory} onChange={handleChange}>
+                        {filteredStyles.map((s) => (
+                          <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>
+                        ))}
                       </StyledSelect>
                     </FormControl>
                   </Grid>
@@ -611,11 +579,7 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-<<<<<<< HEAD
           {/* ===== 2. APPROXIMATE PRICING ===== */}
-=======
-          {/* 2. APPROXIMATE PRICING */}
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
@@ -625,11 +589,7 @@ const EditProductForm = () => {
                     <StyledTextField label="Minimum Approx. Price (₹)" name="minPrice" type="number" inputProps={{ min: 0 }} value={productData.minPrice} onChange={handleChange} fullWidth helperText="Displayed as lower range" />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-<<<<<<< HEAD
                     <StyledTextField label="Maximum Approx. Price (₹)" name="maxPrice" type="number" inputProps={{ min: 0 }} value={productData.maxPrice} onChange={handleChange} fullWidth helperText="Displayed as upper range" />
-=======
-                    <StyledTextField label="Maximum Approx. Price (₹)" name="maxPrice" type="number" value={productData.maxPrice} onChange={handleChange} fullWidth required />
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
                   </Grid>
                   <Grid item xs={12}>
                     <StyledTextField label="Price Note" name="priceNote" value={productData.priceNote} onChange={handleChange} fullWidth multiline rows={2} />
@@ -706,33 +666,12 @@ const EditProductForm = () => {
                       </IconButton>
                     </Box>
                     <Grid container spacing={2}>
-<<<<<<< HEAD
-                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth /></Grid>
-                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Size" value={dia.diamondSize} onChange={(e) => handleDiamondChange(idx, 'diamondSize', e.target.value)} fullWidth /></Grid>
-                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth /></Grid>
-                      <Grid item xs={12} sm={4}><StyledTextField label="Weight / Piece (Carat)" value={dia.weightPerPiece} onChange={(e) => handleDiamondChange(idx, 'weightPerPiece', e.target.value)} fullWidth /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth placeholder="e.g. Baguette, Round, Solitaire" /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Name / Size" value={dia.diamondName || dia.diamondSize || ''} onChange={(e) => handleDiamondChange(idx, 'diamondName', e.target.value)} fullWidth placeholder="e.g. Marquise, Round Brilliant, Solitaire" /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth placeholder="e.g. 4.2 mm" /></Grid>
+                      <Grid item xs={12} sm={4}><StyledTextField label="Weight / Piece (Carat)" value={dia.weightPerPiece} onChange={(e) => handleDiamondChange(idx, 'weightPerPiece', e.target.value)} fullWidth placeholder="e.g. 0.047" /></Grid>
                       <Grid item xs={12} sm={4}><StyledTextField label="Number of Pieces" type="number" inputProps={{ min: 1 }} value={dia.pieces} onChange={(e) => handleDiamondChange(idx, 'pieces', e.target.value)} fullWidth /></Grid>
-                      <Grid item xs={12} sm={4}><StyledTextField label="Total Diamond Weight (Carat)" value={dia.totalWeight} onChange={(e) => handleDiamondChange(idx, 'totalWeight', e.target.value)} fullWidth /></Grid>
-=======
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Name" value={dia.diamondName || dia.diamondSize || ''} onChange={(e) => handleDiamondChange(idx, 'diamondName', e.target.value)} fullWidth placeholder="e.g. Marquise, Round Brilliant, Solitaire" />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Weight / Piece" value={dia.weightPerPiece} onChange={(e) => handleDiamondChange(idx, 'weightPerPiece', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Diamond Pieces" type="number" value={dia.pieces} onChange={(e) => handleDiamondChange(idx, 'pieces', e.target.value)} fullWidth />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <StyledTextField label="Total Diamond Weight" value={dia.totalWeight} onChange={(e) => handleDiamondChange(idx, 'totalWeight', e.target.value)} fullWidth />
-                      </Grid>
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
+                      <Grid item xs={12} sm={4}><StyledTextField label="Total Diamond Weight (Carat)" value={dia.totalWeight} onChange={(e) => handleDiamondChange(idx, 'totalWeight', e.target.value)} fullWidth placeholder="e.g. 0.28 CTW" /></Grid>
                     </Grid>
                   </Paper>
                 ))}
@@ -787,19 +726,11 @@ const EditProductForm = () => {
             </Card>
           </Grid>
 
-<<<<<<< HEAD
-          {/* ===== 6. CHAIN / CHAKI INFORMATION ===== */}
-          <Grid item xs={12}>
-            <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-              <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="CHAIN / CHAKI INFORMATION" description="Chain inclusions, lengths and component weights" />
-=======
-          {/* 6. SIZE & COMPONENT DETAILS */}
+          {/* ===== 6. SIZE & COMPONENT DETAILS ===== */}
           <Grid item xs={12}>
             <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
                 <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="SIZE & COMPONENT DETAILS" description="Ring/Bangle size, chain details, pendant size — shown based on product type" />
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
                 <Grid container spacing={2.5}>
 
                   {/* Ring / Bangle Size — only for rings and bangles */}
@@ -832,36 +763,47 @@ const EditProductForm = () => {
                     </Grid>
                   )}
 
-                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
-                    <FormControl fullWidth>
-                      <InputLabel sx={{ fontWeight: 600 }}>Includes Chain</InputLabel>
-                      <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain} onChange={handleChange}>
-                        <MenuItem value="Yes">Yes</MenuItem>
-                        <MenuItem value="No">No</MenuItem>
-                        <MenuItem value="Optional">Optional</MenuItem>
-                      </StyledSelect>
-                    </FormControl>
-                  </Grid>
-<<<<<<< HEAD
-                  <Grid item xs={12} sm={3}><StyledTextField label="Chain Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches" /></Grid>
-                  <Grid item xs={12} sm={3}><StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" /></Grid>
-                  <Grid item xs={12} sm={3}><StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" /></Grid>
-=======
-
-                  {hasChain && (
-                    <Grid item xs={12} sm={3}>
-                      <StyledTextField label="Chain / Piece Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches / 45 cm" />
+                  {/* Bracelet Length — only for bracelets */}
+                  {isBracelet && (
+                    <Grid item xs={12} sm={6}>
+                      <StyledTextField
+                        label="Bracelet Length"
+                        name="braceletLength"
+                        value={productData.braceletLength || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        placeholder="e.g. 7 Inches / 18 cm"
+                        helperText="Total length of the bracelet"
+                      />
                     </Grid>
                   )}
 
-                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
-                    <StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth />
+                  {/* Chain details — only for items that typically have chains */}
+                  {hasChain && (
+                    <>
+                      <Grid item xs={12} sm={3}>
+                        <FormControl fullWidth>
+                          <InputLabel sx={{ fontWeight: 600 }}>Includes Chain</InputLabel>
+                          <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain} onChange={handleChange}>
+                            <MenuItem value="Yes">Yes</MenuItem>
+                            <MenuItem value="No">No</MenuItem>
+                            <MenuItem value="Optional">Optional</MenuItem>
+                          </StyledSelect>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
+                        <StyledTextField label="Chain / Piece Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches / 45 cm" />
+                      </Grid>
+                    </>
+                  )}
+
+                  <Grid item xs={12} sm={hasChain ? 3 : 6}>
+                    <StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" />
                   </Grid>
-                  <Grid item xs={12} sm={hasChain ? 3 : 4}>
-                    <StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth />
+                  <Grid item xs={12} sm={hasChain ? 3 : 6}>
+                    <StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" />
                   </Grid>
 
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
                 </Grid>
               </CardContent>
             </Card>

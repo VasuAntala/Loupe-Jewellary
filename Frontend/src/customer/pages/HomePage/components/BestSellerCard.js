@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatPriceINR } from "../../../../utils/price";
 import { MessageCircle, ShoppingBag, Sparkles } from 'lucide-react';
 
+const PLACEHOLDER_IMAGE_URL = "https://res.cloudinary.com/deq0hxr3t/image/upload/v1709462235/no-found_mnvvpf.svg";
+
 const BestSellerCard = ({ product }) => {
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
     const [wishlisted, setWishlisted] = useState(false);
@@ -18,7 +20,7 @@ const BestSellerCard = ({ product }) => {
     // Extract image URL safely
     const mainImage = Array.isArray(product?.imageUrls) && product.imageUrls.length > 0
         ? product.imageUrls[0]?.imageUrl
-        : (product?.imageUrl || product?.image || '/product/product4.jpeg');
+        : (product?.imageUrl || product?.image || PLACEHOLDER_IMAGE_URL);
 
     const colorOptions = product.colors || [
         { colorName: 'Yellow Gold', colorCode: '#eab308', image: mainImage },
@@ -63,7 +65,7 @@ const BestSellerCard = ({ product }) => {
                         transition={{ duration: 0.5, ease: "easeOut" }}
                         className="w-full h-full object-cover drop-shadow-[0_15px_30px_rgba(0,0,0,0.05)] group-hover:scale-105"
                         onError={(e) => {
-                            e.target.src = "/product/product4.jpeg";
+                            e.target.src = PLACEHOLDER_IMAGE_URL;
                         }}
                     />
                 </AnimatePresence>

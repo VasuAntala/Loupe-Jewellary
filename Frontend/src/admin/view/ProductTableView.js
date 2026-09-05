@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -61,7 +61,6 @@ const ProductsTableView = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1.5 }}>
           <Button variant="outlined" startIcon={<Filter size={16} />} sx={{ borderRadius: '12px', textTransform: 'none', px: 2, borderColor: '#f1f5f9', color: '#64748b', fontWeight: 700, '&:hover': { borderColor: '#3c7399', bgcolor: 'transparent' } }}>Filters</Button>
-          {/* <Button variant="contained" sx={{ borderRadius: '12px', textTransform: 'none', px: 2, bgcolor: '#111827', color: '#ffffff', fontWeight: 700, boxShadow: '0 10px 20px rgba(0,0,0,0.1)', '&:hover': { bgcolor: '#1f2937' } }}>Inventory</Button> */}
         </Box>
       </Box>
       <TableContainer>
@@ -76,44 +75,50 @@ const ProductsTableView = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {recentProducts.map((item) => (
-              <TableRow key={item._id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Avatar variant="rounded" src={item.imageUrls?.[0].imageUrl} sx={{ width: 40, height: 40, borderRadius: '10px' }} />
-                    <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1e293b', textTransform: 'capitalize' }}>{item.title}</Typography>
-                      <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 600 }}>ID: {item._id.slice(-6).toUpperCase()}</Typography>
+            {recentProducts.map((item) => {
+              const imgUrl = item.imageUrls?.[0]?.imageUrl || item.imageUrl || (typeof item.imageUrls?.[0] === 'string' ? item.imageUrls[0] : '');
+              const catName = item.category?.name || item.secondLevelCategory || item.topLevelCategory || 'Jewellery';
+              const displayPrice = item.minPrice || item.discountedPrice || item.price || 0;
+
+              return (
+                <TableRow key={item._id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Avatar variant="rounded" src={imgUrl} sx={{ width: 40, height: 40, borderRadius: '10px' }} />
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1e293b', textTransform: 'capitalize' }}>{item.title}</Typography>
+                        <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 600 }}>ID: {item._id ? item._id.slice(-6).toUpperCase() : 'N/A'}</Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#64748b', textTransform: 'capitalize' }}>{item.category.name}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1e293b' }}>AED {item.discountedPrice?.toLocaleString()}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{
-                    display: 'inline-block',
-                    px: 1.5, py: 0.5,
-                    borderRadius: '6px',
-                    bgcolor: '#f0fdf4',
-                    color: '#10b981',
-                    fontWeight: 700,
-                    fontSize: '0.75rem'
-                  }}>
-                    In Stock
-                  </Box>
-                </TableCell>
-                <TableCell align="right">
-                  <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                    <IconButton size="small" sx={{ color: '#94a3b8' }}><Eye size={18} /></IconButton>
-                    <IconButton size="small" sx={{ color: '#94a3b8' }}><Trash2 size={18} /></IconButton>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#64748b', textTransform: 'capitalize' }}>{catName}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1e293b' }}>₹{Number(displayPrice).toLocaleString('en-IN')}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{
+                      display: 'inline-block',
+                      px: 1.5, py: 0.5,
+                      borderRadius: '6px',
+                      bgcolor: '#f0fdf4',
+                      color: '#10b981',
+                      fontWeight: 700,
+                      fontSize: '0.75rem'
+                    }}>
+                      In Stock
+                    </Box>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                      <IconButton size="small" sx={{ color: '#94a3b8' }}><Eye size={18} /></IconButton>
+                      <IconButton size="small" sx={{ color: '#94a3b8' }}><Trash2 size={18} /></IconButton>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

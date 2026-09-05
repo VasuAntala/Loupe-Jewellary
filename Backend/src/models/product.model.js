@@ -64,17 +64,15 @@ const ProductSchema = new mongoose.Schema({
     ringSize: { type: String },
     chainLength: { type: String },
     pendantSize: { type: String },
+    braceletLength: { type: String },
     productCode: { type: String },
     status: { type: String, default: 'active' },
     priceNote: { type: String },
-<<<<<<< HEAD
-
-    // --- Repeatable Dimensions ---
-=======
     topLevelCategory: { type: String },
     secondLevelCategory: { type: String },
     thirdLevelCategory: { type: String },
->>>>>>> 0178b7ceea5eb3e2c41a240d67a038c55e1ad52f
+
+    // --- Repeatable Dimensions ---
     dimensionsList: [
         {
             label: { type: String },

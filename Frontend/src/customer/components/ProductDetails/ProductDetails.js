@@ -357,6 +357,13 @@ export default function ProductDetails() {
                 </Accordion>
               )}
 
+              {/* ── Bracelet Info ── */}
+              {product.braceletLength && (
+                <Accordion title="Bracelet Information" defaultOpen>
+                  <SpecRow label="Bracelet Length" value={product.braceletLength} />
+                </Accordion>
+              )}
+
               {/* ── Additional Specifications ── */}
               {hasAdditionalSpecs && (
                 <Accordion title="Additional Specifications">

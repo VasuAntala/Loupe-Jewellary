@@ -24,13 +24,6 @@ const ComingSoon = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            <div className="p-4 sm:p-6 rounded-3xl bg-[#1e3545]/90 backdrop-blur-md shadow-[0_10px_30px_rgba(30,53,69,0.25)] border border-[#1e3545]/20 flex items-center justify-center">
-              <img
-                src="/Loupe-logo.png"
-                alt="Loupe Jewellery"
-                className="h-20 sm:h-28 md:h-32 w-auto object-contain drop-shadow-md"
-              />
-            </div>
             <img
               src="/Loupe-logo.png"
               alt="Loupe Jewellery"

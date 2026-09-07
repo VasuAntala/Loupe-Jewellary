@@ -1,5 +1,5 @@
 const Rating = require('../models/rating.model.js');
-const productService = require('../services/product.service.js');
+const productService = require('./product.service.js');
 
 
 async function createRating(reqData, user) {
@@ -20,7 +20,7 @@ async function createRating(reqData, user) {
 }
 
 async function getProductRating(productId) {
-    return await Rating.find({product: productId});
+    return await Rating.find({ product: productId });
 }
 
 module.exports = {

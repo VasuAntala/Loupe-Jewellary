@@ -1,4 +1,4 @@
-﻿import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import CustomerRouters from './customer/routers/CustomerRouters';
 import AdminRouters from './customer/routers/AdminRouters';
@@ -25,6 +25,7 @@ function App() {
   const isAdmin = IsAdmin();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isComingSoonRoute = location.pathname === '/';
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-gray-900 dark:bg-gray-900 dark:text-gray-100">
@@ -36,7 +37,7 @@ function App() {
         <Route path='/*' element={<CustomerRouters />}></Route>
         <Route path='/admin/*' element={<AdminGuard><AdminRouters /></AdminGuard>} />
       </Routes>
-      {!isAdminRoute && <WhatsAppContact />}
+      {!isAdminRoute && !isComingSoonRoute && <WhatsAppContact />}
     </div>
   );
 }

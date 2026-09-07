@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Address = require('../models/address.model.js');
 const Order = require('../models/order.model.js');
 const OrderItem = require('../models/orderItems.model.js');
-const cartService = require('../services/cart.service.js');
+const cartService = require('./cart.service.js');
 
 async function createOrder(user, shippAddress) {
     let address;
@@ -10,7 +10,7 @@ async function createOrder(user, shippAddress) {
     if (shippAddress) {
         // Handle both nested and flat address objects
         const addressData = shippAddress.address || shippAddress;
-        
+
         // Map fields explicitly to handle potential naming variations
         const mappedAddress = {
             firstName: addressData.firstName?.trim() || '',
@@ -88,7 +88,7 @@ async function createOrder(user, shippAddress) {
     })
 
     const savedOrder = await createdOrder.save();
-    
+
     // Return the populated order to ensure frontend has all data (like address fields) immediately
     return await findOrderById(savedOrder._id);
 }

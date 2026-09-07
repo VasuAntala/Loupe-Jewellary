@@ -1,21 +1,21 @@
-const CartItem = require('../models/cartItem.model');
-const userService = require('../services/user.service.js');
+const CartItem = require('../models/cartItem.model.js');
+const userService = require('./user.service.js');
 
 async function updateCartItem(userId, cartItemId, cartItemData) {
     try {
         const item = await findCartItemById(cartItemId);
-        
+
         if (!item) {
             throw new Error(`The cart item with the id ${cartItemId} does not exist.`);
         }
-        
+
         const user = await userService.findUserById(item.userId);
 
-        if(!user) {
+        if (!user) {
             throw new Error("user not found with id:", userId);
         }
 
-        if(user._id.toString() === userId.toString()) {
+        if (user._id.toString() === userId.toString()) {
             const MAX_QUANTITY = 10;
             if (cartItemData.quantity > MAX_QUANTITY) {
                 throw new Error(`You can only order a maximum of ${MAX_QUANTITY} units of the same product.`);
@@ -45,7 +45,7 @@ async function removeCartItem(userId, cartItemId) {
     const cartItem = await findCartItemById(cartItemId);
     const user = await userService.findUserById(userId);
 
-    if(user._id.toString() === cartItem.userId.toString()) {
+    if (user._id.toString() === cartItem.userId.toString()) {
         await CartItem.findByIdAndDelete(cartItemId);
         return `cart item with id ${cartItemId} removed successfully!`;
     }
@@ -58,10 +58,10 @@ async function findCartItemById(cartItemId) {
     try {
         const item = await CartItem.findById(cartItemId).populate('product');
 
-        if(!item) {
+        if (!item) {
             throw new Error(`No cart item with the id of "${cartItemId}"`);
-        }   
-        return item; 
+        }
+        return item;
 
     } catch (error) {
         throw new Error(error.message);

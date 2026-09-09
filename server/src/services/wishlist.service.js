@@ -1,7 +1,7 @@
-const WishList = require('../models/wishlist.model');
-const WishItem = require('../models/wishItem.model');
-const Product = require('../models/product.model');
-const userService = require('../services/user.service.js');
+const WishList = require('../models/wishlist.model.js');
+const WishItem = require('../models/wishItem.model.js');
+const Product = require('../models/product.model.js');
+const userService = require('./user.service.js');
 
 async function createWish(user) {
     try {

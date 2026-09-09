@@ -77,7 +77,7 @@ app.use('/api/gold-price', goldPriceRouter);
 
 // Serve frontend static build if present (production / unified deployment)
 const frontendDistPath = [
-    path.join(__dirname,"Frontend","dist"),
+    path.join(__dirname,"dist"),
     path.join(__dirname, "../dist"),
     path.join(__dirname, "../../Frontend/dist")
 ].find(p => fs.existsSync(p));

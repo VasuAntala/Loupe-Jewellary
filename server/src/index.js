@@ -2,12 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require("path");
-
-app.use(express.static(path.join(__dirname, "dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
-});
+const fs = require("fs");
 
 const app = express();
 
@@ -80,5 +75,18 @@ app.use('/api/sparkle-videos', sparkleVideoRouter);
 const goldPriceRouter = require('./routes/goldPrice.route.js');
 app.use('/api/gold-price', goldPriceRouter);
 
+// Serve frontend static build if present (production / unified deployment)
+const frontendDistPath = [
+    path.join(__dirname, "dist"),
+    path.join(__dirname, "../dist"),
+    path.join(__dirname, "../../Frontend/dist")
+].find(p => fs.existsSync(p));
+
+if (frontendDistPath) {
+    app.use(express.static(frontendDistPath));
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(frontendDistPath, "index.html"));
+    });
+}
 
 module.exports = app;

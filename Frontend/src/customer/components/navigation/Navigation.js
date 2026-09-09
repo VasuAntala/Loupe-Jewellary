@@ -309,6 +309,7 @@ export default function Navigation() {
                       src="/Loupe_Jeweler-logo.png"
                       alt="Loupe Jeweler"
                       className="h-10 w-auto object-contain"
+                      style={{ filter: 'brightness(0)' }}
                     />
                   </Link>
                   <IconButton onClick={() => setOpen(false)} sx={{ color: '#3c7399' }}>
@@ -516,6 +517,7 @@ export default function Navigation() {
                   src="/Loupe-logo.png"
                   alt="Loupe Jeweler"
                   className="h-[260px] sm:h-[260px] lg:h-[260px] w-auto object-contain transition-all duration-300 transform scale-110"
+                  style={{ filter: 'brightness(0)' }}
                 />
               </Link>
             </div>

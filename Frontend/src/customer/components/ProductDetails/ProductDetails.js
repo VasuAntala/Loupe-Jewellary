@@ -65,11 +65,12 @@ function SpecRow({ label, value }) {
   return (
     <Box sx={{
       display: "grid", gridTemplateColumns: "1fr 1fr",
-      py: 1, borderBottom: "1px solid #f1f5f9",
+      py: 1.5, borderBottom: "1px dashed #e2e8f0",
       "&:last-child": { borderBottom: "none" },
+      alignItems: 'center'
     }}>
-      <Typography sx={{ fontSize: "0.82rem", color: "#64748b", fontWeight: 600 }}>{label}</Typography>
-      <Typography sx={{ fontSize: "0.82rem", color: "#1e3545", fontWeight: 700 }}>{value}</Typography>
+      <Typography sx={{ fontSize: "0.88rem", color: "#64748b", fontWeight: 500 }}>{label}</Typography>
+      <Typography sx={{ fontSize: "0.92rem", color: "#1e293b", fontWeight: 600 }}>{value}</Typography>
     </Box>
   );
 }
@@ -191,19 +192,19 @@ export default function ProductDetails() {
           <Grid item xs={12} md={6}>
 
             {/* Brand */}
-            <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, color: "#3c7399", textTransform: "uppercase", letterSpacing: 2, mb: 0.5 }}>
+            <Typography sx={{ fontSize: "0.85rem", fontWeight: 800, color: "#3c7399", textTransform: "uppercase", letterSpacing: 3, mb: 1 }}>
               Loupe Jeweller
             </Typography>
 
             {/* Product Name */}
-            <Typography variant="h5" sx={{ fontWeight: 700, color: "#1e3545", lineHeight: 1.3, mb: 0.8 }}>
+            <Typography variant="h1" sx={{ fontSize: { xs: '1.8rem', md: '2.4rem' }, fontWeight: 400, color: "#1e293b", lineHeight: 1.2, mb: 1.5, fontFamily: 'serif' }}>
               {product.title}
             </Typography>
 
             {/* Product Code */}
             {product.productCode && (
-              <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 700, mb: 1.5, letterSpacing: "0.08em" }}>
-                Product Code: <span style={{ color: "#3c7399" }}>{product.productCode}</span>
+              <Typography sx={{ fontSize: "0.85rem", color: "#64748b", mb: 2 }}>
+                Product Code: <span style={{ color: "#3c7399", fontWeight: 600 }}>{product.productCode}</span>
               </Typography>
             )}
 
@@ -279,7 +280,51 @@ export default function ProductDetails() {
               ))}
             </Box>
 
+            {/* ── Quick Highlights ── */}
+            <Box sx={{ mb: 3, p: 3, bgcolor: "white", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
+              <Typography sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#1e293b", mb: 2, fontFamily: 'serif' }}>
+                Key Highlights
+              </Typography>
+              <Grid container spacing={2}>
+                {hasMetals && product.metalDetails[0]?.purity && (
+                  <Grid item xs={6}>
+                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
+                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Metal Purity</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.metalDetails[0].purity}</Typography>
+                    </Box>
+                  </Grid>
+                )}
+                {hasDiamonds && product.diamondDetails[0]?.totalWeight && (
+                  <Grid item xs={6}>
+                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
+                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Diamond Weight</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.diamondDetails[0].totalWeight} Ct</Typography>
+                    </Box>
+                  </Grid>
+                )}
+                {product.braceletLength && (
+                  <Grid item xs={6}>
+                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
+                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Bracelet Length</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.braceletLength}</Typography>
+                    </Box>
+                  </Grid>
+                )}
+                {hasChain && (
+                  <Grid item xs={6}>
+                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
+                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Chain Details</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.includesChain} ({product.chainLength})</Typography>
+                    </Box>
+                  </Grid>
+                )}
+              </Grid>
+            </Box>
+
             {/* ── Accordions ── */}
+            <Typography sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#1e293b", mb: 2, fontFamily: 'serif' }}>
+              Detailed Specifications
+            </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
 
               {/* Description */}

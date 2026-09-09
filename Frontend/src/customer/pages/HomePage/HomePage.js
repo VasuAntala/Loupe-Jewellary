@@ -14,6 +14,8 @@ import TrustBanner from "./components/TrustBanner";
 import SocialFeed from "./components/SocialFeed";
 import PerfectSparkleSection from "./components/PerfectSparkleSection";
 import ChooseYourJewellery from "./components/ChooseYourJewellery";
+import ShopByOccasion from "./components/ShopByOccasion";
+import FAQSection from "./components/FAQSection";
 
 const HomePage = () => {
   const location = useLocation();
@@ -94,11 +96,16 @@ const HomePage = () => {
 
       {/* 3rd Position: Choose Your Jewellery Section */}
       <section className="reveal">
-        <ChooseYourJewellery />
+        <ChooseYourJewellery products={allProductsList} />
       </section>
       
       <section className="reveal">
         <PerfectSparkleSection />
+      </section>
+
+      {/* Shop By Occasion */}
+      <section className="reveal">
+        <ShopByOccasion />
       </section>
 
 
@@ -120,6 +127,11 @@ const HomePage = () => {
       {/* 4. Brand Trust Features */}
       <section className="reveal">
         <TrustBanner />
+      </section>
+
+      {/* FAQ Section */}
+      <section className="reveal">
+        <FAQSection />
       </section>
 
       {/* 5. Social Feed */}

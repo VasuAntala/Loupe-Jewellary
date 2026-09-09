@@ -93,13 +93,14 @@ const LifestyleSplit = () => {
                                 borderRadius: '40px',
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
-                                boxShadow: '0 20px 50px rgba(0,0,0,0.08)'
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
                             }}
                         >
                             <img
-                                src="/product/product 2.png"
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
-                                alt="Lifestyle 1"
+                                src="/lifestyle/lifestyle_ring.jpg"
+                                style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
+                                className="hover:scale-105 transition-transform duration-1000"
+                                alt="Ring — Every Moment"
                             />
                         </Box>
                     </motion.div>
@@ -117,13 +118,14 @@ const LifestyleSplit = () => {
                                 borderRadius: '40px',
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
-                                boxShadow: '0 20px 50px rgba(0,0,0,0.08)'
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
                             }}
                         >
                             <img
-                                src="/product/product 3.png"
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
-                                alt="Lifestyle 2"
+                                src="/lifestyle/lifestyle_necklace.jpg"
+                                style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
+                                className="hover:scale-105 transition-transform duration-1000"
+                                alt="Necklace — Every Moment"
                             />
                         </Box>
                     </motion.div>
@@ -142,13 +144,14 @@ const LifestyleSplit = () => {
                                 borderRadius: '40px',
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
-                                boxShadow: '0 20px 50px rgba(0,0,0,0.08)'
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
                             }}
                         >
                             <img
-                                src="/product/Necklace.jpeg"
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
-                                alt="Lifestyle 3"
+                                src="/lifestyle/lifestyle_earrings.jpg"
+                                style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
+                                className="hover:scale-105 transition-transform duration-1000"
+                                alt="Earrings — Every Moment"
                             />
                         </Box>
                     </motion.div>

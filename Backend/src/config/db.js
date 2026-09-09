@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 async function connectWithFallback() {
-  const mongoURL = process.env.MONGO_URL || "mongodb+srv://vasuantala123:Vasu8283@cluster0.p1ilxej.mongodb.net/Loupe_jewels";
+  const mongoURL = process.env.MONGO_URL || "mongodb+srv://codiqsolutions_db_user:fZY2xu1wi76lyCyC@cluster0.ixpfe72.mongodb.net/Loupe";
 
   try {
     await mongoose.connect(mongoURL, {
       serverSelectionTimeoutMS: 8000,
     });
-    console.log("MongoDB connected successfully →", mongoURL);
+    console.log("MongoDB connected successfully", mongoURL);
     return;
   } catch (err) {
     console.error("Primary DB connection failed:", err?.message || err);

@@ -16,6 +16,7 @@ import PerfectSparkleSection from "./components/PerfectSparkleSection";
 import ChooseYourJewellery from "./components/ChooseYourJewellery";
 import ShopByOccasion from "./components/ShopByOccasion";
 import FAQSection from "./components/FAQSection";
+import CustomerReviews from "./components/CustomerReviews";
 
 const HomePage = () => {
   const location = useLocation();
@@ -127,6 +128,11 @@ const HomePage = () => {
       {/* 4. Brand Trust Features */}
       <section className="reveal">
         <TrustBanner />
+      </section>
+
+      {/* Customer Reviews */}
+      <section className="reveal">
+        <CustomerReviews />
       </section>
 
       {/* FAQ Section */}

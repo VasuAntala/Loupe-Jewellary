@@ -1,0 +1,222 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.cs-wrapper {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1208 50%, #0d0d0d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: "Montserrat", sans-serif;
+}
+
+.cs-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cs-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+  animation: cs-fade-in 1.2s ease both;
+}
+
+@keyframes cs-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Logo ring */
+.cs-logo-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cs-pulse-ring 3s ease-in-out infinite;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
+}
+
+@keyframes cs-pulse-ring {
+  0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+  50%       { box-shadow: 0 0 50px rgba(212, 175, 55, 0.5); }
+}
+
+.cs-logo-text {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: #d4af37;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+/* Brand name */
+.cs-brand {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+  color: #d4af37;
+  text-transform: uppercase;
+}
+
+/* Main headline */
+.cs-headline {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 300;
+  color: #f5f0e8;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+
+/* Subtitle */
+.cs-sub {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #9a9080;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  max-width: 420px;
+}
+
+/* Ornament divider */
+.cs-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.cs-divider::before,
+.cs-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #d4af3760);
+}
+
+.cs-divider::after {
+  background: linear-gradient(to left, transparent, #d4af3760);
+}
+
+.cs-diamond {
+  color: #d4af37;
+  font-size: 0.6rem;
+  opacity: 0.8;
+}
+
+/* Notification section */
+.cs-notify {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cs-notify-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #6a6058;
+}
+
+.cs-input-row {
+  display: flex;
+  gap: 0;
+  border: 1px solid #d4af3750;
+  border-radius: 2px;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.cs-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  outline: none;
+  color: #f0ebe0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.2rem;
+  width: 240px;
+}
+
+.cs-input::placeholder {
+  color: #5a5248;
+}
+
+.cs-btn {
+  background: #d4af37;
+  border: none;
+  color: #0a0a0a;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.4rem;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.cs-btn:hover {
+  background: #e8c84a;
+  transform: translateX(1px);
+}
+
+.cs-btn:active {
+  transform: translateX(0);
+}
+
+/* Footer */
+.cs-footer {
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  color: #3a3530;
+  margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .cs-input-row {
+    flex-direction: column;
+  }
+  .cs-input {
+    width: 260px;
+    border-bottom: 1px solid #d4af3730;
+  }
+  .cs-btn {
+    padding: 0.75rem;
+  }
+}

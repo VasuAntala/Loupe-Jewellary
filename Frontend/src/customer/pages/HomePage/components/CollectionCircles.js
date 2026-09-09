@@ -6,16 +6,16 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const categories = [
-    { name: "RINGS", image: "/product/product4.jpeg", id: "rings" },
-    { name: "EARRINGS", image: "/product/_.jpeg", id: "earrings" },
-    { name: "NECKLACES", image: "/product/Necklace.jpeg", id: "necklaces" },
-    { name: "PENDANTS", image: "/product/product7.jpeg", id: "pendants" },
-    { name: "BRACELETS", image: "/product/product 2.png", id: "bracelets" },
-    { name: "BANGLES", image: "/product/product 3.png", id: "bangles" },
-    { name: "MANGALSUTRA", image: "/product/product5.jpeg", id: "mangalsutra" },
-    { name: "CHAINS", image: "/product/product 3.png", id: "chains" },
-    { name: "LOCKETS", image: "/product/product7.jpeg", id: "lockets" },
-    { name: "ANKLETS", image: "/product/product5.jpeg", id: "anklets" },
+    { name: "RINGS", image: "/product/product4.jpeg", hoverImage: "/product/product4.jpeg", id: "rings" },
+    { name: "EARRINGS", image: "/product/_.jpeg", hoverImage: "/product/_.jpeg", id: "earrings" },
+    { name: "NECKLACES", image: "/product/Necklace.jpeg", hoverImage: "/product/Necklace.jpeg", id: "necklaces" },
+    { name: "PENDANTS", image: "/product/product7.jpeg", hoverImage: "/product/product7.jpeg", id: "pendants" },
+    { name: "BRACELETS", image: "/product/product 2.png", hoverImage: "/product/product 2.png", id: "bracelets" },
+    { name: "BANGLES", image: "/product/product 3.png", hoverImage: "/product/product 3.png", id: "bangles" },
+    { name: "MANGALSUTRA", image: "/product/product5.jpeg", hoverImage: "/product/product5.jpeg", id: "mangalsutra" },
+    { name: "CHAINS", image: "/product/product 3.png", hoverImage: "/product/product 3.png", id: "chains" },
+    { name: "LOCKETS", image: "/product/product7.jpeg", hoverImage: "/product/product7.jpeg", id: "lockets" },
+    { name: "ANKLETS", image: "/product/product5.jpeg", hoverImage: "/product/product5.jpeg", id: "anklets" },
 ];
 
 const CollectionCircles = () => {
@@ -61,7 +61,8 @@ const CollectionCircles = () => {
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 cursor: 'pointer',
-                                '&:hover img': { transform: 'scale(1.05)' }
+                                '&:hover .main-img': { opacity: 0 },
+                                '&:hover .hover-img': { opacity: 1, transform: 'scale(1.05)' }
                             }}
                             onClick={() => navigate(`/all-jewellery/category/${cat.id}`)}
                         >
@@ -77,13 +78,21 @@ const CollectionCircles = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    p: 1
+                                    p: 1,
+                                    position: 'relative'
                                 }}
                             >
                                 <img
                                     src={cat.image}
                                     alt={cat.name}
-                                    className="w-full h-full object-cover rounded-full transition-transform duration-500"
+                                    className="main-img w-full h-full object-cover rounded-full transition-all duration-500 absolute top-0 left-0"
+                                    style={{ padding: '8px' }}
+                                />
+                                <img
+                                    src={cat.hoverImage}
+                                    alt={`${cat.name} Model`}
+                                    className="hover-img w-full h-full object-cover rounded-full transition-all duration-500 absolute top-0 left-0 opacity-0"
+                                    style={{ padding: '8px' }}
                                 />
                             </Box>
                             <Typography

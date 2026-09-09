@@ -1,6 +1,7 @@
-﻿import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import HomePage from "../pages/HomePage/HomePage";
+import ComingSoon from "../pages/ComingSoon/ComingSoon";
 import Product from "../components/Products/product";
 import ProductDetails from "../components/ProductDetails/ProductDetails";
 import Cart from "../components/Cart/Cart";
@@ -82,7 +83,7 @@ const CustomerRouters = () => {
   return (
     <ModalState>
       <Routes>
-        <Route path="/" element={<Navigate to="/home1" replace />} />
+        <Route path="/" element={<ComingSoon />} />
         <Route
           path="/home1"
           element={

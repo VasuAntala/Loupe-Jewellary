@@ -9,6 +9,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ScrollToTop from "./components/ScrollToTop";
 
+import ComingSoon from './customer/pages/ComingSoon/ComingSoon';
+
 function App() {
   // Initialize theme from localStorage once on mount
   useEffect(() => {
@@ -25,17 +27,19 @@ function App() {
   const isAdmin = IsAdmin();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isComingSoonRoute = location.pathname === '/';
+  const isStoreRoute = location.pathname.startsWith('/home1');
+  const isComingSoonRoute = location.pathname === '/' || (!isStoreRoute && !isAdminRoute && !location.pathname.startsWith('/product') && location.pathname !== '/cart' && location.pathname !== '/checkout');
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+    <div className={`min-h-screen ${isComingSoonRoute ? 'bg-[#a9cee5]' : 'bg-[#fafafa] text-gray-900 dark:bg-gray-900 dark:text-gray-100'}`}>
 
       <ScrollToTop />
       
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
-        <Route path='/*' element={<CustomerRouters />}></Route>
-        <Route path='/admin/*' element={<AdminGuard><AdminRouters /></AdminGuard>} />
+        <Route path="/" element={<ComingSoon />} />
+        <Route path="/admin/*" element={<AdminGuard><AdminRouters /></AdminGuard>} />
+        <Route path="/*" element={<CustomerRouters />} />
       </Routes>
       {!isAdminRoute && !isComingSoonRoute && <WhatsAppContact />}
     </div>

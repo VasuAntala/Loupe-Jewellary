@@ -83,14 +83,8 @@ const CustomerRouters = () => {
   return (
     <ModalState>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <WithLayout showLayout={false}>
-              <ComingSoon />
-            </WithLayout>
-          }
-        />
+        <Route path="/" element={<ComingSoon />} />
+        <Route path="/home" element={<ComingSoon />} />
         <Route
           path="/home1"
           element={
@@ -213,14 +207,8 @@ const CustomerRouters = () => {
         <Route path="/contact-info" element={<WithLayout showLayout={true}><ContactInfo /></WithLayout>} />
 
         {/* 404 Page */}
-        <Route
-          path="*"
-          element={
-            <WithLayout showLayout={true}>
-              <PageNotFound />
-            </WithLayout>
-          }
-        />
+        {/* Fallback for non-developer routes: Coming Soon */}
+        <Route path="*" element={<ComingSoon />} />
       </Routes>
     </ModalState>
   );

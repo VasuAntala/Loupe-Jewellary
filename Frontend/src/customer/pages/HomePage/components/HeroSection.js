@@ -7,17 +7,24 @@ const HeroSection = () => {
 
     return (
         <Box
+            component="section"
             onClick={() => navigate('/all-jewellery')}
             sx={{
                 width: '100%',
+                // Header is 108px (notice marquee + navbar).
+                // calc(100vh - 108px) fills the exact visible screen height with ZERO space at the bottom
+                height: { 
+                    xs: '340px', 
+                    sm: 'calc(100vh - 108px)', 
+                    md: 'calc(100vh - 108px)' 
+                },
                 position: 'relative',
                 cursor: 'pointer',
                 overflow: 'hidden',
                 bgcolor: '#ffffff',
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+                alignItems: 'center'
             }}
         >
             <Box
@@ -26,14 +33,15 @@ const HeroSection = () => {
                 alt="B.Brother Loupe - Crafted to Perfection. Made to Be Yours."
                 sx={{
                     width: '100%',
-                    height: 'auto',
-                    maxHeight: { xs: 'auto', sm: '75vh', md: '85vh', lg: '90vh' },
+                    height: '100%',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
                     objectFit: 'cover',
                     objectPosition: 'center',
                     display: 'block',
-                    transition: 'transform 0.4s ease',
+                    transition: 'opacity 0.3s ease',
                     '&:hover': {
-                        transform: 'scale(1.008)',
+                        opacity: 0.97,
                     }
                 }}
             />

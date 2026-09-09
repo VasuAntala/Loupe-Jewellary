@@ -69,22 +69,16 @@ html.dark body {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Custom Scrollbar */
+/* Hide scrollbar completely while keeping smooth scrolling */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
+  display: none;
+  width: 0px;
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--accent-theme);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-theme);
+html, body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
 }
 
 /* Buttons and chips accents */

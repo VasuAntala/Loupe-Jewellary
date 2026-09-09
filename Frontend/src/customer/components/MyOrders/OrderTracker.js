@@ -23,13 +23,11 @@ const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.active}`]: {
         [`& .${stepConnectorClasses.line}`]: {
             background: '#3c7399',
-            background: 'linear-gradient(to right, #3c7399, #3c7399)',
         },
     },
     [`&.${stepConnectorClasses.completed}`]: {
         [`& .${stepConnectorClasses.line}`]: {
             background: '#3c7399',
-            background: 'linear-gradient(to right, #3c7399, #3c7399)',
         },
     },
     [`& .${stepConnectorClasses.line}`]: {

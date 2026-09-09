@@ -2,11 +2,12 @@
   "name": "ecommerce-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --no-warnings src/server.js",
-    "dev": "nodemon --no-warnings src/server.js"
+    "build": "echo 'No build step required'",
+    "start": "node --no-warnings server.js",
+    "dev": "nodemon --no-warnings server.js"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,6 @@
-const app = require('.');
-const { connectDB } = require('./config/db');
-const { ensureAdminUserExists } = require('./seed/ensureAdmin');
+const app = require('./src');
+const { connectDB } = require('./src/config/db');
+const { ensureAdminUserExists } = require('./src/seed/ensureAdmin');
 const PORT = Number(process.env.PORT) || 5455;
 
 const startServer = (port) => {
@@ -24,6 +24,10 @@ const startServer = (port) => {
       process.exit(1);
     }
   });
+  return server;
 };
 
 startServer(PORT);
+
+module.exports = app;
+

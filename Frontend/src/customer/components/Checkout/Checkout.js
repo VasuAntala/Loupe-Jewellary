@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -24,15 +24,11 @@ const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
     },
     [`&.${stepConnectorClasses.active}`]: {
         [`& .${stepConnectorClasses.line}`]: {
-            background: '#ED213A',
-            background: '-webkit-linear-gradient(to right, #93291E, #ED213A)',
             background: 'linear-gradient(to right, #93291E, #ED213A)',
         },
     },
     [`&.${stepConnectorClasses.completed}`]: {
         [`& .${stepConnectorClasses.line}`]: {
-            background: '#ED213A',
-            background: '-webkit-linear-gradient(to right, #93291E, #ED213A)',
             background: 'linear-gradient(to right, #93291E, #ED213A)',
         },
     },
@@ -56,14 +52,10 @@ const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
     justifyContent: 'center',
     alignItems: 'center',
     ...(ownerState.active && {
-        background: '#ED213A',
-        background: '-webkit-linear-gradient(to right, #93291E, #ED213A)',
         background: 'linear-gradient(to right, #93291E, #ED213A)',
         boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
     }),
     ...(ownerState.completed && {
-        background: '#ED213A',
-        background: '-webkit-linear-gradient(to right, #93291E, #ED213A)',
         background: 'linear-gradient(to right, #93291E, #ED213A)',
     }),
 }));

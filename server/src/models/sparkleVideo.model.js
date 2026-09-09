@@ -12,7 +12,15 @@ const SparkleVideoSchema = new mongoose.Schema({
     },
     price: {
         type: String,
-        required: true,
+        default: '',
+    },
+    minPrice: {
+        type: Number,
+        default: 0,
+    },
+    maxPrice: {
+        type: Number,
+        default: 0,
     },
     oldPrice: {
         type: String,

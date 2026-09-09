@@ -249,7 +249,7 @@ export default function Navigation() {
   };
 
   const handleClose = () => {
-    navigate("/");
+    navigate("/home1");
     modal.closeModal();
   };
 
@@ -512,7 +512,7 @@ export default function Navigation() {
               >
                 <MenuIcon sx={{ fontSize: 28 }} />
               </IconButton>
-              <Link to="/" className="flex items-center ml-1 lg:ml-0">
+              <Link to="/home1" className="flex items-center ml-1 lg:ml-0">
                 <img
                   src="/Loupe-logo.png"
                   alt="Loupe Jeweler"

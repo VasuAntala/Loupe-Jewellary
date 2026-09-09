@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Card, CardContent, Button, TextField, Grid,
-  IconButton, CircularProgress, LinearProgress, Chip, Avatar, Switch, FormControlLabel
+  IconButton, CircularProgress, LinearProgress, Chip, Avatar, Switch, FormControlLabel,
+  Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
-import { Trash2, Upload, Video, Plus, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { Trash2, Upload, Video, Plus, CheckCircle, Eye, EyeOff, Edit2, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { uploadVideoViaBackend, deleteAssetViaBackend } from '../../utils/cloudinaryUtils';
 import { API_BASE_URL } from '../../config/apiConfig';
@@ -15,9 +16,12 @@ const SparkleVideoManager = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [form, setForm] = useState({ title: '', price: '', oldPrice: '', discount: '', displayOrder: 0 });
+  const [form, setForm] = useState({ title: '', minPrice: '', maxPrice: '', oldPrice: '', discount: '', displayOrder: 0 });
   const [pendingVideo, setPendingVideo] = useState(null); // { secure_url, public_id }
   const [saving, setSaving] = useState(false);
+  const [editingVideo, setEditingVideo] = useState(null);
+  const [editForm, setEditForm] = useState({ title: '', minPrice: '', maxPrice: '', oldPrice: '', discount: '', displayOrder: 0 });
+  const [updating, setUpdating] = useState(false);
   const jwt = localStorage.getItem('jwt');
 
   const fetchVideos = async () => {
@@ -50,21 +54,80 @@ const SparkleVideoManager = () => {
   };
 
   const handleSave = async () => {
-    if (!pendingVideo || !form.title || !form.price) return alert('Fill in title, price and upload a video first.');
+    const min = Number(form.minPrice);
+    const max = Number(form.maxPrice);
+    if (!pendingVideo || !form.title.trim() || !form.minPrice || !form.maxPrice) {
+      return alert('Please fill in title, minimum approx price, maximum approx price, and upload a video.');
+    }
+    if (min <= 0 || max <= 0) {
+      return alert('Approximate prices must be greater than 0.');
+    }
+    if (min > max) {
+      return alert('Minimum price cannot be greater than maximum price.');
+    }
     setSaving(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/sparkle-videos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
-        body: JSON.stringify({ ...form, videoUrl: pendingVideo.secure_url, videoPublicId: pendingVideo.public_id }),
+        body: JSON.stringify({
+          ...form,
+          minPrice: min,
+          maxPrice: max,
+          price: `${min} - ${max}`,
+          videoUrl: pendingVideo.secure_url,
+          videoPublicId: pendingVideo.public_id
+        }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
-      setForm({ title: '', price: '', oldPrice: '', discount: '', displayOrder: 0 });
+      setForm({ title: '', minPrice: '', maxPrice: '', oldPrice: '', discount: '', displayOrder: 0 });
       setPendingVideo(null);
       fetchVideos();
     } catch (err) {
       alert('Save failed: ' + err.message);
     } finally { setSaving(false); }
+  };
+
+  const handleOpenEdit = (video) => {
+    setEditingVideo(video);
+    setEditForm({
+      title: video.title || '',
+      minPrice: video.minPrice || '',
+      maxPrice: video.maxPrice || '',
+      oldPrice: video.oldPrice || '',
+      discount: video.discount || '',
+      displayOrder: video.displayOrder || 0
+    });
+  };
+
+  const handleEditSave = async () => {
+    if (!editingVideo) return;
+    const min = Number(editForm.minPrice);
+    const max = Number(editForm.maxPrice);
+    if (!editForm.title.trim()) {
+      return alert('Please enter a product title.');
+    }
+    if (min > 0 && max > 0 && min > max) {
+      return alert('Minimum price cannot be greater than maximum price.');
+    }
+    setUpdating(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/sparkle-videos/${editingVideo._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+        body: JSON.stringify({
+          ...editForm,
+          minPrice: min || 0,
+          maxPrice: max || 0,
+          price: min && max ? `${min} - ${max}` : editingVideo.price
+        }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error);
+      setEditingVideo(null);
+      fetchVideos();
+    } catch (err) {
+      alert('Update failed: ' + err.message);
+    } finally { setUpdating(false); }
   };
 
   const handleDelete = async (video) => {
@@ -151,29 +214,89 @@ const SparkleVideoManager = () => {
 
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField label="Product Title *" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
-                  fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} />
+                <TextField 
+                  label="Product Title *" 
+                  value={form.title} 
+                  onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
+                  fullWidth 
+                  size="small" 
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} 
+                />
               </Grid>
               <Grid item xs={6} sm={3}>
-                <TextField label="Price (₹) *" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))}
-                  fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} />
+                <TextField 
+                  label="Min Approx Price (₹) *" 
+                  type="number"
+                  inputProps={{ min: 0 }}
+                  value={form.minPrice} 
+                  onChange={e => setForm(p => ({ ...p, minPrice: e.target.value }))}
+                  fullWidth 
+                  size="small" 
+                  helperText="Lower range"
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} 
+                />
               </Grid>
               <Grid item xs={6} sm={3}>
-                <TextField label="Old Price (₹)" value={form.oldPrice} onChange={e => setForm(p => ({ ...p, oldPrice: e.target.value }))}
-                  fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} />
+                <TextField 
+                  label="Max Approx Price (₹) *" 
+                  type="number"
+                  inputProps={{ min: 0 }}
+                  value={form.maxPrice} 
+                  onChange={e => setForm(p => ({ ...p, maxPrice: e.target.value }))}
+                  fullWidth 
+                  size="small" 
+                  helperText="Upper range"
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} 
+                />
               </Grid>
-              <Grid item xs={6} sm={3}>
-                <TextField label="Discount (e.g. 7% Off)" value={form.discount} onChange={e => setForm(p => ({ ...p, discount: e.target.value }))}
-                  fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} />
+              <Grid item xs={6} sm={4}>
+                <TextField 
+                  label="Old Ref Price (₹)" 
+                  value={form.oldPrice} 
+                  onChange={e => setForm(p => ({ ...p, oldPrice: e.target.value }))}
+                  fullWidth 
+                  size="small" 
+                  helperText="Optional strike-through"
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} 
+                />
               </Grid>
-              <Grid item xs={6} sm={3}>
-                <TextField label="Display Order" type="number" value={form.displayOrder} onChange={e => setForm(p => ({ ...p, displayOrder: Number(e.target.value) }))}
-                  fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} />
+              <Grid item xs={6} sm={4}>
+                <TextField 
+                  label="Discount Tag (e.g. 10% Off)" 
+                  value={form.discount} 
+                  onChange={e => setForm(p => ({ ...p, discount: e.target.value }))}
+                  fullWidth 
+                  size="small" 
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} 
+                />
               </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField 
+                  label="Display Order" 
+                  type="number" 
+                  value={form.displayOrder} 
+                  onChange={e => setForm(p => ({ ...p, displayOrder: Number(e.target.value) }))}
+                  fullWidth 
+                  size="small" 
+                  helperText="Lower numbers show first"
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }} 
+                />
+              </Grid>
+
+              {/* Live Preview Box */}
+              <Grid item xs={12}>
+                <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '12px', border: '1px solid #bae6fd', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Info size={20} color="#0284c7" />
+                  <Typography variant="body2" sx={{ color: '#0369a1', fontWeight: 600 }}>
+                    Customer sees: <strong>Approx. ₹{Number(form.minPrice || 0).toLocaleString('en-IN')} – ₹{Number(form.maxPrice || 0).toLocaleString('en-IN')}</strong>. Exact price is shared over WhatsApp.
+                  </Typography>
+                </Box>
+              </Grid>
+
               <Grid item xs={12}>
                 <Button
                   onClick={handleSave}
-                  disabled={!pendingVideo || !form.title || !form.price || saving}
+                  disabled={!pendingVideo || !form.title || !form.minPrice || !form.maxPrice || saving}
                   variant="contained"
                   startIcon={saving ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <Plus size={18} />}
                   sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 800, bgcolor: BRAND, '&:hover': { bgcolor: '#5fa0b8' }, px: 4 }}
@@ -199,7 +322,7 @@ const SparkleVideoManager = () => {
       ) : (
         <Grid container spacing={2}>
           {videos.map((video, i) => (
-            <Grid item xs={6} sm={4} md={3} lg={2} key={video._id}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={video._id}>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: i * 0.05 }}>
                 <Card sx={{ borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 2px 10px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
                   <Box sx={{ position: 'relative', aspectRatio: '4/5', bgcolor: '#0f172a' }}>
@@ -219,30 +342,65 @@ const SparkleVideoManager = () => {
                       sx={{ position: 'absolute', top: 10, right: 10, bgcolor: 'rgba(0,0,0,0.5)', color: '#fff', fontWeight: 700, fontSize: '0.65rem' }}
                     />
                   </Box>
-                  <CardContent sx={{ p: 1.5 }}>
-                    <Typography sx={{ fontWeight: 700, fontSize: '0.78rem', color: '#111827', mb: 0.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <CardContent sx={{ p: 2 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: '0.85rem', color: '#111827', mb: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {video.title}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                      <Typography sx={{ color: BRAND, fontWeight: 700, fontSize: '0.85rem' }}>₹{video.price}</Typography>
-                      {video.oldPrice && <Typography sx={{ color: '#94a3b8', fontSize: '0.75rem', textDecoration: 'line-through' }}>₹{video.oldPrice}</Typography>}
-                      {video.discount && <Chip label={video.discount} size="small" sx={{ bgcolor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '0.6rem', height: 18 }} />}
+                    
+                    {/* Price Range Display */}
+                    <Box sx={{ mb: 2 }}>
+                      <Typography sx={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        Approx. Price Range
+                      </Typography>
+                      {video.minPrice && video.maxPrice ? (
+                        <Typography sx={{ color: BRAND, fontWeight: 800, fontSize: '0.95rem' }}>
+                          ₹{Number(video.minPrice).toLocaleString('en-IN')} – ₹{Number(video.maxPrice).toLocaleString('en-IN')}
+                        </Typography>
+                      ) : (
+                        <Typography sx={{ color: BRAND, fontWeight: 800, fontSize: '0.95rem' }}>
+                          ₹{video.price || 'Price on request'}
+                        </Typography>
+                      )}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                        {video.oldPrice && (
+                          <Typography sx={{ color: '#94a3b8', fontSize: '0.75rem', textDecoration: 'line-through' }}>
+                            ₹{video.oldPrice}
+                          </Typography>
+                        )}
+                        {video.discount && (
+                          <Chip label={video.discount} size="small" sx={{ bgcolor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '0.6rem', height: 18 }} />
+                        )}
+                      </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <IconButton
-                        onClick={() => handleToggle(video)}
+
+                    {/* Actions: Edit, Toggle Active, Delete */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 1, borderTop: '1px solid #f1f5f9' }}>
+                      <Button
                         size="small"
-                        sx={{ bgcolor: video.isActive ? '#f0fff4' : '#f8fafc', color: video.isActive ? '#22c55e' : '#94a3b8', borderRadius: '8px' }}
+                        onClick={() => handleOpenEdit(video)}
+                        startIcon={<Edit2 size={14} />}
+                        sx={{ textTransform: 'none', fontWeight: 700, fontSize: '0.75rem', color: BRAND, bgcolor: '#f0f9ff', borderRadius: '8px', px: 1.5, '&:hover': { bgcolor: '#e0f2fe' } }}
                       >
-                        {video.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDelete(video)}
-                        size="small"
-                        sx={{ bgcolor: '#fff1f2', color: '#f43f5e', borderRadius: '8px', '&:hover': { bgcolor: '#ffe4e6' } }}
-                      >
-                        <Trash2 size={16} />
-                      </IconButton>
+                        Edit
+                      </Button>
+                      <Box sx={{ display: 'flex', gap: 0.5 }}>
+                        <IconButton
+                          onClick={() => handleToggle(video)}
+                          size="small"
+                          sx={{ bgcolor: video.isActive ? '#f0fff4' : '#f8fafc', color: video.isActive ? '#22c55e' : '#94a3b8', borderRadius: '8px' }}
+                          title={video.isActive ? "Hide video" : "Show video"}
+                        >
+                          {video.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleDelete(video)}
+                          size="small"
+                          sx={{ bgcolor: '#fff1f2', color: '#f43f5e', borderRadius: '8px', '&:hover': { bgcolor: '#ffe4e6' } }}
+                          title="Delete video"
+                        >
+                          <Trash2 size={16} />
+                        </IconButton>
+                      </Box>
                     </Box>
                   </CardContent>
                 </Card>
@@ -251,6 +409,119 @@ const SparkleVideoManager = () => {
           ))}
         </Grid>
       )}
+
+      {/* Edit Video Modal */}
+      <Dialog 
+        open={Boolean(editingVideo)} 
+        onClose={() => setEditingVideo(null)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: '20px', p: 1 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 800, color: '#111827', pb: 1 }}>
+          Edit Sparkle Video Details
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mb: 2.5 }}>
+            Update the title, approximate price range, or display order without re-uploading the video.
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Product Title *"
+                value={editForm.title}
+                onChange={e => setEditForm(p => ({ ...p, title: e.target.value }))}
+                fullWidth
+                size="small"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Min Approx Price (₹) *"
+                type="number"
+                inputProps={{ min: 0 }}
+                value={editForm.minPrice}
+                onChange={e => setEditForm(p => ({ ...p, minPrice: e.target.value }))}
+                fullWidth
+                size="small"
+                helperText="Lower range"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Max Approx Price (₹) *"
+                type="number"
+                inputProps={{ min: 0 }}
+                value={editForm.maxPrice}
+                onChange={e => setEditForm(p => ({ ...p, maxPrice: e.target.value }))}
+                fullWidth
+                size="small"
+                helperText="Upper range"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Old Ref Price (₹)"
+                value={editForm.oldPrice}
+                onChange={e => setEditForm(p => ({ ...p, oldPrice: e.target.value }))}
+                fullWidth
+                size="small"
+                helperText="Optional strike-through"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Discount Tag"
+                value={editForm.discount}
+                onChange={e => setEditForm(p => ({ ...p, discount: e.target.value }))}
+                fullWidth
+                size="small"
+                placeholder="e.g. 10% Off"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Display Order"
+                type="number"
+                value={editForm.displayOrder}
+                onChange={e => setEditForm(p => ({ ...p, displayOrder: Number(e.target.value) }))}
+                fullWidth
+                size="small"
+                helperText="Lower numbers show first"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '12px', border: '1px solid #bae6fd' }}>
+                <Typography variant="body2" sx={{ color: '#0369a1', fontWeight: 600 }}>
+                  Customer will see: <strong>Approx. ₹{Number(editForm.minPrice || 0).toLocaleString('en-IN')} – ₹{Number(editForm.maxPrice || 0).toLocaleString('en-IN')}</strong>
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 2.5, pt: 1 }}>
+          <Button 
+            onClick={() => setEditingVideo(null)} 
+            sx={{ textTransform: 'none', fontWeight: 700, color: '#64748b' }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleEditSave} 
+            variant="contained" 
+            disabled={updating || !editForm.title.trim()}
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 800, bgcolor: BRAND, '&:hover': { bgcolor: '#5fa0b8' }, px: 3 }}
+          >
+            {updating ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

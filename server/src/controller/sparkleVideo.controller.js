@@ -12,6 +12,8 @@ const getSparkleVideos = async (req, res) => {
             _id: v._id,
             title: v.title,
             price: v.price,
+            minPrice: v.minPrice || 0,
+            maxPrice: v.maxPrice || 0,
             oldPrice: v.oldPrice,
             discount: v.discount,
             videoUrl: getOptimizedUrl(v.videoUrl, 'video'),
@@ -35,6 +37,8 @@ const getAllSparkleVideosAdmin = async (req, res) => {
             _id: v._id,
             title: v.title,
             price: v.price,
+            minPrice: v.minPrice || 0,
+            maxPrice: v.maxPrice || 0,
             oldPrice: v.oldPrice,
             discount: v.discount,
             videoUrl: getOptimizedUrl(v.videoUrl, 'video'),
@@ -52,15 +56,24 @@ const getAllSparkleVideosAdmin = async (req, res) => {
 // ─── CREATE a new sparkle video entry (after video already uploaded) ─────────
 const createSparkleVideo = async (req, res) => {
     try {
-        const { title, price, oldPrice, discount, videoUrl, videoPublicId, displayOrder } = req.body;
+        const { title, price, minPrice, maxPrice, oldPrice, discount, videoUrl, videoPublicId, displayOrder } = req.body;
 
-        if (!title || !price || !videoUrl || !videoPublicId) {
-            return res.status(400).json({ error: 'title, price, videoUrl, and videoPublicId are required' });
+        if (!title || !videoUrl || !videoPublicId) {
+            return res.status(400).json({ error: 'title, videoUrl, and videoPublicId are required' });
+        }
+
+        const numMin = Number(minPrice) || 0;
+        const numMax = Number(maxPrice) || 0;
+
+        if (!price && numMin <= 0 && numMax <= 0) {
+            return res.status(400).json({ error: 'Please provide an approximate price range (Min and Max Price)' });
         }
 
         const video = new SparkleVideo({
             title,
-            price,
+            price: price || (numMin && numMax ? `${numMin} - ${numMax}` : ''),
+            minPrice: numMin,
+            maxPrice: numMax,
             oldPrice: oldPrice || '',
             discount: discount || '',
             videoUrl,
@@ -80,7 +93,10 @@ const createSparkleVideo = async (req, res) => {
 const updateSparkleVideo = async (req, res) => {
     try {
         const { id } = req.params;
-        const updates = req.body;
+        const updates = { ...req.body };
+
+        if (updates.minPrice !== undefined) updates.minPrice = Number(updates.minPrice) || 0;
+        if (updates.maxPrice !== undefined) updates.maxPrice = Number(updates.maxPrice) || 0;
 
         const video = await SparkleVideo.findByIdAndUpdate(id, updates, { new: true });
         if (!video) return res.status(404).json({ error: 'Sparkle video not found' });

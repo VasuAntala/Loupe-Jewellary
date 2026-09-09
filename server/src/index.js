@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 });
 
 
-app.get('/', (req, res) => {
+app.get('/check-api/', (req, res) => {
     return res.status(200).send({ message: 'welcome to backend', status: true })
 })
 

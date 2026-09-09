@@ -1,5 +1,5 @@
 const razorpay = require("../config/razorpayClient.js");
-const orderService = require("../services/order.service.js");
+const orderService = require("./order.service.js");
 const { removeAllCartItems } = require("./cart.service.js");
 
 const createPaymentLink = async (orderId) => {

@@ -4,7 +4,7 @@ import { Box, Typography, IconButton, Skeleton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { API_BASE_URL } from '../../../../config/apiConfig';
+import { API_URL, API_BASE_URL } from '../../../../config/apiConfig';
 import { formatPriceRange, openWhatsApp } from '../../../../utils/whatsapp';
 
 const WA_ICON = (
@@ -52,7 +52,7 @@ const PerfectSparkleSection = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/api/sparkle-videos`)
+        fetch(`${API_URL}/api/sparkle-videos`)
             .then(res => res.json())
             .then(data => setVideos(Array.isArray(data) ? data : []))
             .catch(() => setVideos([]))

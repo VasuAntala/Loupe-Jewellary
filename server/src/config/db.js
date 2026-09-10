@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+// Set query buffer timeout to 5000ms so queries don't hang indefinitely if DB is disconnected
+mongoose.set('bufferTimeoutMS', 5000);
+
 async function connectWithFallback() {
   const mongoURL = process.env.MONGO_URL || "mongodb+srv://codiqsolutions_db_user:fZY2xu1wi76lyCyC@cluster0.ixpfe72.mongodb.net/Loupe";
   const isProd = process.env.NODE_ENV === "production";
@@ -8,15 +11,17 @@ async function connectWithFallback() {
 
   try {
     await mongoose.connect(mongoURL, {
-      serverSelectionTimeoutMS: 8000,
+      serverSelectionTimeoutMS: 5000,
     });
     console.log("MongoDB connected successfully to:", maskedURL);
     return;
   } catch (err) {
-    console.error("Primary DB connection failed:", err?.message || err);
+    console.error("[Database Connection Error]:", err?.message || err);
     if (isProd) {
-      console.error("[CRITICAL] Cannot fallback to in-memory database in production mode. Check MONGO_URL and IP whitelist.");
-      process.exit(1);
+      console.error("[CRITICAL] MongoDB Atlas connection failed in production.");
+      console.error("-> If this is Hostinger: Ensure IP Access List in MongoDB Atlas allows 0.0.0.0/0 (Allow Access from Anywhere).");
+      // Do NOT kill the process so the web server stays alive to serve static files and diagnostics
+      return;
     }
     console.log("Falling back to in-memory MongoDB for local development...");
   }

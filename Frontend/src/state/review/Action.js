@@ -1,4 +1,4 @@
-﻿import { api } from "../../config/apiConfig"
+import { api } from "../../config/apiConfig"
 import { API_BASE_URL } from "../../config/apiConfig";
 import { ADD_REVIEW_TO_PRODUCT_FAILURE, ADD_REVIEW_TO_PRODUCT_REQUEST, ADD_REVIEW_TO_PRODUCT_SUCCESS, GET_REVIEW_FAILURE, GET_REVIEW_REQUEST, GET_REVIEW_SUCCESSS } from "./ActionType"
 
@@ -15,7 +15,7 @@ export const addReviewToProduct = (reqData) => async (dispatch) => {
 
         // Check if the modal context exists and close it
         if (reqData.modal) {
-            reqData.navigate(`${API_BASE_URL}/product/${reqData.productId}`)
+            reqData.navigate(`/product/${reqData.productId}`);
             reqData.modal.closeModal();
         }
     } catch (error) {

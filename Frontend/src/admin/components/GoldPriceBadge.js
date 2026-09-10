@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { RefreshCw, TrendingUp, TrendingDown, Minus, Clock, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '../../config/apiConfig';
 
 const REFRESH_INTERVAL = 60; // seconds
 
@@ -28,7 +29,6 @@ const GoldPriceBadge = () => {
         else setLoading(true);
         setError(false);
         try {
-            const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455';
             const res = await fetch(`${API_URL}/api/gold-price`);
             const data = await res.json();
             if (!data || data.error) throw new Error(data?.error || 'Invalid response');

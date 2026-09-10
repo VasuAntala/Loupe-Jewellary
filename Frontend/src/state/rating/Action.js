@@ -16,7 +16,7 @@ export const addRatingToProduct = (reqData) => async (dispatch) => {
 
         // Check if the modal context exists and close it
         if (reqData.modal) {
-            reqData.navigate(`${API_BASE_URL}/product/${reqData.productId}`)
+            reqData.navigate(`/product/${reqData.productId}`);
             reqData.modal.closeModal();
         }
     } catch (error) {

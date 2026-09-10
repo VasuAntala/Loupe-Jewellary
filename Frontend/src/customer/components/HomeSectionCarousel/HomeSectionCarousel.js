@@ -5,6 +5,7 @@ import "./style1.css";
 import { useDispatch, useSelector } from "react-redux";
 import { store } from "../../../state/store";
 import { findProducts } from "../../../state/product/Action";
+import { API_URL } from "../../../config/apiConfig";
 
 const HomeSectionCarousel = ({
     sectionName,
@@ -44,8 +45,7 @@ const HomeSectionCarousel = ({
                     collectionName: collection || ""
                 });
 
-                const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455';
-                const response = await fetch(`${apiUrl}/api/products?${params.toString()}`);
+                const response = await fetch(`${API_URL}/api/products?${params.toString()}`);
                 const data = await response.json();
                 setLocalProducts(data);
             } catch (error) {

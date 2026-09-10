@@ -1,6 +1,12 @@
 import axios from "axios";
 
-export const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://localhost:5455";
+const isProduction = import.meta.env.PROD || import.meta.env.VITE_NODE_ENV === "production";
+
+export const API_URL =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  (isProduction ? "https://loupejewels.com" : "http://localhost:5455");
+
 export const API_BASE_URL = API_URL;
 
 export const api = axios.create({

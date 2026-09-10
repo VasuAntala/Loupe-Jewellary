@@ -24,8 +24,8 @@ const GoldPriceWidget = () => {
 
         try {
             // Fetch via backend proxy to avoid CORS restrictions
-            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455';
-            const goldRes = await fetch(`${API_BASE_URL}/api/gold-price`);
+            const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455';
+            const goldRes = await fetch(`${API_URL}/api/gold-price`);
             const data = await goldRes.json();
 
             if (!data || data.error) throw new Error(data?.error || 'Invalid response');

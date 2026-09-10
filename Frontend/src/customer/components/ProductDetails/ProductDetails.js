@@ -76,10 +76,49 @@ function SpecRow({ label, value }) {
 }
 
 /* ─────────────────────────────────────────────
+   Metal colour options
+───────────────────────────────────────────── */
+const METAL_OPTIONS = [
+  {
+    id: "yellow-gold",
+    label: "Yellow Gold",
+    short: "Gold",
+    gradient: "radial-gradient(circle at 35% 35%, #ffe680, #d4a017 45%, #8b6200 100%)",
+    border: "#c8960a",
+    glow: "rgba(212,160,23,0.45)",
+  },
+  {
+    id: "rose-gold",
+    label: "Rose Gold",
+    short: "Rose",
+    gradient: "radial-gradient(circle at 35% 35%, #ffd6cc, #c97b63 45%, #8b3a27 100%)",
+    border: "#c97b63",
+    glow: "rgba(201,123,99,0.45)",
+  },
+  {
+    id: "silver",
+    label: "Silver",
+    short: "Silver",
+    gradient: "radial-gradient(circle at 35% 35%, #f5f5f5, #b8b8b8 45%, #5c5c5c 100%)",
+    border: "#9ca3af",
+    glow: "rgba(180,180,180,0.45)",
+  },
+  {
+    id: "white-gold",
+    label: "White Gold",
+    short: "White",
+    gradient: "radial-gradient(circle at 35% 35%, #ffffff, #d4d4d4 45%, #888 100%)",
+    border: "#aaa",
+    glow: "rgba(200,200,200,0.45)",
+  },
+];
+
+/* ─────────────────────────────────────────────
    Main Component
 ───────────────────────────────────────────── */
 export default function ProductDetails() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedMetal, setSelectedMetal] = useState(METAL_OPTIONS[0]); // default: Yellow Gold
   const navigate = useNavigate();
   const param = useParams();
   const dispatch = useDispatch();
@@ -110,6 +149,20 @@ export default function ProductDetails() {
   const hasChain = product?.includesChain === "Yes" || product?.includesChain === "Optional";
 
   const handleWhatsApp = () => openWhatsApp(product);
+
+  // Build WhatsApp URL injecting chosen metal colour
+  const whatsAppHrefWithMetal = (() => {
+    try {
+      const base = buildWhatsAppUrl(product);
+      const url = new URL(base);
+      const existing = url.searchParams.get("text") || "";
+      const colorLine = `\nMetal Colour Preference: ${selectedMetal.label}`;
+      url.searchParams.set("text", existing + colorLine);
+      return url.toString();
+    } catch {
+      return buildWhatsAppUrl(product);
+    }
+  })();
 
   if (!product) return null;
 
@@ -229,12 +282,83 @@ export default function ProductDetails() {
               </Typography>
             </Box>
 
-            {/* ── Primary CTA: WhatsApp ── */}
+            {/* ── Metal Colour Selector (clean, professional) ── */}
+            <Box sx={{ mb: 2.5 }}>
+              {/* Header */}
+              <Box sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 1,
+              }}>
+                <Typography
+                  sx={{
+                    fontSize: "0.78rem",
+                    fontWeight: 800,
+                    color: "#1e293b",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                  }}>
+                  Metal Colour
+                </Typography>
+                <Typography sx={{ fontSize: "0.68rem", color: "#94a3b8" }}>
+                  tap to choose
+                </Typography>
+              </Box>
+
+              {/* Swatch row */}
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                {METAL_OPTIONS.map((metal) => {
+                  const isSelected = selectedMetal.id === metal.id;
+                  return (
+                    <Box
+                      key={metal.id}
+                      onClick={() => setSelectedMetal(metal)}
+                      sx={{
+                        cursor: "pointer",
+                        textAlign: "center",
+                      }}>
+                      <Box
+                        sx={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: "50%",
+                          background: metal.gradient,
+                          border: isSelected ? `2px solid ${metal.border}` : "2px solid #e2e8f0",
+                          transition: "border 0.2s",
+                        }}
+                      />
+                      <Typography
+                        sx={{
+                          mt: 0.5,
+                          fontSize: "0.62rem",
+                          fontWeight: isSelected ? 600 : 400,
+                          color: isSelected ? metal.border : "#6b7280",
+                          textTransform: "uppercase",
+                        }}>
+                        {metal.short}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+
+              <Box sx={{ border: `1px solid ${selectedMetal.border}30`, background: `${selectedMetal.glow.replace("0.45", "0.08")}`, display: "flex", alignItems: "center", gap: 1.5, transition: "all 0.3s ease" }}>
+                {/* Mini swatch dot */}
+                <Box sx={{ width: 14, height: 14, borderRadius: "50%", background: selectedMetal.gradient, border: `1px solid ${selectedMetal.border}`, flexShrink: 0 }} />
+                <Typography sx={{ fontSize: "0.73rem", color: "#475569", lineHeight: 1.5 }}>
+                  You have selected{" "}
+                  <strong style={{ color: selectedMetal.border }}>{selectedMetal.label}</strong>.
+                  {" "}This preference will be shared with us on WhatsApp.
+                </Typography>
+              </Box>
+            </Box>
+
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 2.5 }}>
               <Button
                 fullWidth
                 component="a"
-                href={buildWhatsAppUrl(product)}
+                href={whatsAppHrefWithMetal}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
@@ -437,6 +561,7 @@ export default function ProductDetails() {
             </Box>
           </Grid>
         </Grid>
+
 
         {/* ── WHAT'S INCLUDED ── */}
         <Box sx={{ mt: 8, p: { xs: 3, md: 5 }, bgcolor: "white", borderRadius: "16px", border: "1px solid #e2e8f0" }}>

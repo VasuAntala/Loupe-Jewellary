@@ -44,7 +44,8 @@ const HomeSectionCarousel = ({
                     collectionName: collection || ""
                 });
 
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455'}/api/products?${params.toString()}`);
+                const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455';
+                const response = await fetch(`${apiUrl}/api/products?${params.toString()}`);
                 const data = await response.json();
                 setLocalProducts(data);
             } catch (error) {

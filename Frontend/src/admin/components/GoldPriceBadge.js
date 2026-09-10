@@ -28,8 +28,8 @@ const GoldPriceBadge = () => {
         else setLoading(true);
         setError(false);
         try {
-            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455';
-            const res = await fetch(`${API_BASE_URL}/api/gold-price`);
+            const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5455';
+            const res = await fetch(`${API_URL}/api/gold-price`);
             const data = await res.json();
             if (!data || data.error) throw new Error(data?.error || 'Invalid response');
             if (goldDataRef.current) setPrevPrice(goldDataRef.current.pricePerGram24k);

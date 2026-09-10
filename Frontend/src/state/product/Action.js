@@ -1,4 +1,5 @@
-﻿import { api } from "../../config/apiConfig";
+import axios from "axios";
+import { api, API_URL, API_BASE_URL } from "../../config/apiConfig";
 import { toastNotify } from '../shared/toast';
 import {
   CREATE_PRODUCT_FAILURE,
@@ -17,7 +18,6 @@ import {
   UPDATE_PRODUCT_SUCCESS,
   UPDATE_PRODUCT_FAILURE,
 } from "./ActionType";
-import { API_BASE_URL } from "../../config/apiConfig";
 
 export const findProducts = (reqData) => async (dispatch) => {
   dispatch({ type: FIND_PRODUCTS_REQUEST });
@@ -41,9 +41,23 @@ export const findProducts = (reqData) => async (dispatch) => {
   console.log('reqData for findProducts', reqData);
 
   try {
-    const { data } = await api.get(
-      `${API_BASE_URL}/api/products?color=${color}&minPrice=${minPrice}&maxPrice=${maxPrice}&minDiscount=${minDiscount}&maxDiscount=${maxDiscount}&type=${type}&category=${category}&occasion=${occasion}&sort=${sort}&pageNumber=${pageNumber}&pageSize=${pageSize}&collectionName=${collectionName}&search=${search || ''}`
-    );
+    const { data } = await axios.get(`${API_URL}/api/products`, {
+      params: {
+        color,
+        minPrice,
+        maxPrice,
+        minDiscount,
+        maxDiscount,
+        type,
+        category,
+        occasion,
+        sort,
+        pageNumber,
+        pageSize,
+        collectionName,
+        search: search || '',
+      },
+    });
 
     dispatch({ type: FIND_PRODUCTS_SUCCESS, payload: data });
   } catch (error) {

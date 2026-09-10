@@ -7,7 +7,7 @@ import {
 import { Trash2, Upload, Video, Plus, CheckCircle, Eye, EyeOff, Edit2, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { uploadVideoViaBackend, deleteAssetViaBackend } from '../../utils/cloudinaryUtils';
-import { API_BASE_URL } from '../../config/apiConfig';
+import { API_URL, API_BASE_URL } from '../../config/apiConfig';
 
 const BRAND = '#3c7399';
 
@@ -26,7 +26,7 @@ const SparkleVideoManager = () => {
 
   const fetchVideos = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/sparkle-videos/admin`, {
+      const res = await fetch(`${API_URL}/api/sparkle-videos/admin`, {
         headers: { Authorization: `Bearer ${jwt}` }
       });
       const data = await res.json();
@@ -67,7 +67,7 @@ const SparkleVideoManager = () => {
     }
     setSaving(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/sparkle-videos`, {
+      const res = await fetch(`${API_URL}/api/sparkle-videos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
         body: JSON.stringify({
@@ -112,7 +112,7 @@ const SparkleVideoManager = () => {
     }
     setUpdating(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/sparkle-videos/${editingVideo._id}`, {
+      const res = await fetch(`${API_URL}/api/sparkle-videos/${editingVideo._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
         body: JSON.stringify({
@@ -133,7 +133,7 @@ const SparkleVideoManager = () => {
   const handleDelete = async (video) => {
     if (!window.confirm(`Delete "${video.title}"?`)) return;
     try {
-      await fetch(`${API_BASE_URL}/api/sparkle-videos/${video._id}`, {
+      await fetch(`${API_URL}/api/sparkle-videos/${video._id}`, {
         method: 'DELETE', headers: { Authorization: `Bearer ${jwt}` }
       });
       fetchVideos();
@@ -142,7 +142,7 @@ const SparkleVideoManager = () => {
 
   const handleToggle = async (video) => {
     try {
-      await fetch(`${API_BASE_URL}/api/sparkle-videos/${video._id}/toggle`, {
+      await fetch(`${API_URL}/api/sparkle-videos/${video._id}/toggle`, {
         method: 'PATCH', headers: { Authorization: `Bearer ${jwt}` }
       });
       fetchVideos();

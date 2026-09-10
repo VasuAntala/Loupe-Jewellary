@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
   Box, Button, Grid, Typography, Divider,
-  Breadcrumbs, Link, IconButton, Collapse,
+  Breadcrumbs, Link, IconButton, Collapse, Dialog, Modal,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +14,8 @@ import {
   ChevronRight, ChevronDown, ChevronUp,
   ShieldCheck, Truck, RefreshCw, Gift,
   Headset, Video, Package, Star, MessageCircle,
-  Share2, Heart,
+  Share2, Heart, Maximize2, ZoomIn, X, Check,
+  Sparkles, Award, Lock, HelpCircle
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────
@@ -25,6 +26,15 @@ function fmtINR(n) {
   return Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 });
 }
 
+function cleanTitle(str) {
+  if (!str) return "";
+  const half = Math.floor(str.length / 2);
+  if (str.length > 10 && str.slice(0, half) === str.slice(half)) {
+    return str.slice(0, half);
+  }
+  return str;
+}
+
 const WHATSAPP_SVG = (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0 }}>
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
@@ -32,26 +42,46 @@ const WHATSAPP_SVG = (
 );
 
 /* ─────────────────────────────────────────────
-   Accordion
+   Accordion Component
 ───────────────────────────────────────────── */
-function Accordion({ title, children, defaultOpen = false }) {
+function Accordion({ title, children, defaultOpen = false, icon }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <Box sx={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
+    <Box sx={{
+      border: "1px solid #e9eff4",
+      borderRadius: "14px",
+      overflow: "hidden",
+      bgcolor: "white",
+      boxShadow: open ? "0 4px 16px rgba(60, 115, 153, 0.06)" : "none",
+      transition: "all 0.3s ease"
+    }}>
       <Box
         onClick={() => setOpen(!open)}
         sx={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          px: 2.5, py: 1.8, cursor: "pointer", userSelect: "none",
+          px: 2.8, py: 2, cursor: "pointer", userSelect: "none",
           bgcolor: open ? "#f8fafc" : "white",
-          "&:hover": { bgcolor: "#f1f5f9" },
+          "&:hover": { bgcolor: "#f1f6fa" },
+          transition: "background-color 0.2s ease"
         }}
       >
-        <Typography sx={{ fontSize: "0.9rem", fontWeight: 700, color: "#3c7399" }}>{title}</Typography>
-        {open ? <ChevronUp size={18} color="#475569" /> : <ChevronDown size={18} color="#475569" />}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          {icon}
+          <Typography sx={{ fontSize: "0.92rem", fontWeight: 700, color: "#1e293b", fontFamily: "'Outfit', sans-serif" }}>
+            {title}
+          </Typography>
+        </Box>
+        <Box sx={{
+          width: 28, height: 28, borderRadius: "50%",
+          bgcolor: open ? "#e0eff7" : "#f1f5f9",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "transform 0.3s ease, background-color 0.2s"
+        }}>
+          {open ? <ChevronUp size={16} color="#3c7399" /> : <ChevronDown size={16} color="#64748b" />}
+        </Box>
       </Box>
       <Collapse in={open}>
-        <Box sx={{ px: 2.5, pb: 2.5, pt: 1 }}>{children}</Box>
+        <Box sx={{ px: 2.8, pb: 2.8, pt: 1 }}>{children}</Box>
       </Collapse>
     </Box>
   );
@@ -64,13 +94,13 @@ function SpecRow({ label, value }) {
   if (!value && value !== 0) return null;
   return (
     <Box sx={{
-      display: "grid", gridTemplateColumns: "1fr 1fr",
-      py: 1.5, borderBottom: "1px dashed #e2e8f0",
+      display: "flex", justifyContent: "space-between",
+      py: 1.4, borderBottom: "1px dashed #e9eff4",
       "&:last-child": { borderBottom: "none" },
       alignItems: 'center'
     }}>
-      <Typography sx={{ fontSize: "0.88rem", color: "#64748b", fontWeight: 500 }}>{label}</Typography>
-      <Typography sx={{ fontSize: "0.92rem", color: "#1e293b", fontWeight: 600 }}>{value}</Typography>
+      <Typography sx={{ fontSize: "0.86rem", color: "#64748b", fontWeight: 500 }}>{label}</Typography>
+      <Typography sx={{ fontSize: "0.9rem", color: "#0f172a", fontWeight: 700, fontFamily: "'Outfit', sans-serif" }}>{value}</Typography>
     </Box>
   );
 }
@@ -82,34 +112,42 @@ const METAL_OPTIONS = [
   {
     id: "yellow-gold",
     label: "Yellow Gold",
-    short: "Gold",
-    gradient: "radial-gradient(circle at 35% 35%, #ffe680, #d4a017 45%, #8b6200 100%)",
-    border: "#c8960a",
-    glow: "rgba(212,160,23,0.45)",
+    short: "Yellow Gold",
+    gradient: "radial-gradient(circle at 35% 35%, #fff3b0 0%, #e5b024 45%, #946900 100%)",
+    border: "#d49e13",
+    glow: "rgba(212,158,19,0.35)",
+    tagBg: "#fef8e7",
+    textColor: "#926800"
   },
   {
     id: "rose-gold",
     label: "Rose Gold",
-    short: "Rose",
-    gradient: "radial-gradient(circle at 35% 35%, #ffd6cc, #c97b63 45%, #8b3a27 100%)",
-    border: "#c97b63",
-    glow: "rgba(201,123,99,0.45)",
-  },
-  {
-    id: "silver",
-    label: "Silver",
-    short: "Silver",
-    gradient: "radial-gradient(circle at 35% 35%, #f5f5f5, #b8b8b8 45%, #5c5c5c 100%)",
-    border: "#9ca3af",
-    glow: "rgba(180,180,180,0.45)",
+    short: "Rose Gold",
+    gradient: "radial-gradient(circle at 35% 35%, #ffded6 0%, #d88972 45%, #8c3b28 100%)",
+    border: "#c9755f",
+    glow: "rgba(201,117,95,0.35)",
+    tagBg: "#fdf2ef",
+    textColor: "#96432f"
   },
   {
     id: "white-gold",
     label: "White Gold",
-    short: "White",
-    gradient: "radial-gradient(circle at 35% 35%, #ffffff, #d4d4d4 45%, #888 100%)",
-    border: "#aaa",
-    glow: "rgba(200,200,200,0.45)",
+    short: "White Gold",
+    gradient: "radial-gradient(circle at 35% 35%, #ffffff 0%, #d4dbdf 45%, #768792 100%)",
+    border: "#8597a4",
+    glow: "rgba(133,151,164,0.35)",
+    tagBg: "#f1f5f8",
+    textColor: "#475569"
+  },
+  {
+    id: "silver",
+    label: "Sterling Silver",
+    short: "Silver",
+    gradient: "radial-gradient(circle at 35% 35%, #f5f5f5 0%, #c0c0c0 45%, #606060 100%)",
+    border: "#9ca3af",
+    glow: "rgba(156,163,175,0.35)",
+    tagBg: "#f8fafc",
+    textColor: "#475569"
   },
 ];
 
@@ -119,6 +157,10 @@ const METAL_OPTIONS = [
 export default function ProductDetails() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedMetal, setSelectedMetal] = useState(METAL_OPTIONS[0]); // default: Yellow Gold
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50, showing: false });
+
   const navigate = useNavigate();
   const param = useParams();
   const dispatch = useDispatch();
@@ -141,14 +183,23 @@ export default function ProductDetails() {
   const showMetals = product?.showMetalDetails === true;
   const showWeights = product?.showWeightDetails === true;
 
-  // ── Dynamic sections — only show if data exists ──
+  // ── Dynamic sections ──
   const hasDimensions = Array.isArray(product?.dimensionsList) && product.dimensionsList.some(d => d.label || d.value);
   const hasDiamonds = showDiamonds && Array.isArray(product?.diamondDetails) && product.diamondDetails.some(d => d.diamondType);
   const hasMetals = showMetals && Array.isArray(product?.metalDetails) && product.metalDetails.some(m => m.metalType);
   const hasAdditionalSpecs = Array.isArray(product?.additionalSpecifications) && product.additionalSpecifications.some(s => s.label);
   const hasChain = product?.includesChain === "Yes" || product?.includesChain === "Optional";
 
-  const handleWhatsApp = () => openWhatsApp(product);
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setMousePos({ x, y, showing: true });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos((prev) => ({ ...prev, showing: false }));
+  };
 
   // Build WhatsApp URL injecting chosen metal colour
   const whatsAppHrefWithMetal = (() => {
@@ -166,195 +217,443 @@ export default function ProductDetails() {
 
   if (!product) return null;
 
-  return (
-    <Box sx={{ bgcolor: "#fafafa", minHeight: "100vh" }}>
+  const currentImgUrl = images[activeIndex]?.imageUrl;
 
-      {/* ── Breadcrumb ── */}
-      <Box sx={{ bgcolor: "white", borderBottom: "1px solid #f1f5f9" }}>
-        <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 2, md: 5 }, py: 2 }}>
-          <Breadcrumbs separator={<ChevronRight size={13} />}>
-            <Link underline="hover" href="/" sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Home</Link>
-            <Link underline="hover" href="/jewellery" sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Jewellery</Link>
-            <Typography sx={{ fontSize: "0.75rem", color: "#3c7399", fontWeight: 600 }}>
-              {product.title}
+  return (
+    <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", color: "#1e293b" }}>
+
+      {/* ── Breadcrumb Bar ── */}
+      <Box sx={{ bgcolor: "white", borderBottom: "1px solid #edf2f7", py: 1.5 }}>
+        <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 2, md: 5 } }}>
+          <Breadcrumbs separator={<ChevronRight size={13} color="#94a3b8" />}>
+            <Link underline="hover" href="/" sx={{ fontSize: "0.78rem", color: "#64748b", fontWeight: 500, "&:hover": { color: "#3c7399" } }}>Home</Link>
+            <Link underline="hover" href="/jewellery" sx={{ fontSize: "0.78rem", color: "#64748b", fontWeight: 500, "&:hover": { color: "#3c7399" } }}>Jewellery</Link>
+            <Typography sx={{ fontSize: "0.78rem", color: "#3c7399", fontWeight: 700 }}>
+              {cleanTitle(product.title)}
             </Typography>
           </Breadcrumbs>
         </Box>
       </Box>
 
+      {/* ── Main Workspace ── */}
       <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 2, md: 5 }, pt: 4, pb: 8 }}>
 
-        {/* ── MAIN ROW ── */}
-        <Grid container spacing={{ xs: 3, md: 6 }}>
+        <Grid container spacing={{ xs: 3, md: 5 }}>
 
-          {/* ══ LEFT: Image Gallery ══ */}
+          {/* ═════════════════════════════════════════
+              LEFT COLUMN: High-End Image Showcase
+             ═════════════════════════════════════════ */}
           <Grid item xs={12} md={6}>
-            <Box sx={{ display: "flex", gap: 2, position: { md: "sticky" }, top: { md: 100 } }}>
+            <Box sx={{ position: { md: "sticky" }, top: { md: 100 } }}>
+              
+              <Box sx={{ display: "flex", flexDirection: { xs: "column-reverse", sm: "row" }, gap: 2 }}>
 
-              {/* Vertical thumbnails */}
-              {images.length > 1 && (
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, width: 76, flexShrink: 0 }}>
-                  {images.map((item, i) => (
-                    <Box
-                      key={i}
-                      onClick={() => setActiveIndex(i)}
-                      sx={{
-                        width: 76, height: 76, borderRadius: "10px", overflow: "hidden",
-                        cursor: "pointer",
-                        border: activeIndex === i ? "2px solid #3c7399" : "2px solid #e2e8f0",
-                        opacity: activeIndex === i ? 1 : 0.6,
-                        transition: "all 0.2s",
-                        "&:hover": { opacity: 1 },
-                      }}
-                    >
-                      <img src={item.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                {/* Vertical Thumbnails */}
+                {images.length > 1 && (
+                  <Box sx={{
+                    display: "flex",
+                    flexDirection: { xs: "row", sm: "column" },
+                    gap: 1.5,
+                    width: { xs: "100%", sm: 84 },
+                    overflowX: { xs: "auto", sm: "visible" },
+                    pb: { xs: 1, sm: 0 },
+                    flexShrink: 0
+                  }}>
+                    {images.map((item, i) => {
+                      const isSelected = activeIndex === i;
+                      return (
+                        <Box
+                          key={i}
+                          onClick={() => setActiveIndex(i)}
+                          sx={{
+                            width: { xs: 72, sm: 84 },
+                            height: { xs: 72, sm: 84 },
+                            borderRadius: "14px",
+                            overflow: "hidden",
+                            cursor: "pointer",
+                            position: "relative",
+                            bgcolor: "white",
+                            border: isSelected ? "2.5px solid #3c7399" : "1px solid #e2e8f0",
+                            boxShadow: isSelected ? "0 4px 14px rgba(60, 115, 153, 0.25)" : "0 2px 6px rgba(0,0,0,0.03)",
+                            transform: isSelected ? "scale(1.03)" : "scale(1)",
+                            transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                            "&:hover": {
+                              borderColor: "#3c7399",
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          <img
+                            src={item.imageUrl}
+                            alt=""
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              display: "block"
+                            }}
+                          />
+                          {isSelected && (
+                            <Box sx={{
+                              position: "absolute",
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              height: 3,
+                              bgcolor: "#3c7399"
+                            }} />
+                          )}
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                )}
+
+                {/* Main Interactive Stage */}
+                <Box sx={{ flex: 1, position: "relative" }}>
+
+                  {/* Top Floating Badges & Action Buttons */}
+                  <Box sx={{
+                    position: "absolute",
+                    top: 16,
+                    left: 16,
+                    right: 16,
+                    zIndex: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    pointerEvents: "none"
+                  }}>
+                    {/* Quality Assurance Tag */}
+                    <Box sx={{
+                      px: 1.5, py: 0.6,
+                      borderRadius: "20px",
+                      bgcolor: "rgba(255, 255, 255, 0.92)",
+                      backdropFilter: "blur(8px)",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.8,
+                      border: "1px solid rgba(255,255,255,0.6)"
+                    }}>
+                      <Sparkles size={14} color="#3c7399" />
+                      <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, color: "#1e293b", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                        100% Certified
+                      </Typography>
                     </Box>
-                  ))}
-                </Box>
-              )}
 
-              {/* Main image */}
-              <Box sx={{ flex: 1, position: "relative" }}>
-                <Box sx={{ position: "absolute", top: 14, right: 14, zIndex: 1, display: "flex", gap: 1 }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({ title: product.title, url: window.location.href });
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                      }
+                    {/* Quick Tools */}
+                    <Box sx={{ display: "flex", gap: 1, pointerEvents: "auto" }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => setIsWishlisted(!isWishlisted)}
+                        sx={{
+                          bgcolor: "white",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                          color: isWishlisted ? "#e11d48" : "#64748b",
+                          transition: "all 0.2s ease",
+                          "&:hover": { bgcolor: "#fff", transform: "scale(1.1)" }
+                        }}
+                      >
+                        <Heart size={18} fill={isWishlisted ? "#e11d48" : "none"} />
+                      </IconButton>
+
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          if (navigator.share) {
+                            navigator.share({ title: product.title, url: window.location.href });
+                          } else {
+                            navigator.clipboard.writeText(window.location.href);
+                          }
+                        }}
+                        sx={{
+                          bgcolor: "white",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                          color: "#3c7399",
+                          transition: "all 0.2s ease",
+                          "&:hover": { bgcolor: "#fff", transform: "scale(1.1)" }
+                        }}
+                      >
+                        <Share2 size={18} />
+                      </IconButton>
+
+                      <IconButton
+                        size="small"
+                        onClick={() => setZoomOpen(true)}
+                        sx={{
+                          bgcolor: "white",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                          color: "#3c7399",
+                          transition: "all 0.2s ease",
+                          "&:hover": { bgcolor: "#fff", transform: "scale(1.1)" }
+                        }}
+                      >
+                        <Maximize2 size={18} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+
+                  {/* Main Image Container with Lens Zoom */}
+                  <Box
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => setZoomOpen(true)}
+                    sx={{
+                      borderRadius: "20px",
+                      overflow: "hidden",
+                      bgcolor: "#ffffff",
+                      border: "1px solid #e9eff4",
+                      boxShadow: "0 10px 30px -10px rgba(60, 115, 153, 0.12)",
+                      position: "relative",
+                      cursor: "zoom-in",
+                      aspectRatio: "1/1",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
                     }}
-                    sx={{ bgcolor: "white", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", "&:hover": { bgcolor: "#f8fafc" } }}
                   >
-                    <Share2 size={17} color="#3c7399" />
-                  </IconButton>
-                </Box>
-                <Box sx={{ borderRadius: "16px", overflow: "hidden", bgcolor: "#f5f5f5", border: "1px solid #eee" }}>
-                  <img
-                    src={images[activeIndex]?.imageUrl}
-                    alt={product.title}
-                    style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", display: "block" }}
-                  />
+                    <img
+                      src={currentImgUrl}
+                      alt={product.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        transform: mousePos.showing ? "scale(1.4)" : "scale(1)",
+                        transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
+                        transition: mousePos.showing ? "transform 0.1s ease-out" : "transform 0.3s ease-in-out"
+                      }}
+                    />
+
+                    {/* Hover Hint */}
+                    {!mousePos.showing && (
+                      <Box sx={{
+                        position: "absolute",
+                        bottom: 14,
+                        right: 14,
+                        px: 1.5, py: 0.6,
+                        borderRadius: "8px",
+                        bgcolor: "rgba(15, 23, 42, 0.65)",
+                        backdropFilter: "blur(4px)",
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.8,
+                        pointerEvents: "none"
+                      }}>
+                        <ZoomIn size={14} />
+                        <Typography sx={{ fontSize: "0.7rem", fontWeight: 500 }}>Hover to zoom</Typography>
+                      </Box>
+                    )}
+                  </Box>
+
                 </Box>
               </Box>
+
+              {/* Trust Features Bar */}
+              <Box sx={{
+                mt: 3,
+                p: 2.5,
+                bgcolor: "white",
+                borderRadius: "16px",
+                border: "1px solid #e9eff4",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.02)",
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: 1.5,
+                textAlign: "center"
+              }}>
+                {[
+                  { icon: <ShieldCheck size={20} color="#3c7399" />, title: "BIS Hallmarked", desc: "100% Guaranteed" },
+                  { icon: <Truck size={20} color="#3c7399" />, title: "Insured Express", desc: "Free Shipping" },
+                  { icon: <RefreshCw size={20} color="#3c7399" />, title: "Easy Exchange", desc: "Lifetime Support" },
+                  { icon: <Award size={20} color="#3c7399" />, title: "SGL Certified", desc: "Natural Diamonds" },
+                ].map((item, index) => (
+                  <Box key={index} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Box sx={{
+                      width: 40, height: 40, borderRadius: "50%", bgcolor: "#f0f7fb",
+                      display: "flex", alignItems: "center", justifyContent: "center", mb: 1,
+                      border: "1px solid #daedf7"
+                    }}>
+                      {item.icon}
+                    </Box>
+                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#1e293b" }}>{item.title}</Typography>
+                    <Typography sx={{ fontSize: "0.65rem", color: "#64748b", mt: 0.2 }}>{item.desc}</Typography>
+                  </Box>
+                ))}
+              </Box>
+
             </Box>
           </Grid>
 
-          {/* ══ RIGHT: Info Panel ══ */}
+
+          {/* ═════════════════════════════════════════
+              RIGHT COLUMN: Product Details & Buying
+             ═════════════════════════════════════════ */}
           <Grid item xs={12} md={6}>
 
-            {/* Brand */}
-            <Typography sx={{ fontSize: "0.85rem", fontWeight: 800, color: "#3c7399", textTransform: "uppercase", letterSpacing: 3, mb: 1 }}>
-              Loupe Jeweller
-            </Typography>
+            {/* Brand Header */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#3c7399" }} />
+              <Typography sx={{ fontSize: "0.8rem", fontWeight: 800, color: "#3c7399", textTransform: "uppercase", letterSpacing: 2 }}>
+                Loupe Jeweller Original
+              </Typography>
+            </Box>
 
-            {/* Product Name */}
-            <Typography variant="h1" sx={{ fontSize: { xs: '1.8rem', md: '2.4rem' }, fontWeight: 400, color: "#1e293b", lineHeight: 1.2, mb: 1.5, fontFamily: 'serif' }}>
-              {product.title}
+            {/* Product Title */}
+            <Typography variant="h1" sx={{
+              fontSize: { xs: '1.8rem', md: '2.3rem' },
+              fontWeight: 600,
+              color: "#0f172a",
+              lineHeight: 1.25,
+              mb: 1,
+              fontFamily: "'Outfit', 'Playfair Display', serif"
+            }}>
+              {cleanTitle(product.title)}
             </Typography>
 
             {/* Product Code */}
             {product.productCode && (
-              <Typography sx={{ fontSize: "0.85rem", color: "#64748b", mb: 2 }}>
-                Product Code: <span style={{ color: "#3c7399", fontWeight: 600 }}>{product.productCode}</span>
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2.5 }}>
+                <Typography sx={{ fontSize: "0.8rem", color: "#64748b" }}>
+                  SKU Code: <span style={{ color: "#0f172a", fontWeight: 700 }}>{product.productCode}</span>
+                </Typography>
+                <Box sx={{ height: 14, width: "1px", bgcolor: "#cbd5e1" }} />
+                <Typography sx={{ fontSize: "0.8rem", color: "#16a34a", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <Check size={14} /> Available to Order
+                </Typography>
+              </Box>
             )}
 
-            <Divider sx={{ mb: 2.5 }} />
+            <Divider sx={{ mb: 3, borderColor: "#e9eff4" }} />
 
-            {/* ── Approximate Price ── */}
-            <Box sx={{ mb: 2.5, p: 2.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-              <Typography sx={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.15em", mb: 0.5 }}>
-                Approx. Price
+            {/* ── Luxury Price Showcase Card ── */}
+            <Box sx={{
+              mb: 3,
+              p: 3,
+              borderRadius: "18px",
+              background: "linear-gradient(135deg, #ffffff 0%, #f4f8fb 100%)",
+              border: "1px solid #daedf7",
+              boxShadow: "0 6px 20px rgba(60, 115, 153, 0.06)",
+              position: "relative",
+              overflow: "hidden"
+            }}>
+              <Box sx={{
+                position: "absolute",
+                top: 0, right: 0,
+                width: 100, height: 100,
+                background: "radial-gradient(circle, rgba(60,115,153,0.08) 0%, rgba(255,255,255,0) 70%)",
+                pointerEvents: "none"
+              }} />
+
+              <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, color: "#3c7399", textTransform: "uppercase", letterSpacing: "0.15em", mb: 0.5 }}>
+                Estimated Price Range
               </Typography>
+
               {priceRange ? (
-                <Typography sx={{ fontSize: "1.9rem", fontWeight: 900, color: "#1e3545", fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>
+                <Typography sx={{ fontSize: { xs: "1.9rem", sm: "2.3rem" }, fontWeight: 800, color: "#0f172a", fontFamily: "'Outfit', sans-serif", lineHeight: 1.1 }}>
                   {priceRange}
                 </Typography>
               ) : (
-                <Typography sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#3c7399", fontStyle: "italic" }}>
-                  Contact us for price
+                <Typography sx={{ fontSize: "1.2rem", fontWeight: 700, color: "#3c7399", fontStyle: "italic" }}>
+                  Price Available Upon Inquiry
                 </Typography>
               )}
-              <Typography sx={{ fontSize: "0.72rem", color: "#94a3b8", mt: 1, lineHeight: 1.6 }}>
-                {product.priceNote || "Final price may vary based on the current gold rate and product specifications. Please contact us on WhatsApp for the latest price."}
+
+              <Typography sx={{ fontSize: "0.74rem", color: "#64748b", mt: 1.2, lineHeight: 1.6 }}>
+                {product.priceNote || "Prices are dynamic based on live gold market rates and customized diamond specifications. Contact us on WhatsApp for exact pricing & order guidance."}
               </Typography>
             </Box>
 
-            {/* ── Metal Colour Selector (clean, professional) ── */}
-            <Box sx={{ mb: 2.5 }}>
-              {/* Header */}
-              <Box sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                mb: 1,
-              }}>
-                <Typography
-                  sx={{
-                    fontSize: "0.78rem",
-                    fontWeight: 800,
-                    color: "#1e293b",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                  }}>
-                  Metal Colour
+            {/* ── Sleek Metal Colour Selector ── */}
+            <Box sx={{ mb: 3.5, p: 2.5, bgcolor: "white", borderRadius: "16px", border: "1px solid #e9eff4", boxShadow: "0 2px 10px rgba(0,0,0,0.02)" }}>
+              
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.8 }}>
+                <Typography sx={{ fontSize: "0.8rem", fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  Select Metal Finish
                 </Typography>
-                <Typography sx={{ fontSize: "0.68rem", color: "#94a3b8" }}>
-                  tap to choose
+                <Typography sx={{ fontSize: "0.75rem", color: "#3c7399", fontWeight: 700 }}>
+                  Selected: <span style={{ color: selectedMetal.border }}>{selectedMetal.label}</span>
                 </Typography>
               </Box>
 
-              {/* Swatch row */}
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              {/* Swatch Button Row */}
+              <Grid container spacing={1.5}>
                 {METAL_OPTIONS.map((metal) => {
                   const isSelected = selectedMetal.id === metal.id;
                   return (
-                    <Box
-                      key={metal.id}
-                      onClick={() => setSelectedMetal(metal)}
-                      sx={{
-                        cursor: "pointer",
-                        textAlign: "center",
-                      }}>
+                    <Grid item xs={6} sm={3} key={metal.id}>
                       <Box
+                        onClick={() => setSelectedMetal(metal)}
                         sx={{
-                          width: 44,
-                          height: 44,
+                          p: 1.2,
+                          borderRadius: "12px",
+                          border: isSelected ? `2px solid ${metal.border}` : "1px solid #e2e8f0",
+                          bgcolor: isSelected ? metal.tagBg : "#ffffff",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1.2,
+                          transition: "all 0.2s ease",
+                          boxShadow: isSelected ? `0 4px 12px ${metal.glow}` : "none",
+                          "&:hover": {
+                            borderColor: metal.border,
+                            transform: "translateY(-1px)"
+                          }
+                        }}
+                      >
+                        <Box sx={{
+                          width: 26,
+                          height: 26,
                           borderRadius: "50%",
                           background: metal.gradient,
-                          border: isSelected ? `2px solid ${metal.border}` : "2px solid #e2e8f0",
-                          transition: "border 0.2s",
-                        }}
-                      />
-                      <Typography
-                        sx={{
-                          mt: 0.5,
-                          fontSize: "0.62rem",
-                          fontWeight: isSelected ? 600 : 400,
-                          color: isSelected ? metal.border : "#6b7280",
-                          textTransform: "uppercase",
+                          border: `1.5px solid ${metal.border}`,
+                          boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2)",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center"
                         }}>
-                        {metal.short}
-                      </Typography>
-                    </Box>
+                          {isSelected && <Check size={14} color="#ffffff" style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.5))" }} />}
+                        </Box>
+                        
+                        <Typography sx={{
+                          fontSize: "0.74rem",
+                          fontWeight: isSelected ? 800 : 600,
+                          color: isSelected ? metal.textColor : "#475569",
+                          whiteSpace: "nowrap"
+                        }}>
+                          {metal.short}
+                        </Typography>
+                      </Box>
+                    </Grid>
                   );
                 })}
-              </Box>
+              </Grid>
 
-              <Box sx={{ border: `1px solid ${selectedMetal.border}30`, background: `${selectedMetal.glow.replace("0.45", "0.08")}`, display: "flex", alignItems: "center", gap: 1.5, transition: "all 0.3s ease" }}>
-                {/* Mini swatch dot */}
-                <Box sx={{ width: 14, height: 14, borderRadius: "50%", background: selectedMetal.gradient, border: `1px solid ${selectedMetal.border}`, flexShrink: 0 }} />
-                <Typography sx={{ fontSize: "0.73rem", color: "#475569", lineHeight: 1.5 }}>
-                  You have selected{" "}
-                  <strong style={{ color: selectedMetal.border }}>{selectedMetal.label}</strong>.
-                  {" "}This preference will be shared with us on WhatsApp.
+              {/* Status Pill */}
+              <Box sx={{
+                mt: 2,
+                px: 2, py: 1.2,
+                borderRadius: "10px",
+                bgcolor: selectedMetal.tagBg,
+                border: `1px solid ${selectedMetal.border}40`,
+                display: "flex",
+                alignItems: "center",
+                gap: 1.2
+              }}>
+                <Box sx={{ width: 10, height: 10, borderRadius: "50%", background: selectedMetal.gradient, flexShrink: 0 }} />
+                <Typography sx={{ fontSize: "0.75rem", color: selectedMetal.textColor, fontWeight: 500 }}>
+                  Preference: <strong style={{ fontWeight: 800 }}>{selectedMetal.label}</strong> will automatically be attached to your WhatsApp price inquiry.
                 </Typography>
               </Box>
+
             </Box>
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 2.5 }}>
+            {/* ── WhatsApp CTA Button ── */}
+            <Box sx={{ mb: 3 }}>
               <Button
                 fullWidth
                 component="a"
@@ -362,107 +661,106 @@ export default function ProductDetails() {
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
-                  py: 1.9, bgcolor: "#25D366", color: "white", borderRadius: "12px",
-                  fontWeight: 800, fontSize: "1rem", textTransform: "none",
-                  display: "flex", alignItems: "center", gap: 1.5,
-                  "&:hover": { bgcolor: "#1ebe5a", transform: "translateY(-1px)" },
-                  boxShadow: "0 6px 20px rgba(37,211,102,0.4)",
-                  transition: "all 0.2s ease",
+                  py: 2,
+                  px: 3,
+                  background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
+                  color: "white",
+                  borderRadius: "14px",
+                  fontWeight: 800,
+                  fontSize: "1.02rem",
+                  textTransform: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1.5,
+                  boxShadow: "0 8px 24px rgba(37,211,102,0.35)",
+                  transition: "all 0.25s ease",
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #22bf5b 0%, #0e7569 100%)",
+                    boxShadow: "0 10px 28px rgba(37,211,102,0.45)",
+                    transform: "translateY(-2px)"
+                  }
                 }}
               >
                 {WHATSAPP_SVG}
-                Chat on WhatsApp — Get Current Price
+                Inquire & Get Current Price on WhatsApp
               </Button>
-            </Box>
 
-            {/* ── Certification Logos ── */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2.5 }}>
-              <Typography sx={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>Certification:</Typography>
-              {[
-                { icon: <ShieldCheck size={16} color="#3c7399" />, label: "BIS" },
-                { icon: <Star size={16} color="#3c7399" fill="#3c7399" />, label: "SGL" },
-              ].map((c) => (
-                <Box key={c.label} sx={{ px: 2, py: 1, border: "1px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", gap: 1, bgcolor: "#f8fafc" }}>
-                  {c.icon}
-                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#3c7399", letterSpacing: 0.5 }}>{c.label}</Typography>
-                </Box>
-              ))}
-            </Box>
-
-            {/* ── Trust Bar ── */}
-            <Box sx={{ bgcolor: "#f0f7fb", borderRadius: "10px", border: "1px solid #daedf7", p: 2, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5, mb: 2.5 }}>
-              {[
-                { icon: <RefreshCw size={18} color="#3c7399" />, text: "Buyback & Exchange" },
-                { icon: <ShieldCheck size={18} color="#3c7399" />, text: "BIS Hallmark" },
-                { icon: <Truck size={18} color="#3c7399" />, text: "Free Shipping" },
-                { icon: <Gift size={18} color="#3c7399" />, text: "Certified Diamond" },
-              ].map((b, i) => (
-                <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  {b.icon}
-                  <Typography sx={{ fontSize: "0.75rem", color: "#3c7399", fontWeight: 600 }}>{b.text}</Typography>
-                </Box>
-              ))}
-            </Box>
-
-            {/* ── Quick Highlights ── */}
-            <Box sx={{ mb: 3, p: 3, bgcolor: "white", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
-              <Typography sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#1e293b", mb: 2, fontFamily: 'serif' }}>
-                Key Highlights
+              <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textAlign: "center", mt: 1.2, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.6 }}>
+                <Lock size={12} color="#16a34a" /> Direct & Instant response from our expert team
               </Typography>
-              <Grid container spacing={2}>
+            </Box>
+
+            {/* ── Key Highlights Grid ── */}
+            <Box sx={{
+              mb: 3, p: 2.5,
+              bgcolor: "white",
+              borderRadius: "16px",
+              border: "1px solid #e9eff4",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.02)"
+            }}>
+              <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: "#0f172a", mb: 2, fontFamily: "'Outfit', sans-serif" }}>
+                Product Highlights
+              </Typography>
+
+              <Grid container spacing={1.5}>
                 {hasMetals && product.metalDetails[0]?.purity && (
                   <Grid item xs={6}>
-                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
-                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Metal Purity</Typography>
-                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.metalDetails[0].purity}</Typography>
+                    <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Metal Purity</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.metalDetails[0].purity}</Typography>
                     </Box>
                   </Grid>
                 )}
+
                 {hasDiamonds && product.diamondDetails[0]?.totalWeight && (
                   <Grid item xs={6}>
-                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
-                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Diamond Weight</Typography>
-                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.diamondDetails[0].totalWeight} Ct</Typography>
+                    <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Diamond Carat</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.diamondDetails[0].totalWeight} Ct</Typography>
                     </Box>
                   </Grid>
                 )}
+
                 {product.braceletLength && (
                   <Grid item xs={6}>
-                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
-                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Bracelet Length</Typography>
-                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.braceletLength}</Typography>
+                    <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Length</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.braceletLength}</Typography>
                     </Box>
                   </Grid>
                 )}
+
                 {hasChain && (
                   <Grid item xs={6}>
-                    <Box sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "8px" }}>
-                      <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 0.5 }}>Chain Details</Typography>
-                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 700 }}>{product.includesChain} ({product.chainLength})</Typography>
+                    <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Chain</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.includesChain} ({product.chainLength || 'Std'})</Typography>
                     </Box>
                   </Grid>
                 )}
               </Grid>
             </Box>
 
-            {/* ── Accordions ── */}
-            <Typography sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#1e293b", mb: 2, fontFamily: 'serif' }}>
+            {/* ── Specifications Accordions ── */}
+            <Typography sx={{ fontSize: "1rem", fontWeight: 800, color: "#0f172a", mb: 2, fontFamily: "'Outfit', sans-serif" }}>
               Detailed Specifications
             </Typography>
+
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
 
               {/* Description */}
               {product.description && (
-                <Accordion title="Product Description" defaultOpen>
-                  <Typography sx={{ fontSize: "0.85rem", color: "#475569", lineHeight: 1.9 }}>
+                <Accordion title="Product Description" defaultOpen icon={<Package size={18} color="#3c7399" />}>
+                  <Typography sx={{ fontSize: "0.88rem", color: "#475569", lineHeight: 1.8 }}>
                     {product.description}
                   </Typography>
                 </Accordion>
               )}
 
-              {/* ── Dimensions ── */}
+              {/* Dimensions */}
               {hasDimensions && (
-                <Accordion title="Product Dimensions" defaultOpen>
+                <Accordion title="Product Dimensions" defaultOpen icon={<Sparkles size={18} color="#3c7399" />}>
                   <Box>
                     {product.dimensionsList.filter(d => d.label || d.value).map((dim, i) => (
                       <SpecRow key={i} label={dim.label} value={dim.value ? `${dim.value} ${(dim.unit || '').toUpperCase()}` : dim.value} />
@@ -471,9 +769,9 @@ export default function ProductDetails() {
                 </Accordion>
               )}
 
-              {/* ── Diamond Details (only if showDiamondDetails = true) ── */}
+              {/* Diamond Details */}
               {hasDiamonds && (
-                <Accordion title="Diamond Details">
+                <Accordion title="Diamond Details" icon={<Star size={18} color="#3c7399" />}>
                   {product.diamondDetails.filter(d => d.diamondType).map((dia, i) => (
                     <Box key={i} sx={{ mb: i < product.diamondDetails.length - 1 ? 2 : 0 }}>
                       {product.diamondDetails.length > 1 && (
@@ -491,15 +789,14 @@ export default function ProductDetails() {
                           <SpecRow label="Total Weight" value={dia.totalWeight ? `${dia.totalWeight} Ct` : null} />
                         </>
                       )}
-                      {i < product.diamondDetails.length - 1 && <Divider sx={{ my: 1.5 }} />}
                     </Box>
                   ))}
                 </Accordion>
               )}
 
-              {/* ── Metal Details (only if showMetalDetails = true) ── */}
+              {/* Metal Details */}
               {hasMetals && (
-                <Accordion title="Metal Details">
+                <Accordion title="Metal Specifications" icon={<ShieldCheck size={18} color="#3c7399" />}>
                   {product.metalDetails.filter(m => m.metalType).map((met, i) => (
                     <Box key={i} sx={{ mb: i < product.metalDetails.length - 1 ? 2 : 0 }}>
                       {product.metalDetails.length > 1 && (
@@ -507,126 +804,144 @@ export default function ProductDetails() {
                           Metal {i + 1}
                         </Typography>
                       )}
-                      <SpecRow label="Metal" value={met.metalType} />
-                      <SpecRow label="Purity" value={met.purity} />
+                      <SpecRow label="Metal Type" value={met.metalType} />
+                      <SpecRow label="Gold Purity" value={met.purity} />
                       {showWeights && (
-                        <SpecRow label="Weight" value={met.finalWeight ? `${met.finalWeight} ${(met.unit || 'g').toUpperCase()}` : null} />
+                        <SpecRow label="Gross Weight" value={met.finalWeight ? `${met.finalWeight} ${(met.unit || 'g').toUpperCase()}` : null} />
                       )}
-                      {i < product.metalDetails.length - 1 && <Divider sx={{ my: 1.5 }} />}
                     </Box>
                   ))}
                 </Accordion>
               )}
 
-              {/* ── Chain Info ── */}
-              {hasChain && (
-                <Accordion title="Chain Information">
-                  <SpecRow label="Includes Chain" value={product.includesChain} />
-                  <SpecRow label="Chain Length" value={product.chainLength} />
-                </Accordion>
-              )}
-
-              {/* ── Bracelet Info ── */}
-              {product.braceletLength && (
-                <Accordion title="Bracelet Information" defaultOpen>
-                  <SpecRow label="Bracelet Length" value={product.braceletLength} />
-                </Accordion>
-              )}
-
-              {/* ── Additional Specifications ── */}
-              {hasAdditionalSpecs && (
-                <Accordion title="Additional Specifications">
-                  {product.additionalSpecifications.filter(s => s.label).map((spec, i) => (
-                    <SpecRow key={i} label={spec.label} value={spec.value} />
-                  ))}
-                </Accordion>
-              )}
-
-              {/* ── Shipping Policy ── */}
-              <Accordion title="Shipping Policy">
+              {/* Shipping Policy Accordion */}
+              <Accordion title="Shipping & Returns" icon={<Truck size={18} color="#3c7399" />}>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
                   {[
-                    ["Free Domestic Shipping", "All jewellery orders include free insured shipping across India."],
-                    ["Delivery Time", "Standard delivery: 5–7 business days. Express: 2–3 business days."],
-                    ["Insured Packaging", "All jewellery is shipped in tamper-proof, insured packaging."],
-                    ["Returns & Exchange", "7-day easy return or exchange. Item must be in original condition."],
+                    ["100% Insured Delivery", "All shipments are fully insured against transit loss or damage."],
+                    ["Free Express Shipping", "Delivered within 5-7 business days across India with full tracking."],
+                    ["Tamper-Proof Box", "Arrives in sealed luxury boxes with official BIS & Diamond certificates."],
                   ].map(([title, desc], i) => (
                     <Box key={i}>
-                      <Typography sx={{ fontSize: "0.82rem", fontWeight: 700, color: "#3c7399", mb: 0.3 }}>{title}</Typography>
-                      <Typography sx={{ fontSize: "0.78rem", color: "#64748b", lineHeight: 1.7 }}>{desc}</Typography>
+                      <Typography sx={{ fontSize: "0.82rem", fontWeight: 700, color: "#0f172a", mb: 0.3 }}>{title}</Typography>
+                      <Typography sx={{ fontSize: "0.78rem", color: "#64748b", lineHeight: 1.6 }}>{desc}</Typography>
                     </Box>
                   ))}
                 </Box>
               </Accordion>
+
             </Box>
+
           </Grid>
         </Grid>
 
 
-        {/* ── WHAT'S INCLUDED ── */}
-        <Box sx={{ mt: 8, p: { xs: 3, md: 5 }, bgcolor: "white", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-          <Typography sx={{ fontSize: "1.2rem", fontWeight: 800, color: "#3c7399", textAlign: "center", mb: 1 }}>
-            What's Included With Your Purchase?
+        {/* ═════════════════════════════════════════
+            LOWER SECTION: Experience & Live Shopping
+           ═════════════════════════════════════════ */}
+
+        {/* ── What's Included Card ── */}
+        <Box sx={{
+          mt: 8,
+          p: { xs: 3, md: 5 },
+          bgcolor: "white",
+          borderRadius: "20px",
+          border: "1px solid #e9eff4",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.02)"
+        }}>
+          <Typography sx={{ fontSize: "1.3rem", fontWeight: 800, color: "#0f172a", textAlign: "center", mb: 0.8, fontFamily: "'Outfit', sans-serif" }}>
+            Included With Your Order
           </Typography>
-          <Typography sx={{ fontSize: "0.82rem", color: "#94a3b8", textAlign: "center", mb: 4 }}>
-            Every Loupe Jeweller order comes with our signature promise.
+          <Typography sx={{ fontSize: "0.85rem", color: "#64748b", textAlign: "center", mb: 4 }}>
+            Every authentic piece comes wrapped in our signature presentation.
           </Typography>
+
           <Grid container spacing={3} justifyContent="center">
             {[
-              { icon: <Truck size={28} color="#3c7399" />, label: "Free Domestic Shipping" },
-              { icon: <ShieldCheck size={28} color="#3c7399" />, label: "Jewellery Care Card" },
-              { icon: <Package size={28} color="#3c7399" />, label: "Jewellery Certificate" },
-              { icon: <Headset size={28} color="#3c7399" />, label: "24×7 Customer Support" },
+              { icon: <Truck size={28} color="#3c7399" />, label: "Free Insured Express Shipping" },
+              { icon: <ShieldCheck size={28} color="#3c7399" />, label: "BIS Hallmark Certification" },
+              { icon: <Package size={28} color="#3c7399" />, label: "Authenticity Guarantee Card" },
+              { icon: <Headset size={28} color="#3c7399" />, label: "Dedicated Concierge Support" },
             ].map((item, i) => (
-              <Grid item xs={6} sm={4} md={2.4} key={i}>
+              <Grid item xs={6} sm={3} key={i}>
                 <Box sx={{ textAlign: "center", p: 2 }}>
-                  <Box sx={{ width: 60, height: 60, borderRadius: "50%", bgcolor: "#f0f7fb", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 1.5, border: "1px solid #daedf7" }}>
+                  <Box sx={{
+                    width: 64, height: 64, borderRadius: "50%",
+                    bgcolor: "#f0f7fb", display: "flex", alignItems: "center", justifyContent: "center",
+                    mx: "auto", mb: 1.5, border: "1px solid #daedf7"
+                  }}>
                     {item.icon}
                   </Box>
-                  <Typography sx={{ fontSize: "0.78rem", fontWeight: 700, color: "#3c7399" }}>{item.label}</Typography>
+                  <Typography sx={{ fontSize: "0.82rem", fontWeight: 700, color: "#0f172a" }}>{item.label}</Typography>
                 </Box>
               </Grid>
             ))}
           </Grid>
         </Box>
 
-        {/* ── WATCH & SHOP LIVE ── */}
+        {/* ── Watch & Shop Live Banner ── */}
         <Box sx={{ mt: 6 }}>
           <Box sx={{
-            borderRadius: "16px", overflow: "hidden",
-            background: "linear-gradient(135deg, #3c7399 0%, #0f172a 100%)",
-            p: { xs: 3, md: 5 },
-            display: "flex", flexDirection: { xs: "column", md: "row" },
-            alignItems: "center", gap: 4,
+            borderRadius: "20px",
+            overflow: "hidden",
+            background: "linear-gradient(135deg, #1e3a52 0%, #0f172a 100%)",
+            p: { xs: 4, md: 6 },
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: "center",
+            gap: 4,
+            boxShadow: "0 12px 32px rgba(15, 23, 42, 0.15)"
           }}>
-            <Box sx={{ width: { xs: "100%", md: 180 }, height: { xs: 160, md: 180 }, borderRadius: "14px", overflow: "hidden", flexShrink: 0, bgcolor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Box sx={{ textAlign: "center", p: 3 }}>
-                <Video size={52} color="#3c7399" />
-                <Typography sx={{ color: "rgba(255,255,255,0.6)", fontSize: "0.72rem", mt: 1.5, fontWeight: 600 }}>LIVE VIDEO CALL</Typography>
+            <Box sx={{
+              width: { xs: "100%", md: 180 },
+              height: { xs: 140, md: 160 },
+              borderRadius: "16px",
+              bgcolor: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0
+            }}>
+              <Box sx={{ textAlign: "center" }}>
+                <Video size={48} color="#3c7399" />
+                <Typography sx={{ color: "rgba(255,255,255,0.7)", fontSize: "0.72rem", mt: 1, fontWeight: 700, letterSpacing: "0.08em" }}>
+                  LIVE VIDEO CALL
+                </Typography>
               </Box>
             </Box>
+
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ fontSize: "1.5rem", fontWeight: 800, color: "white", mb: 1 }}>
-                Watch &amp; Shop Live
+              <Typography sx={{ fontSize: "1.6rem", fontWeight: 800, color: "white", mb: 1, fontFamily: "'Outfit', sans-serif" }}>
+                Book a Live Video Consultation
               </Typography>
-              <Typography sx={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.8, mb: 3 }}>
-                Not sure how it looks in real life? Book a free live video consultation with our jewellery experts. See the piece up close, ask questions, and shop with confidence — from the comfort of your home.
+              <Typography sx={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.8, mb: 3 }}>
+                Experience the brilliance of this piece in high definition before you buy. Schedule a 1-on-1 virtual appointment with our master jeweler.
               </Typography>
+
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                 <Button
                   component="a"
                   href={buildWhatsAppUrl(product)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  sx={{ bgcolor: "#3c7399", color: "white", px: 4, py: 1.4, borderRadius: "10px", fontWeight: 800, fontSize: "0.82rem", textTransform: "none", "&:hover": { bgcolor: "#2b526d" }, boxShadow: "0 4px 18px rgba(0,0,0,0.2)" }}
+                  sx={{
+                    bgcolor: "#3c7399", color: "white", px: 4, py: 1.5, borderRadius: "12px",
+                    fontWeight: 800, fontSize: "0.85rem", textTransform: "none",
+                    "&:hover": { bgcolor: "#2b526d" }, boxShadow: "0 4px 18px rgba(0,0,0,0.2)"
+                  }}
                 >
-                  Book a Video Call
+                  Book Video Appointment
                 </Button>
                 <Button
                   variant="outlined"
                   component="a"
                   href="tel:+919909109074"
-                  sx={{ borderColor: "rgba(255,255,255,0.3)", color: "white", px: 4, py: 1.4, borderRadius: "10px", fontWeight: 700, fontSize: "0.82rem", textTransform: "none", "&:hover": { borderColor: "#3c7399", bgcolor: "rgba(151,194,213,0.1)" } }}
+                  sx={{
+                    borderColor: "rgba(255,255,255,0.3)", color: "white", px: 4, py: 1.5, borderRadius: "12px",
+                    fontWeight: 700, fontSize: "0.85rem", textTransform: "none",
+                    "&:hover": { borderColor: "#3c7399", bgcolor: "rgba(151,194,213,0.1)" }
+                  }}
                 >
                   Call Us: +91 99091 09074
                 </Button>
@@ -635,7 +950,7 @@ export default function ProductDetails() {
           </Box>
         </Box>
 
-        {/* ── YOU MAY ALSO LIKE ── */}
+        {/* ── Carousel: You May Also Like ── */}
         <Box sx={{ mt: 8, mx: { xs: -2, md: -5 }, px: { xs: 2, md: 5 } }}>
           <HomeSectionCarousel
             sectionName="You May Also Like"
@@ -644,21 +959,26 @@ export default function ProductDetails() {
           />
         </Box>
 
-        {/* ── CUSTOMER REVIEWS ── */}
+        {/* ── Customer Reviews ── */}
         <Box sx={{ mt: 8 }}>
-          <Typography sx={{ fontSize: "1.2rem", fontWeight: 800, color: "#3c7399", mb: 3 }}>
-            Customer Reviews
+          <Typography sx={{ fontSize: "1.3rem", fontWeight: 800, color: "#0f172a", mb: 2, fontFamily: "'Outfit', sans-serif" }}>
+            Customer Reviews & Ratings
           </Typography>
-          <Divider sx={{ mb: 4 }} />
-          <Box sx={{ textAlign: "center", py: 7, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px dashed #e2e8f0" }}>
-            <MessageCircle size={32} color="#94a3b8" style={{ marginBottom: 12 }} />
-            <Typography sx={{ color: "#94a3b8", mb: 2.5, fontSize: "0.95rem" }}>
-              Be the first to share your experience!
+          <Divider sx={{ mb: 4, borderColor: "#e9eff4" }} />
+
+          <Box sx={{ textAlign: "center", py: 7, bgcolor: "white", borderRadius: "16px", border: "1px dashed #cbd5e1" }}>
+            <MessageCircle size={36} color="#94a3b8" style={{ marginBottom: 12 }} />
+            <Typography sx={{ color: "#64748b", mb: 2.5, fontSize: "0.95rem" }}>
+              Be the first to leave a review for this jewelry piece!
             </Typography>
             <Button
               onClick={() => { navigate(`/product/${param.productId}/ratrev`); modal.openModal(); }}
               variant="outlined"
-              sx={{ borderColor: "#3c7399", color: "#3c7399", borderRadius: "8px", textTransform: "none", fontWeight: 600, "&:hover": { bgcolor: "#3c7399", color: "white", borderColor: "#3c7399" } }}
+              sx={{
+                borderColor: "#3c7399", color: "#3c7399", borderRadius: "10px",
+                px: 3, py: 1, textTransform: "none", fontWeight: 700,
+                "&:hover": { bgcolor: "#3c7399", color: "white", borderColor: "#3c7399" }
+              }}
             >
               Write a Review
             </Button>
@@ -666,6 +986,36 @@ export default function ProductDetails() {
         </Box>
 
       </Box>
+
+      {/* ── Lightbox Zoom Modal ── */}
+      <Modal
+        open={zoomOpen}
+        onClose={() => setZoomOpen(false)}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center", p: 2 }}
+      >
+        <Box sx={{
+          position: "relative",
+          bgcolor: "white",
+          borderRadius: "20px",
+          maxWidth: "90vw",
+          maxHeight: "90vh",
+          p: 2,
+          outline: "none",
+          boxShadow: "0 24px 48px rgba(0,0,0,0.3)"
+        }}>
+          <IconButton
+            onClick={() => setZoomOpen(false)}
+            sx={{ position: "absolute", top: 12, right: 12, bgcolor: "rgba(0,0,0,0.05)", "&:hover": { bgcolor: "rgba(0,0,0,0.1)" } }}
+          >
+            <X size={20} />
+          </IconButton>
+          <img
+            src={currentImgUrl}
+            alt={product.title}
+            style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain", borderRadius: "12px", display: "block" }}
+          />
+        </Box>
+      </Modal>
 
       <RatingReviewForm open={modal.state} handleClose={() => modal.closeModal()} />
     </Box>

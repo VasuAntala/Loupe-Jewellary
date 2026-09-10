@@ -21,6 +21,35 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { formatPriceINR } from "../../../utils/price";
 
+// Per-category featured images — vivid, high-contrast jewellery photos
+const categoryFeaturedImages = {
+  rings: {
+    src: "https://img.magnific.com/premium-photo/elegant-solitaire-diamond-engagement-ring-light-blue-background_1091925-30235.jpg",
+    label: "Ring Collections",
+    tagline: "Crafted for eternal moments"
+  },
+  earrings: {
+    src: "/lifestyle/lifestyle_earrings.jpg",
+    label: "Earring Collections",
+    tagline: "Statement pieces, effortlessly elegant"
+  },
+  bracelets: {
+    src: "https://tyaani.com/cdn/shop/files/OB260125PBR-00916_YG-FlatlayMs.jpg?format=webp&v=1779175364&width=500",
+    label: "Bracelet Collections",
+    tagline: "Adorn every wrist with grace"
+  },
+  necklaces: {
+    src: "/lifestyle/lifestyle_necklace.jpg",
+    label: "Necklace Collections",
+    tagline: "Drape yourself in timeless beauty"
+  },
+  "best-seller": {
+    src: "/Occasion/Bridal Collection.png",
+    label: "Best Sellers",
+    tagline: "Loved by thousands worldwide"
+  },
+};
+
 const navigation = {
   categories: [
     {
@@ -496,8 +525,8 @@ export default function Navigation() {
           </marquee>
         </div>
 
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-          <div className="flex h-20 items-center justify-between">
+        <div className="mx-auto max-w-[1400px] px-3 sm:px-6 lg:px-8">
+          <div className="flex h-16 sm:h-18 lg:h-20 items-center justify-between">
 
             {/* Left: Logo & Toggle */}
             <div className="flex items-center">
@@ -516,7 +545,7 @@ export default function Navigation() {
                 <img
                   src="/Loupe-logo.png"
                   alt="Loupe Jeweler"
-                  className="h-[260px] sm:h-[260px] lg:h-[260px] w-auto object-contain transition-all duration-300 transform scale-110"
+                  className="h-[180px] sm:h-[220px] lg:h-[260px] w-auto object-contain transition-all duration-300"
                   style={{ filter: 'brightness(0)' }}
                 />
               </Link>
@@ -548,31 +577,39 @@ export default function Navigation() {
                             leaveFrom="opacity-100 translate-y-0 scale-100"
                             leaveTo="opacity-0 translate-y-4 scale-95"
                           >
-                            <Popover.Panel static className="absolute left-1/2 -translate-x-1/2 top-full z-20 mt-0 w-max min-w-[900px] max-w-[95vw] text-sm text-gray-700 shadow-[0_40px_80px_rgba(0,0,0,0.12)] bg-white border border-gray-100 rounded-b-2xl overflow-hidden">
+                            <Popover.Panel static className="absolute left-1/2 -translate-x-1/2 top-full z-20 mt-0 w-max min-w-[820px] xl:min-w-[960px] max-w-[96vw] text-sm text-gray-700 shadow-[0_32px_80px_rgba(0,0,0,0.14)] bg-white border border-gray-100 rounded-b-2xl overflow-hidden">
                               <div className="flex">
                                 {/* Left Content: Navigation Grid */}
-                                <div className="flex-1 bg-white px-12 py-12 border-r border-gray-50">
-                                  <div className="grid grid-cols-3 gap-x-14 gap-y-10">
+                                <div className="flex-1 bg-white px-10 py-10 border-r border-gray-100">
+                                  {/* Category header */}
+                                  <div className="flex items-center gap-3 mb-8">
+                                    <span className="block w-6 h-[2px] bg-[#3c7399]" />
+                                    <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 2 }}>
+                                      {category.name} — Browse by
+                                    </Typography>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-x-10 gap-y-8">
                                     {category.sections.map((section) => (
-                                      <div key={section.id} className="min-w-[150px]">
+                                      <div key={section.id} className="min-w-[140px]">
                                         <Typography sx={{
                                           fontFamily: "'Playfair Display', serif",
                                           fontWeight: 700,
-                                          fontSize: '0.9rem',
-                                          color: '#3c7399',
-                                          mb: 3,
+                                          fontSize: '0.88rem',
+                                          color: '#1e3545',
+                                          mb: 2.5,
                                           pb: 1,
-                                          borderBottom: '1px solid #f1f5f9'
+                                          borderBottom: '2px solid #a9cee5'
                                         }}>
                                           {section.name}
                                         </Typography>
-                                        <ul className="space-y-3">
+                                        <ul className="space-y-2.5">
                                           {section.items.map((item) => (
                                             <li key={item.id}>
                                               <p
                                                 onClick={() => handleCategoryClick(category, section, item, () => { close(); setHoveredIndex(null); })}
-                                                className="text-gray-500 hover:text-[#3c7399] cursor-pointer hover:translate-x-1 transition-all duration-300 text-[0.8rem] font-medium tracking-wide"
+                                                className="text-gray-500 hover:text-[#3c7399] cursor-pointer group flex items-center gap-1.5 transition-all duration-200 text-[0.79rem] font-medium tracking-wide"
                                               >
+                                                <span className="block w-0 group-hover:w-3 h-[1.5px] bg-[#3c7399] transition-all duration-200 flex-shrink-0" />
                                                 {item.name}
                                               </p>
                                             </li>
@@ -581,36 +618,65 @@ export default function Navigation() {
                                       </div>
                                     ))}
                                   </div>
+                                  {/* Bottom CTA */}
+                                  <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
+                                    <Typography sx={{ fontSize: '0.7rem', color: '#94a3b8', letterSpacing: 0.5 }}>
+                                      Explore the full {category.name} collection
+                                    </Typography>
+                                    <Button
+                                      onClick={() => { navigate(`/${category.id}`); close(); setHoveredIndex(null); }}
+                                      variant="text"
+                                      sx={{
+                                        color: '#3c7399', fontSize: '0.7rem', fontWeight: 900, letterSpacing: 1.5,
+                                        textTransform: 'uppercase', p: 0, minWidth: 0,
+                                        '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+                                      }}
+                                    >
+                                      View All →
+                                    </Button>
+                                  </div>
                                 </div>
 
-                                {/* Right Content: Featured Boutique Spot */}
-                                <div className="w-[320px] bg-[#fafafa] p-8 flex flex-col items-center justify-center text-center">
-                                  <div className="w-full aspect-[4/5] rounded-xl overflow-hidden shadow-lg mb-6 group/img">
-                                    <img
-                                      src={index === 0 ? "https://images.pexels.com/photos/10983783/pexels-photo-10983783.jpeg?auto=compress&cs=tinysrgb&w=600" :
-                                        index === 1 ? "https://images.pexels.com/photos/9428281/pexels-photo-9428281.jpeg?auto=compress&cs=tinysrgb&w=600" :
-                                          "https://images.pexels.com/photos/11745093/pexels-photo-11745093.jpeg?auto=compress&cs=tinysrgb&w=600"}
-                                      alt="Featured"
-                                      className="w-full h-full object-cover transition-transform duration-1000 group-hover/img:scale-110"
-                                    />
-                                  </div>
-                                  <Typography sx={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1rem', color: '#3c7399', mb: 1 }}>
-                                    The {category.name} Collection
-                                  </Typography>
-                                  <Typography sx={{ fontSize: '0.7rem', color: '#64748b', mb: 3, letterSpacing: 0.5, lineHeight: 1.5 }}>
-                                    Curated masterpieces handcrafted with precision for the modern connoisseur.
-                                  </Typography>
-                                  <Button
-                                    onClick={() => navigate(`/${category.id}`)}
-                                    variant="outlined"
-                                    sx={{
-                                      borderColor: '#3c7399', color: '#3c7399', borderRadius: '4px',
-                                      px: 3, py: 0.8, fontSize: '0.65rem', fontWeight: 900, letterSpacing: 1.5,
-                                      '&:hover': { bgcolor: '#3c7399', color: 'white' }
+                                {/* Right Content: Immersive Hero Image Card */}
+                                <div className="w-[270px] xl:w-[300px] relative overflow-hidden flex-shrink-0" style={{ minHeight: '360px' }}>
+                                  {/* Background Image — full vivid display */}
+                                  <img
+                                    src={categoryFeaturedImages[category.id]?.src || 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=700&q=90&fit=crop'}
+                                    alt={`${category.name} Featured`}
+                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out"
+                                    style={{
+                                      transform: hoveredIndex === index ? 'scale(1.07)' : 'scale(1)',
+                                      filter: 'contrast(1.12) saturate(1.18) brightness(0.96)'
                                     }}
-                                  >
-                                    Discover All
-                                  </Button>
+                                    onError={(e) => {
+                                      e.target.onerror = null;
+                                      e.target.src = 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=700&q=90&fit=crop';
+                                    }}
+                                  />
+                                  {/* Gradient Overlay — only bottom vignette, top is fully clear */}
+                                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 38%, rgba(21,38,53,0.72) 75%, rgba(21,38,53,0.95) 100%)' }} />
+                                  {/* Top tag */}
+                                  <div className="absolute top-5 left-5">
+                                    <span className="inline-block px-3 py-1 text-[0.6rem] font-black tracking-[0.18em] uppercase rounded-full" style={{ background: 'rgba(169,206,229,0.22)', backdropFilter: 'blur(8px)', border: '1px solid rgba(169,206,229,0.4)', color: '#a9cee5' }}>
+                                      ✦ New Season
+                                    </span>
+                                  </div>
+                                  {/* Bottom Content */}
+                                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                                    <Typography sx={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.15rem', color: '#ffffff', mb: 0.5, lineHeight: 1.3 }}>
+                                      {categoryFeaturedImages[category.id]?.label || `The ${category.name} Edit`}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.72)', mb: 2.5, letterSpacing: 0.5, lineHeight: 1.5 }}>
+                                      {categoryFeaturedImages[category.id]?.tagline || 'Curated masterpieces handcrafted with precision.'}
+                                    </Typography>
+                                    <button
+                                      onClick={() => { navigate(`/${category.id}`); close(); setHoveredIndex(null); }}
+                                      className="inline-flex items-center gap-2 text-[0.68rem] font-black tracking-[0.18em] uppercase text-white border border-white/50 px-4 py-2 rounded-full hover:bg-white hover:text-[#1e3545] transition-all duration-300"
+                                    >
+                                      Discover All
+                                      <span className="text-base leading-none">→</span>
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </Popover.Panel>
@@ -852,8 +918,7 @@ export default function Navigation() {
           </div>
         </div>
       </header>
-      <div className="h-[108px]" aria-hidden="true" />
-      {/* <div className="h-4" aria-hidden="true" /> */}
+      <div className="h-[96px] sm:h-[100px] lg:h-[108px]" aria-hidden="true" />
 
       {/* Cart Drawer */}
       <Drawer

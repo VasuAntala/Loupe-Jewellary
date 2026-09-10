@@ -56,9 +56,9 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
 
     const settings = {
         dots: false,
-        infinite: products.length > 3,
+        infinite: products.length > 4,
         speed: 500,
-        slidesToShow: products.length > 0 ? Math.min(3, products.length) : 3,
+        slidesToShow: products.length > 0 ? Math.min(4, products.length) : 3,
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 5000,

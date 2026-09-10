@@ -24,9 +24,18 @@ app.use((req, res, next) => {
 });
 
 
+const mongoose = require('mongoose');
+
 app.get('/check-api/', (req, res) => {
-    return res.status(200).send({ message: 'welcome to backend', status: true })
-})
+    const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+    const dbState = states[mongoose.connection.readyState] || 'unknown';
+    return res.status(200).json({
+        message: 'welcome to backend',
+        status: true,
+        database: dbState,
+        env: process.env.NODE_ENV || 'development'
+    });
+});
 
 const authRouters = require('./routes/auth.route.js');
 app.use('/auth', authRouters);

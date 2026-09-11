@@ -41,10 +41,9 @@ import {
   User,
   MapPin,
   Package,
-  Info,
-  Download
+  Info
 } from "lucide-react";
-import { api } from '../../config/apiConfig';
+
 import { motion } from "framer-motion";
 import { store } from "../../state/store";
 import { confirmedOrder, deleteOrder, deliveredOrder, getOrders, shippedOrder } from '../../state/admin/order/Action';
@@ -62,31 +61,6 @@ const OrdersTable = () => {
   const [orderToDelete, setOrderToDelete] = React.useState(null);
   const [deleteReason, setDeleteReason] = React.useState("");
   const [selectedOrder, setSelectedOrder] = React.useState(null);
-  const [downloadingOrderId, setDownloadingOrderId] = React.useState(null);
-  const dispatch = useDispatch();
-  const { adminOrder } = useSelector(store => store);
-
-  const handleDownloadInvoice = async (orderId) => {
-    try {
-      setDownloadingOrderId(orderId);
-      const response = await api.get(`/api/admin/orders/${orderId}/invoice`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `invoice-${orderId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Failed to download invoice:", error);
-      toast.error("Failed to download invoice.");
-    } finally {
-      setDownloadingOrderId(null);
-    }
-  };
-
   const handleClick = (event, id) => {
     setAnchorEl({ ...anchorEl, [id]: event.currentTarget });
   };
@@ -243,32 +217,20 @@ const OrdersTable = () => {
                       </Menu>
                     </TableCell>
                     <TableCell align="center">
-                      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                        <Button
-                          size="small"
-                          variant="contained"
-                          onClick={() => setSelectedOrder(item)}
-                          startIcon={<Eye size={16} />}
-                          sx={{
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            bgcolor: '#3c7399',
-                            '&:hover': { bgcolor: '#a9cee5' }
-                          }}
-                        >
-                          View
-                        </Button>
-                        <Tooltip title="Download Invoice">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDownloadInvoice(item._id)}
-                            disabled={downloadingOrderId === item._id}
-                            sx={{ color: '#3c7399', bgcolor: 'rgba(60, 115, 153, 0.1)', borderRadius: '8px' }}
-                          >
-                            <Download size={18} />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        onClick={() => setSelectedOrder(item)}
+                        startIcon={<Eye size={16} />}
+                        sx={{
+                          borderRadius: '8px',
+                          textTransform: 'none',
+                          bgcolor: '#3c7399',
+                          '&:hover': { bgcolor: '#a9cee5' }
+                        }}
+                      >
+                        View
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );

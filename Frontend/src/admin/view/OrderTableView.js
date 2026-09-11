@@ -23,39 +23,15 @@ import {
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrders } from "../../state/admin/order/Action";
-import { Globe, ShoppingBag, Eye, Trash2, Filter, User, MapPin, Package, Download } from "lucide-react";
+import { Globe, ShoppingBag, Eye, Trash2, Filter, User, MapPin, Package } from "lucide-react";
 import { useDashboard } from "../components/AdminDashboard";
-import { api } from '../../config/apiConfig';
-import { toast } from 'react-toastify';
+
 
 const OrdersTableView = () => {
   const dispatch = useDispatch();
   const { adminOrder } = useSelector((store) => store);
   const { searchQuery, statusFilter, selectedMonth, selectedYear } = useDashboard();
   const [selectedOrder, setSelectedOrder] = React.useState(null);
-  const [downloadingOrderId, setDownloadingOrderId] = React.useState(null);
-
-  const handleDownloadInvoice = async (orderId) => {
-    try {
-      setDownloadingOrderId(orderId);
-      const response = await api.get(`/api/admin/orders/${orderId}/invoice`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `invoice-${orderId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Failed to download invoice:", error);
-      toast.error("Failed to download invoice.");
-    } finally {
-      setDownloadingOrderId(null);
-    }
-  };
-
   useEffect(() => {
     dispatch(getOrders());
   }, [dispatch]);
@@ -157,7 +133,6 @@ const OrdersTableView = () => {
                   <TableCell align="right">
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                       <IconButton size="small" sx={{ color: '#94a3b8' }} onClick={() => setSelectedOrder(order)}><Eye size={18} /></IconButton>
-                      <IconButton size="small" sx={{ color: '#3c7399' }} onClick={() => handleDownloadInvoice(order._id)} disabled={downloadingOrderId === order._id}><Download size={18} /></IconButton>
                     </Box>
                   </TableCell>
                 </TableRow>

@@ -1,20 +1,21 @@
-﻿import { Avatar, Box, Card, CardContent, Grid, Typography, LinearProgress } from '@mui/material'
+import { Avatar, Box, Card, CardContent, Grid, Typography, LinearProgress } from '@mui/material'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
-import { Users, Package, Banknote, ShoppingBag, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { Users, Package, ShoppingBag, ArrowUpRight, ArrowDownRight, Gem } from 'lucide-react'
 
 const MonthlyOverview = () => {
     const { adminDashboard } = useSelector(store => store);
     const stats = adminDashboard?.stats;
+    const totalProducts = adminDashboard?.allProducts?.length || 0;
 
     const salesData = [
         {
-            stats: `AED ${(stats?.totalSales || 0).toLocaleString()}`,
-            title: 'Total Revenue',
-            trend: '+12.5%',
+            stats: totalProducts.toLocaleString(),
+            title: 'Total Products',
+            trend: '+5.0%',
             isUp: true,
-            icon: <Banknote size={20} />,
+            icon: <Gem size={20} />,
             color: '#3c7399',
             bg: '#f0f9ff'
         },

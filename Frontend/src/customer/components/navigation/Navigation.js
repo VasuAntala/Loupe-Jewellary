@@ -60,12 +60,12 @@ const navigation = {
           id: "style",
           name: "Shop by Style",
           items: [
-            { name: "Engagement Rings", id: "engagement" },
-            { name: "Wedding Bands", id: "wedding-bands" },
-            { name: "Eternity Rings", id: "eternity" },
-            { name: "Cocktail Rings", id: "cocktail" },
-            { name: "Stackable Rings", id: "stackable" },
-            { name: "Solitaire Rings", id: "solitaire" },
+            { name: "Engagement Rings", id: "engagement-ring" },
+            { name: "Solitaire Rings", id: "solitaire-ring" },
+            { name: "Diamond Rings", id: "diamond-ring" },
+            { name: "Eternity Rings", id: "eternity-ring" },
+            { name: "Halo Rings", id: "halo-ring" },
+            { name: "Daily Wear Rings", id: "daily-wear-ring" },
           ],
         },
         {
@@ -74,8 +74,6 @@ const navigation = {
           items: [
             { name: "Yellow Gold", id: "yellow-gold" },
             { name: "Rose Gold", id: "rose-gold" },
-            { name: "White Gold", id: "white-gold" },
-            { name: "Platinum", id: "platinum" },
             { name: "Sterling Silver", id: "silver" },
           ],
         },
@@ -154,6 +152,14 @@ const navigation = {
             { name: "Silver", id: "silver-bracelets" },
           ],
         },
+        {
+          id: "collections",
+          name: "Collections",
+          items: [
+            { name: "Signature Loupe", id: "signature" },
+            { name: "Vintage Inspired", id: "vintage" },
+          ],
+        },
       ],
     },
     {
@@ -164,12 +170,12 @@ const navigation = {
           id: "style",
           name: "Shop by Style",
           items: [
-            { name: "Solitaire Pendants", id: "solitaire-pendants" },
-            { name: "Gold Chains", id: "gold-chains" },
-            { name: "Statement Necklaces", id: "statement" },
-            { name: "Chokers", id: "chokers" },
-            { name: "Lariats", id: "lariats" },
-            { name: "Mangalsutra", id: "mangalsutra" },
+            { name: "Diamond Necklaces", id: "diamond-necklace" },
+            { name: "Pendant Necklaces", id: "pendant-necklace" },
+            { name: "Diamond Pendants", id: "diamond-pendant" },
+            { name: "Solitaire Pendants", id: "solitaire-pendant" },
+            { name: "Tennis Necklaces", id: "tennis-necklace" },
+            { name: "Choker Necklaces", id: "choker-necklace" },
           ],
         },
         {
@@ -499,13 +505,13 @@ export default function Navigation() {
         </Dialog>
       </Transition.Root>
 
-      <header className="fixed top-0 left-0 right-0 z-50 w-full shadow-md" style={{ backgroundColor: '#a9cee5', color: '#1e3545' }}>
+      <header className="relative z-50 w-full shadow-md" style={{ backgroundColor: '#a9cee5', color: '#1e3545' }}>
         {/* Premium Top Announcement / Notice Bar */}
-        <div 
-          className="w-full py-1.5 px-4 text-[0.75rem] font-medium tracking-wider border-b border-white/5" 
-          style={{ 
-            backgroundColor: '#152635', 
-            color: '#ebd69d' 
+        <div
+          className="w-full py-1.5 px-4 text-[0.75rem] font-medium tracking-wider border-b border-white/5"
+          style={{
+            backgroundColor: '#152635',
+            color: '#ebd69d'
           }}
         >
           {/* eslint-disable-next-line jsx-a11y/no-distracting-elements */}
@@ -918,7 +924,7 @@ export default function Navigation() {
           </div>
         </div>
       </header>
-      <div className="h-[96px] sm:h-[100px] lg:h-[108px]" aria-hidden="true" />
+
 
       {/* Cart Drawer */}
       <Drawer

@@ -22,8 +22,14 @@
 }
 
 /* Prevent double scrollbar — only ONE scrollbar allowed on the entire page */
-html, body {
+html {
   overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 html {

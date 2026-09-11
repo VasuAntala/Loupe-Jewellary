@@ -255,18 +255,28 @@ const CreateProductForm = () => {
     Number(productData.minPrice) >= 0;
   const prodType = productData.secondLevelCategory;
 
-  // Conditional field visibility based on sub-category
-  const isRing = ['rings', 'bangles'].includes(prodType);
-  const isBracelet = prodType === 'bracelets';
-  const hasChain = ['necklaces', 'pendants', 'mangalsutra', 'chains', 'lockets', 'anklets'].includes(prodType);
-  const hasPendantSize = ['pendants', 'mangalsutra', 'lockets'].includes(prodType);
+  // Conditional field visibility based on sub-category and specific style
+  const isRing = ['rings', 'bangles'].includes(prodType) || productData.thirdLevelCategory?.includes('ring');
+  const isBracelet = prodType === 'bracelets' || productData.thirdLevelCategory?.includes('bracelet');
+  const hasChain = ['necklaces', 'pendants', 'mangalsutra', 'chains', 'lockets', 'anklets'].includes(prodType) || 
+                   ['diamond-necklace', 'pendant-necklace', 'diamond-pendant', 'solitaire-pendant', 'tennis-necklace', 'choker-necklace'].includes(productData.thirdLevelCategory) ||
+                   productData.thirdLevelCategory?.includes('necklace') || 
+                   productData.thirdLevelCategory?.includes('pendant') || 
+                   productData.thirdLevelCategory?.includes('choker');
+  const hasPendantSize = ['pendants', 'mangalsutra', 'lockets'].includes(prodType) || 
+                         ['pendant-necklace', 'diamond-pendant', 'solitaire-pendant'].includes(productData.thirdLevelCategory) ||
+                         productData.thirdLevelCategory?.includes('pendant') || 
+                         productData.thirdLevelCategory?.includes('locket');
 
   const stylesByType = {
     rings: [
-      { value: 'ring', label: 'Ring' },
-      { value: 'engagement-ring', label: 'Engagement Ring' },
-      { value: 'solitaire-ring', label: 'Solitaire Ring' },
-      { value: 'eternity-ring', label: 'Eternity Ring' },
+      { value: 'engagement-ring', label: 'Engagement Rings' },
+      { value: 'solitaire-ring', label: 'Solitaire Rings' },
+      { value: 'diamond-ring', label: 'Diamond Rings' },
+      { value: 'eternity-ring', label: 'Eternity Rings' },
+      { value: 'halo-ring', label: 'Halo Rings' },
+      { value: 'daily-wear-ring', label: 'Daily Wear Rings' },
+      { value: 'ring', label: 'General Ring' },
       { value: 'cocktail-ring', label: 'Cocktail Ring' },
       { value: 'pearl-ring', label: 'Pearl Ring' },
       { value: 'couple-ring', label: 'Couple Rings' },
@@ -282,22 +292,24 @@ const CreateProductForm = () => {
       { value: 'jhumka', label: 'Jhumkas' },
     ],
     necklaces: [
-      { value: 'necklace', label: 'Necklace' },
-      { value: 'choker', label: 'Choker' },
+      { value: 'diamond-necklace', label: 'Diamond Necklaces' },
+      { value: 'pendant-necklace', label: 'Pendant Necklaces' },
+      { value: 'diamond-pendant', label: 'Diamond Pendants' },
+      { value: 'solitaire-pendant', label: 'Solitaire Pendants' },
+      { value: 'tennis-necklace', label: 'Tennis Necklaces' },
+      { value: 'choker-necklace', label: 'Choker Necklaces' },
+      { value: 'necklace', label: 'Necklace (General)' },
       { value: 'statement-necklace', label: 'Statement Necklace' },
       { value: 'layered-necklace', label: 'Layered Necklace' },
       { value: 'lariat', label: 'Lariat' },
     ],
     pendants: [
-      { value: 'pendant', label: 'Pendant' },
-      { value: 'solitaire-pendant', label: 'Solitaire Pendant' },
+      { value: 'diamond-pendant', label: 'Diamond Pendants' },
+      { value: 'solitaire-pendant', label: 'Solitaire Pendants' },
+      { value: 'pendant-necklace', label: 'Pendant Necklaces' },
+      { value: 'pendant', label: 'Pendant (General)' },
       { value: 'gemstone-pendant', label: 'Gemstone Pendant' },
       { value: 'initial-pendant', label: 'Initial & Alphabet Pendant' },
-    ],
-    mangalsutra: [
-      { value: 'mangal-sutra', label: 'Mangal Sutra' },
-      { value: 'solitaire-mangalsutra', label: 'Solitaire Mangalsutra' },
-      { value: 'modern-mangalsutra', label: 'Modern Bracelet Mangalsutra' },
     ],
     bracelets: [
       { value: 'bracelet', label: 'Bracelet' },
@@ -315,16 +327,6 @@ const CreateProductForm = () => {
       { value: 'chain', label: 'Chain' },
       { value: 'gold-chain', label: 'Gold Chain' },
       { value: 'rope-chain', label: 'Rope Chain' },
-    ],
-    lockets: [
-      { value: 'locket', label: 'Locket' },
-      { value: 'photo-locket', label: 'Photo Locket' },
-    ],
-    anklets: [
-      { value: 'anklet', label: 'Anklet' },
-    ],
-    'nose-pins': [
-      { value: 'nose-pin', label: 'Nose Pin' },
     ],
     other: [
       { value: 'brooch', label: 'Brooch' },
@@ -381,7 +383,7 @@ const CreateProductForm = () => {
                         <StyledSelect label="Category (Material) *" name="topLevelCategory" value={productData.topLevelCategory} onChange={handleChange} required>
                           <MenuItem value="diamond">Diamond Jewelry</MenuItem>
                           <MenuItem value="gold">Gold Jewelry</MenuItem>
-                          <MenuItem value="platinum">Platinum Jewelry</MenuItem>
+                          {/* <MenuItem value="platinum">Platinum Jewelry</MenuItem> */}
                           <MenuItem value="gemstone">Gemstone Jewelry</MenuItem>
                           <MenuItem value="silver">Silver Jewelry</MenuItem>
                         </StyledSelect>
@@ -396,13 +398,13 @@ const CreateProductForm = () => {
                           <MenuItem value="earrings">Earrings</MenuItem>
                           <MenuItem value="necklaces">Necklaces</MenuItem>
                           <MenuItem value="pendants">Pendants</MenuItem>
-                          <MenuItem value="mangalsutra">Mangalsutra</MenuItem>
+                          {/* <MenuItem value="mangalsutra">Mangalsutra</MenuItem> */}
                           <MenuItem value="bracelets">Bracelets</MenuItem>
                           <MenuItem value="bangles">Bangles</MenuItem>
                           <MenuItem value="chains">Chains</MenuItem>
-                          <MenuItem value="lockets">Lockets</MenuItem>
-                          <MenuItem value="anklets">Anklets</MenuItem>
-                          <MenuItem value="nose-pins">Nose Pins</MenuItem>
+                          {/* <MenuItem value="lockets">Lockets</MenuItem> */}
+                          {/* <MenuItem value="anklets">Anklets</MenuItem> */}
+                          {/* <MenuItem value="nose-pins">Nose Pins</MenuItem> */}
                           <MenuItem value="other">Other Accessories</MenuItem>
                         </StyledSelect>
                       </FormControl>
@@ -499,10 +501,10 @@ const CreateProductForm = () => {
                             </Box>
                           )}
                         >
-                          <MenuItem value="best-sellers">🔥 Best Seller</MenuItem>
-                          <MenuItem value="wedding">💍 Wedding Collection</MenuItem>
-                          <MenuItem value="recommended">⭐ Recommended</MenuItem>
-                          <MenuItem value="new-arrival">✨ New Arrival</MenuItem>
+                          <MenuItem value="best-sellers">Best Seller</MenuItem>
+                          <MenuItem value="wedding">Wedding Collection</MenuItem>
+                          <MenuItem value="recommended">Recommended</MenuItem>
+                          <MenuItem value="new-arrival">New Arrival</MenuItem>
                           <MenuItem value="dharohar">Dharohar</MenuItem>
                           <MenuItem value="aksharam">Aksharam</MenuItem>
                         </StyledSelect>

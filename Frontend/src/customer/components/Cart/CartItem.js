@@ -24,41 +24,41 @@ const CartItem = ({ item }) => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className='p-6 mb-6 bg-white rounded-3xl border border-[#f1f5f9] hover:shadow-xl transition-all duration-300'
+            className='p-3 sm:p-6 mb-4 sm:mb-6 bg-white rounded-2xl sm:rounded-3xl border border-[#f1f5f9] hover:shadow-xl transition-all duration-300'
         >
-            <Box sx={{ display: 'flex', gap: 3 }}>
-                <Box sx={{ width: 140, height: 140, flexShrink: 0, borderRadius: '20px', overflow: 'hidden', bgcolor: '#f8fafc' }}>
+            <Box sx={{ display: 'flex', gap: { xs: 1.5, sm: 3 } }}>
+                <Box sx={{ width: { xs: 85, sm: 140 }, height: { xs: 85, sm: 140 }, flexShrink: 0, borderRadius: { xs: '12px', sm: '20px' }, overflow: 'hidden', bgcolor: '#f8fafc' }}>
                     <img src={item.product?.imageUrls?.[0]?.imageUrl} className='w-full h-full object-cover' alt={item.product?.title} />
                 </Box>
 
-                <Box sx={{ flex: 1 }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--text-dark)' }}>
+                        <Box sx={{ pr: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--text-dark)', fontSize: { xs: '0.9rem', sm: '1.15rem' }, lineHeight: 1.3 }}>
                                 {item.product?.title}
                             </Typography>
-                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.65rem' }}>
                                 {item.product?.brand}
                             </Typography>
                         </Box>
 
-                        <IconButton onClick={handleRemoveCartItem} size="small" sx={{ color: '#ef4444' }}>
-                            <Trash2 size={18} />
+                        <IconButton onClick={handleRemoveCartItem} size="small" sx={{ color: '#ef4444', p: 0.5 }}>
+                            <Trash2 size={16} />
                         </IconButton>
                     </Box>
 
-                    <Typography variant="body2" sx={{ my: 1, color: 'text.secondary', fontWeight: 500 }}>
+                    <Typography variant="body2" sx={{ my: 0.5, color: 'text.secondary', fontWeight: 500, fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
                         Weight: {item.weight ? `${item.weight} G` : 'N/A'} | Size: {item.size ? `${item.size} MM` : 'N/A'}
                     </Typography>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 800, color: 'var(--primary-blue)' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, mt: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 800, color: 'var(--primary-blue)', fontSize: { xs: '0.95rem', sm: '1.25rem' } }}>
                             ₹{formatPriceINR(item.discountedPrice)}
                         </Typography>
-                        <Typography variant="body2" sx={{ textDecoration: 'line-through', opacity: 0.5 }}>
+                        <Typography variant="body2" sx={{ textDecoration: 'line-through', opacity: 0.5, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                             ₹{formatPriceINR(item.price)}
                         </Typography>
-                        <Typography variant="caption" sx={{ bgcolor: '#dcfce7', color: '#166534', px: 1, py: 0.5, borderRadius: '6px', fontWeight: 700 }}>
+                        <Typography variant="caption" sx={{ bgcolor: '#dcfce7', color: '#166534', px: 1, py: 0.2, borderRadius: '4px', fontWeight: 700, fontSize: '0.65rem' }}>
                             {item.product?.discountPercent}% OFF
                         </Typography>
                     </Box>

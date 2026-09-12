@@ -39,16 +39,16 @@ const BestSellerCard = ({ product }) => {
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="group relative bg-white px-2 py-2 transition-all duration-500 max-w-[17rem] mx-auto w-full"
+            className="group relative bg-white px-1.5 py-1.5 sm:px-2 sm:py-2 transition-all duration-500 w-full mx-auto"
         >
             {/* 1. Luxury Image Frame */}
             <Box
-                className="relative aspect-[4/5] w-full mb-3 overflow-hidden rounded-[20px] bg-gradient-to-br from-[#fcfcfc] to-[#f3f4f6]/30 border border-gray-100/50 transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] group-hover:-translate-y-1 flex items-center justify-center cursor-pointer"
+                className="relative aspect-[4/5] w-full mb-2 sm:mb-3 overflow-hidden rounded-[14px] sm:rounded-[20px] bg-gradient-to-br from-[#fcfcfc] to-[#f3f4f6]/30 border border-gray-100/50 transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] group-hover:-translate-y-1 flex items-center justify-center cursor-pointer"
                 onClick={handleNavigate}
             >
                 {/* Floating "New Tier" Badge */}
-                <div className="absolute top-3 left-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
-                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-white/80 backdrop-blur-xl border border-gray-100 rounded-full shadow-sm">
+                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/80 backdrop-blur-xl border border-gray-100 rounded-full shadow-sm">
                         <Sparkles size={10} className="text-[#97c2d5]" />
                         <span className="text-[7px] font-black tracking-widest text-gray-500">EXCLUSIVE</span>
                     </div>
@@ -74,24 +74,24 @@ const BestSellerCard = ({ product }) => {
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
 
                 {/* Persistent Wishlist */}
-                <div className="absolute top-3 right-3 z-20">
+                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20">
                     <div className="bg-white/90 backdrop-blur-xl rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white transition-all duration-300 hover:scale-110 active:scale-95">
                         <Checkbox
                             checked={wishlisted}
                             onChange={(e) => setWishlisted(e.target.checked)}
-                            icon={<FavoriteBorderIcon sx={{ fontSize: 16, color: '#94a3b8' }} />}
-                            checkedIcon={<FavoriteIcon sx={{ fontSize: 16, color: '#ef4444' }} />}
-                            sx={{ p: 0.75 }}
+                            icon={<FavoriteBorderIcon sx={{ fontSize: { xs: 14, sm: 16 }, color: '#94a3b8' }} />}
+                            checkedIcon={<FavoriteIcon sx={{ fontSize: { xs: 14, sm: 16 }, color: '#ef4444' }} />}
+                            sx={{ p: { xs: 0.4, sm: 0.75 } }}
                         />
                     </div>
                 </div>
 
                 {/* Quick Buy Toggles (Bottom Hover) */}
-                <div className="absolute bottom-4 inset-x-3 flex gap-1.5 opacity-0 group-hover:opacity-100 translate-y-6 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
+                <div className="hidden sm:flex absolute bottom-4 inset-x-3 gap-1.5 opacity-0 group-hover:opacity-100 translate-y-6 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
                     <IconButton
                         size="small"
                         sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#25D366', color: 'white' }, transition: 'all 0.3s', boxShadow: '0 4px 14px rgba(0,0,0,0.1)', p: 1 }}
-                        onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/yournumber`, '_blank'); }}
+                        onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/919909109074`, '_blank'); }}
                     >
                         <MessageCircle size={14} />
                     </IconButton>
@@ -126,11 +126,11 @@ const BestSellerCard = ({ product }) => {
 
                 <Typography
                     onClick={handleNavigate}
-                    className="text-[#1e293b] font-medium leading-tight mb-2 group-hover:text-[#3c7399] transition-colors duration-300 cursor-pointer"
+                    className="text-[#1e293b] font-medium leading-tight mb-1 sm:mb-2 group-hover:text-[#3c7399] transition-colors duration-300 cursor-pointer"
                     sx={{
-                        fontSize: '0.85rem',
+                        fontSize: { xs: '0.75rem', sm: '0.85rem' },
                         fontFamily: "'Outfit', sans-serif",
-                        height: '2.2rem',
+                        height: { xs: '2rem', sm: '2.2rem' },
                         overflow: 'hidden',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -142,14 +142,14 @@ const BestSellerCard = ({ product }) => {
 
                 <div className="flex items-center justify-between mt-1">
                     <div className="flex flex-col">
-                        <span className="text-gray-400 text-[8px] font-bold tracking-widest uppercase mb-0.5">Value Est.</span>
-                        <div className="flex items-baseline gap-1.5">
+                        <span className="text-gray-400 text-[7px] sm:text-[8px] font-bold tracking-widest uppercase mb-0.5">Value Est.</span>
+                        <div className="flex items-baseline gap-1">
                             {product.minPrice && product.maxPrice ? (
-                                <span className="text-[#1e293b] font-serif italic text-xs">
+                                <span className="text-[#1e293b] font-serif italic text-[11px] sm:text-xs">
                                     ₹{formatPriceINR(product.minPrice)} - ₹{formatPriceINR(product.maxPrice)}
                                 </span>
                             ) : (
-                                <span className="text-[#1e293b] font-serif italic text-base font-medium">
+                                <span className="text-[#1e293b] font-serif italic text-xs sm:text-base font-medium">
                                     ₹{formatPriceINR(product.discountedPrice || product.price || 0)}
                                 </span>
                             )}

@@ -230,15 +230,15 @@ export default function Product() {
       <main className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
 
         {/* Editorial Header Section */}
-        <div className="pt-24 pb-12 text-center">
+        <div className="pt-8 sm:pt-16 pb-4 sm:pb-8 text-center">
           <Typography
             variant="h1"
             sx={{
-              fontSize: { xs: '2.5rem', md: '4rem' },
+              fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3.5rem' },
               fontWeight: 400,
               fontFamily: "'Playfair Display', serif",
               color: '#3c7399',
-              mb: 2,
+              mb: 1.5,
               textTransform: 'capitalize'
             }}
           >
@@ -248,10 +248,10 @@ export default function Product() {
           </Typography>
           <Typography
             sx={{
-              fontSize: '0.75rem',
+              fontSize: { xs: '0.65rem', sm: '0.75rem' },
               fontWeight: 800,
               color: '#94a3b8',
-              letterSpacing: 3,
+              letterSpacing: { xs: 1.5, sm: 3 },
               textTransform: 'uppercase'
             }}
           >
@@ -259,21 +259,15 @@ export default function Product() {
           </Typography>
         </div>
 
-        <Divider sx={{ mb: 6, opacity: 0.1 }} />
+        <Divider sx={{ mb: { xs: 3, md: 6 }, opacity: 0.1 }} />
 
-        <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
 
-          {/* Premium Filter Sidebar */}
-          <aside className="w-full lg:w-[280px] flex-shrink-0">
+          {/* Premium Filter Sidebar - Hidden on mobile, drawer used instead */}
+          <aside className="hidden lg:block lg:w-[280px] flex-shrink-0">
             <div className="sticky top-32">
               <div className="flex items-center justify-between mb-8">
                 <Typography sx={{ fontSize: '1.2rem', fontWeight: 300, fontFamily: "'Playfair Display', serif", color: '#3c7399' }}>Filters</Typography>
-                <button
-                  onClick={() => setMobileFiltersOpen(true)}
-                  className="lg:hidden p-2 text-[#3c7399]"
-                >
-                  <FilterAltIcon />
-                </button>
               </div>
 
               {/* Price Range Filter */}
@@ -364,6 +358,37 @@ export default function Product() {
 
           {/* Product Grid Area */}
           <div className="flex-1">
+            {/* Mobile Filter & Sort Toolbar */}
+            <div className="lg:hidden flex items-center justify-between gap-3 bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 mb-5">
+              <Button
+                onClick={() => setMobileFiltersOpen(true)}
+                variant="outlined"
+                startIcon={<FilterAltIcon sx={{ fontSize: 18 }} />}
+                sx={{
+                  flex: 1,
+                  borderColor: '#3c7399',
+                  color: '#3c7399',
+                  textTransform: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  borderRadius: '10px',
+                  py: 0.8
+                }}
+              >
+                Filters
+              </Button>
+              <div className="flex-1">
+                <select
+                  value={sortValue || "low_to_high"}
+                  onChange={(e) => handleSortFilter(e.target.value)}
+                  className="w-full bg-[#f8fafc] border border-slate-200 text-[#3c7399] font-bold text-xs py-2 px-3 rounded-xl focus:outline-none focus:border-[#3c7399]"
+                >
+                  <option value="low_to_high">Price: Low to High</option>
+                  <option value="high_to_low">Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+
             {products.products?.content ? (
               products.products.content.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-40 bg-white rounded-3xl border border-dashed border-slate-200">
@@ -375,7 +400,7 @@ export default function Product() {
                   <Typography sx={{ color: '#94a3b8', fontSize: '0.9rem' }}>Try refining your filters or search keywords.</Typography>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-y-4 justify-items-center">
+                <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-4 md:gap-6 justify-items-center">
                   {products.products.content.map((product, idx) => (
                     <ProductCard product={product} key={product._id} index={idx} />
                   ))}

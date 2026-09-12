@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
-import { Tooltip, IconButton } from '@mui/material';
+import { Tooltip, IconButton, Box } from '@mui/material';
 
 const WhatsAppContact = () => {
     const phoneNumber = "919909109074"; // Verified contact number
@@ -9,7 +9,8 @@ const WhatsAppContact = () => {
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
     return (
-        <motion.div
+        <Box
+            component={motion.div}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{
@@ -20,10 +21,10 @@ const WhatsAppContact = () => {
             }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            style={{
+            sx={{
                 position: 'fixed',
-                bottom: '30px',
-                right: '30px',
+                bottom: { xs: '18px', sm: '30px' },
+                right: { xs: '18px', sm: '30px' },
                 zIndex: 1000
             }}
         >
@@ -34,22 +35,22 @@ const WhatsAppContact = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{
-                        width: 65,
-                        height: 65,
+                        width: { xs: 50, sm: 65 },
+                        height: { xs: 50, sm: 65 },
                         bgcolor: '#25D366',
                         color: 'white',
                         boxShadow: '0 8px 32px rgba(37, 211, 102, 0.4)',
-                        border: '4px solid white',
+                        border: { xs: '3px solid white', sm: '4px solid white' },
                         '&:hover': {
                             bgcolor: '#128C7E',
                             boxShadow: '0 12px 40px rgba(37, 211, 102, 0.6)',
                         }
                     }}
                 >
-                    <i className="fa-brands fa-whatsapp" style={{ fontSize: '32px' }}></i>
+                    <i className="fa-brands fa-whatsapp" style={{ fontSize: '26px' }}></i>
                 </IconButton>
             </Tooltip>
-        </motion.div>
+        </Box>
     );
 };
 

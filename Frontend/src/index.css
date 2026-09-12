@@ -21,19 +21,11 @@
   box-sizing: border-box;
 }
 
-/* Prevent double scrollbar — only ONE scrollbar allowed on the entire page */
-html {
+/* Clean viewport overflow handling — prevents horizontal jitter and scroll trapping */
+html, body {
+  max-width: 100%;
   overflow-x: hidden;
-  overflow-y: auto;
-}
-
-body {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-html {
-  scroll-behavior: smooth;
+  position: relative;
 }
 
 body {
@@ -332,16 +324,26 @@ html, body {
   }
 }
 
-/* Scroll reveal utility */
-.reveal {
+/* Scroll reveal utility — GPU accelerated for silky-smooth first scroll */
+/* .reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 600ms ease, transform 600ms ease;
-}
+  transform: translateY(18px) translateZ(0);
+  will-change: opacity, transform;
+  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+} */
 
 .reveal.reveal-active {
   opacity: 1;
-  transform: none;
+  transform: translateY(0) translateZ(0);
+}
+
+/* Hide scrollbar utility for touch/swipe carousels and tab lists */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Marquee utility (if needed later) */

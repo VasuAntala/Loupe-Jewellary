@@ -72,6 +72,43 @@ const ProductSchema = new mongoose.Schema({
     secondLevelCategory: { type: String },
     thirdLevelCategory: { type: String },
 
+    // --- Category-Specific Engineering & CAD Dimensions ---
+    // Rings
+    topWidth: { type: String },
+    topThickness: { type: String },
+    shankWidth: { type: String },
+    shankThickness: { type: String },
+
+    // Earrings
+    earringHeight: { type: String },
+    earringWidth: { type: String },
+    earringThickness: { type: String },
+    backFinding: { type: String }, // e.g. Screw Back, Push Back, Lever Back
+
+    // Bracelets
+    braceletWidth: { type: String },
+    braceletThickness: { type: String },
+    claspType: { type: String }, // e.g. Box Clasp with Safety, Lobster
+
+    // Necklaces
+    necklaceLength: { type: String },
+    linkWidth: { type: String },
+    linkThickness: { type: String },
+
+    // Pendants
+    pendantHeight: { type: String },
+    pendantWidth: { type: String },
+
+    // Bangles
+    bangleSize: { type: String },
+    innerDiameter: { type: String },
+    bangleWidth: { type: String },
+    isOpenable: { type: String },
+
+    // Mangalsutra
+    mangalsutraLength: { type: String },
+    blackBeadsRows: { type: String },
+
     // --- Repeatable Dimensions ---
     dimensionsList: [
         {

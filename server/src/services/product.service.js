@@ -43,6 +43,7 @@ async function createProduct(reqData) {
     const quantityVal = reqData.quantity !== undefined ? Number(reqData.quantity) : 1;
 
     const product = new Product({
+        ...reqData,
         title: titleVal,
         description: descriptionVal,
         details: detailsVal,

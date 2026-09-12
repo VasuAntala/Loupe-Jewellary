@@ -1,17 +1,19 @@
 import React, { useRef } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const LifestyleSplit = () => {
+    const navigate = useNavigate();
     const containerRef = useRef(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start end", "end start"]
     });
 
-    const y1 = useTransform(scrollYProgress, [0, 1], [80, -80]);
-    const y2 = useTransform(scrollYProgress, [0, 1], [-40, 40]);
-    const y3 = useTransform(scrollYProgress, [0, 1], [120, -120]);
+    const y1 = useTransform(scrollYProgress, [0, 1], [60, -60]);
+    const y2 = useTransform(scrollYProgress, [0, 1], [-30, 30]);
+    const y3 = useTransform(scrollYProgress, [0, 1], [90, -90]);
 
     return (
         <Box ref={containerRef} sx={{ py: { xs: 6, sm: 10, md: 16 }, px: { xs: 3, sm: 6, md: 12 }, bgcolor: '#f8fafc', overflow: 'hidden' }}>
@@ -53,6 +55,7 @@ const LifestyleSplit = () => {
                     </Typography>
                     <Button
                         variant="outlined"
+                        onClick={() => navigate('/all-jewellery/all/jewellery')}
                         sx={{
                             borderColor: '#3c7399',
                             color: '#3c7399',
@@ -79,79 +82,116 @@ const LifestyleSplit = () => {
 
                 {/* Images Grid - Mosaic Style */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-5 items-center">
-                    {/* First Image - Space on Top */}
+                    {/* First Image - Space on Top (Bracelet / Bangle) */}
                     <motion.div
                         style={{ y: y1 }}
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8 }}
-                        className="mt-6 sm:mt-12 md:mt-20"
+                        className="mt-6 sm:mt-12 md:mt-20 cursor-pointer"
+                        onClick={() => navigate('/all-jewellery/category/bracelets')}
                     >
                         <Box
                             sx={{
                                 borderRadius: { xs: '16px', sm: '28px', md: '40px' },
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
-                                boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.06)',
+                                bgcolor: '#ffffff',
+                                border: '1.5px solid #edf2f7',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                p: { xs: 1.5, sm: 2.5 },
+                                transition: 'all 0.4s ease',
+                                '&:hover': {
+                                    borderColor: '#3c7399',
+                                    boxShadow: '0 25px 60px rgba(60,115,153,0.15)'
+                                }
                             }}
                         >
                             <img
-                                src="/lifestyle/lifestyle_ring.jpg"
-                                style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
-                                className="hover:scale-105 transition-transform duration-1000"
-                                alt="Ring — Every Moment"
+                                src="/product/bracelet-1.jpg"
+                                style={{ objectFit: 'contain', width: '100%', height: '100%', display: 'block' }}
+                                className="hover:scale-108 transition-transform duration-700"
+                                alt="Floral Diamond Bracelet — Every Moment"
                             />
                         </Box>
                     </motion.div>
 
-                    {/* Second Image - Complete/Center */}
+                    {/* Second Image - Complete/Center (Necklace) */}
                     <motion.div
                         style={{ y: y2 }}
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8, delay: 0.2 }}
+                        className="cursor-pointer"
+                        onClick={() => navigate('/all-jewellery/category/necklaces')}
                     >
                         <Box
                             sx={{
                                 borderRadius: { xs: '16px', sm: '28px', md: '40px' },
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
-                                boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.06)',
+                                bgcolor: '#ffffff',
+                                border: '1.5px solid #edf2f7',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                p: { xs: 1.5, sm: 2.5 },
+                                transition: 'all 0.4s ease',
+                                '&:hover': {
+                                    borderColor: '#3c7399',
+                                    boxShadow: '0 25px 60px rgba(60,115,153,0.15)'
+                                }
                             }}
                         >
                             <img
-                                src="/lifestyle/lifestyle_necklace.jpg"
-                                style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
-                                className="hover:scale-105 transition-transform duration-1000"
-                                alt="Necklace — Every Moment"
+                                src="/product/necklace-1.jpg"
+                                style={{ objectFit: 'contain', width: '100%', height: '100%', display: 'block' }}
+                                className="hover:scale-108 transition-transform duration-700"
+                                alt="Tennis Y-Drop Diamond Necklace — Every Moment"
                             />
                         </Box>
                     </motion.div>
 
-                    {/* Third Image - Space on Bottom (Shifted Up) */}
+                    {/* Third Image - Space on Bottom (Earrings) */}
                     <motion.div
                         style={{ y: y3 }}
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="-mt-6 sm:-mt-12 md:-mt-20"
+                        className="-mt-6 sm:-mt-12 md:-mt-20 cursor-pointer"
+                        onClick={() => navigate('/all-jewellery/category/earrings')}
                     >
                         <Box
                             sx={{
                                 borderRadius: { xs: '16px', sm: '28px', md: '40px' },
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
-                                boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.06)',
+                                bgcolor: '#ffffff',
+                                border: '1.5px solid #edf2f7',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                p: { xs: 1.5, sm: 2.5 },
+                                transition: 'all 0.4s ease',
+                                '&:hover': {
+                                    borderColor: '#3c7399',
+                                    boxShadow: '0 25px 60px rgba(60,115,153,0.15)'
+                                }
                             }}
                         >
                             <img
-                                src="/lifestyle/lifestyle_earrings.jpg"
-                                style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
-                                className="hover:scale-105 transition-transform duration-1000"
-                                alt="Earrings — Every Moment"
+                                src="/product/earring-2.jpg"
+                                style={{ objectFit: 'contain', width: '100%', height: '100%', display: 'block' }}
+                                className="hover:scale-108 transition-transform duration-700"
+                                alt="Triple Heart Diamond Drop Earrings — Every Moment"
                             />
                         </Box>
                     </motion.div>

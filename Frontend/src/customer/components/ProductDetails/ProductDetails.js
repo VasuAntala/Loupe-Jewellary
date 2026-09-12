@@ -193,7 +193,16 @@ export default function ProductDetails() {
   const showWeights = product?.showWeightDetails === true;
 
   // ── Dynamic sections ──
-  const hasDimensions = Array.isArray(product?.dimensionsList) && product.dimensionsList.some(d => d.label || d.value);
+  const hasCategorySpecs = Boolean(
+    product?.ringSize || product?.topWidth || product?.shankWidth || product?.topThickness || product?.shankThickness ||
+    product?.earringHeight || product?.earringWidth || product?.earringThickness || product?.backFinding ||
+    product?.braceletLength || product?.braceletWidth || product?.braceletThickness || product?.claspType ||
+    product?.necklaceLength || product?.linkWidth || product?.linkThickness ||
+    product?.pendantHeight || product?.pendantWidth ||
+    product?.bangleSize || product?.innerDiameter || product?.bangleWidth || product?.isOpenable ||
+    product?.mangalsutraLength || product?.blackBeadsRows
+  );
+  const hasDimensions = (Array.isArray(product?.dimensionsList) && product.dimensionsList.some(d => d.label || d.value)) || hasCategorySpecs;
   const hasDiamonds = showDiamonds && Array.isArray(product?.diamondDetails) && product.diamondDetails.some(d => d.diamondType);
   const hasMetals = showMetals && Array.isArray(product?.metalDetails) && product.metalDetails.some(m => m.metalType);
   const hasAdditionalSpecs = Array.isArray(product?.additionalSpecifications) && product.additionalSpecifications.some(s => s.label);
@@ -828,9 +837,49 @@ export default function ProductDetails() {
 
               {/* Dimensions */}
               {hasDimensions && (
-                <Accordion title="Product Dimensions" defaultOpen icon={<Sparkles size={18} color="#3c7399" />}>
+                <Accordion title="Product Dimensions & Specifications" defaultOpen icon={<Sparkles size={18} color="#3c7399" />}>
                   <Box>
-                    {product.dimensionsList.filter(d => d.label || d.value).map((dim, i) => (
+                    {/* Ring Specifics */}
+                    {product.ringSize && <SpecRow label="Default Ring Size" value={product.ringSize} />}
+                    {product.topWidth && <SpecRow label="Top Crown Width" value={`${product.topWidth} mm`} />}
+                    {product.topThickness && <SpecRow label="Top Crown Thickness" value={`${product.topThickness} mm`} />}
+                    {product.shankWidth && <SpecRow label="Bottom Shank Width" value={`${product.shankWidth} mm`} />}
+                    {product.shankThickness && <SpecRow label="Bottom Shank Thickness" value={`${product.shankThickness} mm`} />}
+
+                    {/* Earring Specifics */}
+                    {product.earringHeight && <SpecRow label="Earring Height" value={`${product.earringHeight} mm`} />}
+                    {product.earringWidth && <SpecRow label="Earring Width" value={`${product.earringWidth} mm`} />}
+                    {product.earringThickness && <SpecRow label="Post Length / Depth" value={`${product.earringThickness} mm`} />}
+                    {product.backFinding && <SpecRow label="Backing Mechanism" value={product.backFinding} />}
+
+                    {/* Bracelet Specifics */}
+                    {product.braceletLength && <SpecRow label="Bracelet Length" value={product.braceletLength} />}
+                    {product.braceletWidth && <SpecRow label="Link / Setting Width" value={`${product.braceletWidth} mm`} />}
+                    {product.braceletThickness && <SpecRow label="Setting Thickness" value={`${product.braceletThickness} mm`} />}
+                    {product.claspType && <SpecRow label="Clasp Type" value={product.claspType} />}
+
+                    {/* Necklace Specifics */}
+                    {product.necklaceLength && <SpecRow label="Necklace Length" value={product.necklaceLength} />}
+                    {product.linkWidth && <SpecRow label="Motif / Link Width" value={`${product.linkWidth} mm`} />}
+                    {product.linkThickness && <SpecRow label="Motif / Link Thickness" value={`${product.linkThickness} mm`} />}
+
+                    {/* Pendant Specifics */}
+                    {product.pendantHeight && <SpecRow label="Pendant Height" value={`${product.pendantHeight} mm`} />}
+                    {product.pendantWidth && <SpecRow label="Pendant Width" value={`${product.pendantWidth} mm`} />}
+                    {product.includesChain && product.includesChain !== "No" && <SpecRow label="Chain Included" value={product.includesChain} />}
+
+                    {/* Bangle Specifics */}
+                    {product.bangleSize && <SpecRow label="Bangle Size" value={product.bangleSize} />}
+                    {product.innerDiameter && <SpecRow label="Inner Diameter" value={`${product.innerDiameter} mm`} />}
+                    {product.bangleWidth && <SpecRow label="Bangle Width" value={`${product.bangleWidth} mm`} />}
+                    {product.isOpenable && <SpecRow label="Closure Style" value={product.isOpenable} />}
+
+                    {/* Mangalsutra Specifics */}
+                    {product.mangalsutraLength && <SpecRow label="Mangalsutra Length" value={product.mangalsutraLength} />}
+                    {product.blackBeadsRows && <SpecRow label="Black Beads Style" value={product.blackBeadsRows} />}
+
+                    {/* Custom / Dynamic Dimensions List */}
+                    {Array.isArray(product?.dimensionsList) && product.dimensionsList.filter(d => d.label || d.value).map((dim, i) => (
                       <SpecRow key={i} label={dim.label} value={dim.value ? `${dim.value} ${(dim.unit || '').toUpperCase()}` : dim.value} />
                     ))}
                   </Box>

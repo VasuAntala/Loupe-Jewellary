@@ -1,52 +1,101 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { formatPriceINR } from "../../../../utils/price";
 
-const stories = [
+const fallbackStories = [
     {
-        id: 1,
+        id: "fallback-1",
         image: "/product/product7.jpeg",
         title: "Celestial Radiance Band",
         price: 24500,
         discount: "5% OFF",
-        category: "LUXE ESSENTIALS"
+        category: "LUXE ESSENTIALS",
+        isFallback: true,
     },
     {
-        id: 2,
+        id: "fallback-2",
         image: "/product/product6.jpeg",
         title: "Marquise Dream Ring",
         price: 18900,
         discount: "3% OFF",
-        category: "BRIDAL STORY"
+        category: "BRIDAL STORY",
+        isFallback: true,
     },
     {
-        id: 3,
+        id: "fallback-3",
         image: "/product/product5.jpeg",
         title: "Ethereal Halo Studs",
         price: 12500,
         discount: "8% OFF",
-        category: "EVERYDAY GLOW"
+        category: "EVERYDAY GLOW",
+        isFallback: true,
     },
     {
-        id: 4,
+        id: "fallback-4",
         image: "/product/product4.jpeg",
         title: "Infinite Grace Bangle",
         price: 32000,
         discount: "4% OFF",
-        category: "STATEMENT PIECE"
+        category: "STATEMENT PIECE",
+        isFallback: true,
     },
-    // {
-    //     id: 5,
-    //     image: "/product/product 3.png",
-    //     title: "Infinite Grace Bangle",
-    //     price: 32000,
-    //     discount: "4% OFF",
-    //     category: "STATEMENT PIECE"
-    // }
 ];
 
-const StyleStory = () => {
+const getProductImage = (p) => {
+    if (!p) return "/product/product7.jpeg";
+    if (typeof p.image === 'string' && p.image) return p.image;
+    if (typeof p.imageUrl === 'string' && p.imageUrl) return p.imageUrl;
+    if (Array.isArray(p.imageUrls) && p.imageUrls.length > 0) {
+        const first = p.imageUrls[0];
+        if (typeof first === 'string') return first;
+        if (first?.imageUrl) return first.imageUrl;
+        if (first?.url) return first.url;
+        if (Array.isArray(first?.images) && first.images.length > 0) return first.images[0];
+    }
+    if (Array.isArray(p.images) && p.images.length > 0) return p.images[0];
+    return "/product/product7.jpeg";
+};
+
+const StyleStory = ({ products = [] }) => {
+    const navigate = useNavigate();
+
+    // Prepare display stories from real tagged products, or fallback to default styled cards
+    const displayStories = (Array.isArray(products) && products.length > 0)
+        ? products.slice(0, 8).map((p) => {
+            const price = Number(p.discountedPrice || p.price || p.minPrice || 0);
+            const originalPrice = Number(p.price || p.maxPrice || 0);
+            let discountStr = "";
+            if (p.discountPercent) {
+                discountStr = `${p.discountPercent}% OFF`;
+            } else if (originalPrice > price && originalPrice > 0) {
+                discountStr = `${Math.round(((originalPrice - price) / originalPrice) * 100)}% OFF`;
+            }
+
+            const rawCat = p.secondLevelCategory || p.category?.name || "STYLE STORY";
+            const categoryLabel = rawCat.replace(/-/g, ' ').toUpperCase();
+
+            return {
+                id: p._id,
+                image: getProductImage(p),
+                title: p.title || "Jewellery Piece",
+                price: price,
+                discount: discountStr,
+                category: categoryLabel,
+                isFallback: false,
+            };
+        })
+        : fallbackStories;
+
+    const handleCardClick = (story) => {
+        if (story.isFallback) {
+            navigate('/all-jewellery/category/jewellery');
+        } else {
+            navigate(`/product/${story.id}`);
+        }
+    };
+
     return (
         <Box sx={{ pt: { xs: 4, md: 5 }, pb: { xs: 8, md: 12 }, bgcolor: '#ffffff' }}>
             <Box sx={{ textAlign: 'center', mb: 5 }}>
@@ -101,7 +150,7 @@ const StyleStory = () => {
                     mx: 'auto'
                 }}
             >
-                {stories.map((story) => (
+                {displayStories.map((story) => (
                     <motion.div
                         key={story.id}
                         initial={{ opacity: 0, y: 30 }}
@@ -109,6 +158,7 @@ const StyleStory = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
                         className="group relative cursor-pointer"
+                        onClick={() => handleCardClick(story)}
                     >
                         {/* Vertical Image Frame */}
                         <Box
@@ -119,7 +169,8 @@ const StyleStory = () => {
                                 overflow: 'hidden',
                                 mb: { xs: 1.5, sm: 3 },
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-                                transition: 'all 0.5s ease'
+                                transition: 'all 0.5s ease',
+                                bgcolor: '#f8fafc'
                             }}
                         >
                             <img
@@ -130,7 +181,7 @@ const StyleStory = () => {
 
                             {/* Category Overlay */}
                             <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
-                                <span className="bg-white/90 backdrop-blur-md text-[#3c7399] text-[7px] sm:text-[8px] font-black tracking-widest px-2 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
+                                <span className="bg-white/90 backdrop-blur-md text-[#3c7399] text-[7px] sm:text-[8px] font-black tracking-widest px-2 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-sm uppercase">
                                     {story.category}
                                 </span>
                             </div>
@@ -140,6 +191,10 @@ const StyleStory = () => {
                                 <Button
                                     variant="contained"
                                     fullWidth
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleCardClick(story);
+                                    }}
                                     sx={{
                                         bgcolor: 'white',
                                         color: '#3c7399',
@@ -162,14 +217,20 @@ const StyleStory = () => {
                                     color: '#3c7399',
                                     fontFamily: "'Outfit', sans-serif",
                                     mb: 0.5,
-                                    lineHeight: 1.2
+                                    lineHeight: 1.2,
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 1,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
                                 }}
                             >
                                 {story.title}
                             </Typography>
                             <div className="flex items-center justify-center gap-2">
                                 <span className="text-[#3c7399] font-serif italic text-sm sm:text-lg">₹{formatPriceINR(story.price)}</span>
-                                <span className="text-[#3c7399] text-[9px] sm:text-[10px] font-black tracking-tighter uppercase">{story.discount}</span>
+                                {story.discount && (
+                                    <span className="text-[#3c7399] text-[9px] sm:text-[10px] font-black tracking-tighter uppercase">{story.discount}</span>
+                                )}
                             </div>
                         </div>
                     </motion.div>

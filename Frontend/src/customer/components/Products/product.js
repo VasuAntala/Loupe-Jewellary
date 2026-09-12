@@ -62,16 +62,12 @@ const filters = [
     id: "occasion",
     name: "Occasion",
     options: [
-      { value: "bridal", label: "Bridal wear", checked: false },
-      { value: "casual", label: "Casual wear", checked: false },
+      { value: "office", label: "Workwear Elegance (Office)", checked: false },
+      { value: "bridal", label: "Bridal Collection", checked: false },
+      { value: "casual", label: "Everyday Essentials (Casual)", checked: false },
+      { value: "traditional-ethenic", label: "Festive Glam (Traditional)", checked: false },
       { value: "engagement", label: "Engagement", checked: false },
-      { value: "modern", label: "Modern wear", checked: false },
-      { value: "office", label: "Office wear", checked: false },
-      {
-        value: "traditional-ethenic",
-        label: "Traditional and ethenic wear",
-        checked: false,
-      },
+      { value: "modern", label: "Modern Wear", checked: false },
     ],
   },
 ];

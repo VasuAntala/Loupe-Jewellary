@@ -125,9 +125,32 @@ const CreateProductForm = () => {
     showDiamondDetails: false,
     showMetalDetails: false,
     showWeightDetails: false,
+    // Category-specific CAD dimensions
     ringSize: '',
-    pendantSize: '',
+    topWidth: '',
+    topThickness: '',
+    shankWidth: '',
+    shankThickness: '',
+    earringHeight: '',
+    earringWidth: '',
+    earringThickness: '',
+    backFinding: 'Screw Back',
     braceletLength: '',
+    braceletWidth: '',
+    braceletThickness: '',
+    claspType: 'Box Clasp with Dual Safety',
+    necklaceLength: '',
+    linkWidth: '',
+    linkThickness: '',
+    pendantHeight: '',
+    pendantWidth: '',
+    pendantSize: '',
+    bangleSize: '2.4',
+    innerDiameter: '',
+    bangleWidth: '',
+    isOpenable: 'No',
+    mangalsutraLength: '',
+    blackBeadsRows: 'Single Row',
   });
 
   const dispatch = useDispatch();
@@ -275,9 +298,32 @@ const CreateProductForm = () => {
       showDiamondDetails: false,
       showMetalDetails: false,
       showWeightDetails: false,
+      // Category-specific CAD dimensions
       ringSize: '',
-      pendantSize: '',
+      topWidth: '',
+      topThickness: '',
+      shankWidth: '',
+      shankThickness: '',
+      earringHeight: '',
+      earringWidth: '',
+      earringThickness: '',
+      backFinding: 'Screw Back',
       braceletLength: '',
+      braceletWidth: '',
+      braceletThickness: '',
+      claspType: 'Box Clasp with Dual Safety',
+      necklaceLength: '',
+      linkWidth: '',
+      linkThickness: '',
+      pendantHeight: '',
+      pendantWidth: '',
+      pendantSize: '',
+      bangleSize: '2.4',
+      innerDiameter: '',
+      bangleWidth: '',
+      isOpenable: 'No',
+      mangalsutraLength: '',
+      blackBeadsRows: 'Single Row',
     });
   };
 
@@ -287,18 +333,13 @@ const CreateProductForm = () => {
     Number(productData.minPrice) >= 0;
   const prodType = productData.secondLevelCategory;
 
-  // Conditional field visibility based on sub-category and specific style
-  const isRing = ['rings', 'bangles'].includes(prodType) || productData.thirdLevelCategory?.includes('ring');
+  // Category detection for CAD / Engineering dimensions
+  const isRing = prodType === 'rings' || productData.thirdLevelCategory?.includes('ring');
+  const isEarring = prodType === 'earrings' || productData.thirdLevelCategory?.includes('earring') || productData.thirdLevelCategory?.includes('stud') || productData.thirdLevelCategory?.includes('jhumka') || productData.thirdLevelCategory?.includes('hoop');
   const isBracelet = prodType === 'bracelets' || productData.thirdLevelCategory?.includes('bracelet');
-  const hasChain = ['necklaces', 'pendants', 'mangalsutra', 'chains', 'lockets', 'anklets'].includes(prodType) || 
-                   ['diamond-necklace', 'pendant-necklace', 'diamond-pendant', 'solitaire-pendant', 'tennis-necklace', 'choker-necklace'].includes(productData.thirdLevelCategory) ||
-                   productData.thirdLevelCategory?.includes('necklace') || 
-                   productData.thirdLevelCategory?.includes('pendant') || 
-                   productData.thirdLevelCategory?.includes('choker');
-  const hasPendantSize = ['pendants', 'mangalsutra', 'lockets'].includes(prodType) || 
-                         ['pendant-necklace', 'diamond-pendant', 'solitaire-pendant'].includes(productData.thirdLevelCategory) ||
-                         productData.thirdLevelCategory?.includes('pendant') || 
-                         productData.thirdLevelCategory?.includes('locket');
+  const isBangle = prodType === 'bangles' || productData.thirdLevelCategory?.includes('bangle') || productData.thirdLevelCategory?.includes('kada');
+  const isNecklace = ['necklaces', 'chains'].includes(prodType) || productData.thirdLevelCategory?.includes('necklace') || productData.thirdLevelCategory?.includes('chain') || productData.thirdLevelCategory?.includes('choker');
+  const isPendant = ['pendants', 'lockets', 'mangalsutra'].includes(prodType) || productData.thirdLevelCategory?.includes('pendant') || productData.thirdLevelCategory?.includes('locket') || productData.thirdLevelCategory?.includes('mangalsutra');
 
   const stylesByType = {
     rings: [
@@ -575,12 +616,12 @@ const CreateProductForm = () => {
                           }}
                           renderValue={(selected) => {
                             const labelsMap = {
-                              'bridal': 'Bridal Wear',
-                              'casual': 'Casual Wear',
-                              'engagement': 'Engagement',
-                              'modern': 'Modern Wear',
-                              'office': 'Office Wear',
-                              'traditional-ethenic': 'Traditional & Ethnic Wear'
+                              'office': '💼 Workwear Elegance',
+                              'bridal': '👰 Bridal Collection',
+                              'casual': '✨ Everyday Essentials',
+                              'traditional-ethenic': '🪔 Festive Glam',
+                              'engagement': '💍 Engagement',
+                              'modern': '🌟 Modern Wear'
                             };
                             const selectedArr = Array.isArray(selected) ? selected : [selected];
                             return (
@@ -592,12 +633,12 @@ const CreateProductForm = () => {
                             );
                           }}
                         >
-                          <MenuItem value="bridal">Bridal Wear</MenuItem>
-                          <MenuItem value="casual">Casual Wear</MenuItem>
-                          <MenuItem value="engagement">Engagement</MenuItem>
-                          <MenuItem value="modern">Modern Wear</MenuItem>
-                          <MenuItem value="office">Office Wear</MenuItem>
-                          <MenuItem value="traditional-ethenic">Traditional &amp; Ethnic Wear</MenuItem>
+                          <MenuItem value="office">💼 Workwear Elegance (Office Wear)</MenuItem>
+                          <MenuItem value="bridal">👰 Bridal Collection (Bridal Wear)</MenuItem>
+                          <MenuItem value="casual">✨ Everyday Essentials (Casual Wear)</MenuItem>
+                          <MenuItem value="traditional-ethenic">🪔 Festive Glam (Traditional &amp; Ethnic)</MenuItem>
+                          <MenuItem value="engagement">💍 Engagement</MenuItem>
+                          <MenuItem value="modern">🌟 Modern Wear</MenuItem>
                         </StyledSelect>
                       </FormControl>
                     </Grid>
@@ -618,18 +659,30 @@ const CreateProductForm = () => {
                               collectionName: selected.includes('best-sellers') ? 'best-sellers' : (selected[0] || ''),
                             }));
                           }}
-                          renderValue={(selected) => (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                              {selected.map((val) => (
-                                <Chip key={val} label={val} size="small" sx={{ bgcolor: BRAND_LIGHT, color: BRAND, fontWeight: 700 }} />
-                              ))}
-                            </Box>
-                          )}
+                          renderValue={(selected) => {
+                            const tagLabels = {
+                              'best-sellers': '🔥 Best Seller',
+                              'style-stories': '✨ Style Stories',
+                              'wedding': '💍 Wedding Collection',
+                              'recommended': '⭐ Recommended',
+                              'new-arrival': '✨ New Arrival',
+                              'dharohar': 'Dharohar',
+                              'aksharam': 'Aksharam',
+                            };
+                            return (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((val) => (
+                                  <Chip key={val} label={tagLabels[val] || val} size="small" sx={{ bgcolor: BRAND_LIGHT, color: BRAND, fontWeight: 700 }} />
+                                ))}
+                              </Box>
+                            );
+                          }}
                         >
-                          <MenuItem value="best-sellers">Best Seller</MenuItem>
-                          <MenuItem value="wedding">Wedding Collection</MenuItem>
-                          <MenuItem value="recommended">Recommended</MenuItem>
-                          <MenuItem value="new-arrival">New Arrival</MenuItem>
+                          <MenuItem value="best-sellers">🔥 Best Seller</MenuItem>
+                          <MenuItem value="style-stories">✨ Style Stories (Homepage)</MenuItem>
+                          <MenuItem value="wedding">💍 Wedding Collection</MenuItem>
+                          <MenuItem value="recommended">⭐ Recommended</MenuItem>
+                          <MenuItem value="new-arrival">✨ New Arrival</MenuItem>
                           <MenuItem value="dharohar">Dharohar</MenuItem>
                           <MenuItem value="aksharam">Aksharam</MenuItem>
                         </StyledSelect>
@@ -1068,86 +1121,448 @@ const CreateProductForm = () => {
             </motion.div>
           </Grid>
 
-          {/* ===== 6. SIZE & COMPONENT DETAILS ===== */}
+          {/* ===== 6. CATEGORY SPECIFICATIONS & CAD DIMENSIONS ===== */}
           <Grid item xs={12}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
               <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                 <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                  <SectionHeader step="6" icon={<LinkIcon size={20} color={BRAND} />} title="SIZE & COMPONENT DETAILS" description="Ring/Bangle size, chain details, pendant size — shown based on product type" />
-                  <Grid container spacing={2.5}>
+                  <SectionHeader
+                    step="6"
+                    icon={<LinkIcon size={20} color={BRAND} />}
+                    title="CATEGORY SPECIFICATIONS & DIMENSIONS"
+                    description="Dynamic CAD dimensions and fittings tailored automatically to the selected product category"
+                  />
 
-                    {/* Ring / Bangle Size — only for rings and bangles */}
-                    {isRing && (
-                      <Grid item xs={12} sm={6}>
-                        <StyledTextField
-                          label={prodType === 'bangles' ? 'Bangle Size / Diameter' : 'Ring Size (e.g. 16, 17, 18)'}
-                          name="ringSize"
-                          value={productData.ringSize}
-                          onChange={handleChange}
-                          fullWidth
-                          placeholder={prodType === 'bangles' ? 'e.g. 2.6 inches / 58 mm' : 'e.g. 16 or 17 or Free Size'}
-                          helperText={prodType === 'bangles' ? 'Inner diameter of bangle' : 'Standard ring size number'}
-                        />
+                  {/* 💍 RINGS */}
+                  {isRing && (
+                    <Box sx={{ p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                        <Chip label="💍 RING SPECIFICATIONS" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.5px' }} />
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          CAD Dimensions & Ring Sizing (e.g. MJR2605336)
+                        </Typography>
+                      </Box>
+                      <Grid container spacing={2.5}>
+                        <Grid item xs={12} sm={4}>
+                          <StyledTextField
+                            label="Ring Size (e.g. 14 NO IND)"
+                            name="ringSize"
+                            value={productData.ringSize || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 14 NO IND / 14 / Free Size"
+                            helperText="Standard Indian size or custom size"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <StyledTextField
+                            label="Top / Crown Width (mm)"
+                            name="topWidth"
+                            value={productData.topWidth || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 2.90 mm"
+                            helperText="Width at the top diamond/motif section"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <StyledTextField
+                            label="Top / Crown Thickness (mm)"
+                            name="topThickness"
+                            value={productData.topThickness || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 2.40 mm"
+                            helperText="Height from finger to diamond surface"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <StyledTextField
+                            label="Bottom Shank Width (mm)"
+                            name="shankWidth"
+                            value={productData.shankWidth || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 1.80 mm"
+                            helperText="Band width at bottom of finger"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <StyledTextField
+                            label="Bottom Shank Thickness (mm)"
+                            name="shankThickness"
+                            value={productData.shankThickness || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 1.50 mm"
+                            helperText="Band thickness at bottom of finger"
+                          />
+                        </Grid>
                       </Grid>
-                    )}
+                    </Box>
+                  )}
 
-                    {/* Pendant / Locket Size — only for pendants, mangalsutra, lockets */}
-                    {hasPendantSize && (
-                      <Grid item xs={12} sm={6}>
-                        <StyledTextField
-                          label="Pendant / Piece Size"
-                          name="pendantSize"
-                          value={productData.pendantSize || ''}
-                          onChange={handleChange}
-                          fullWidth
-                          placeholder="e.g. 15mm x 10mm"
-                          helperText="Height × Width of the pendant/piece"
-                        />
+                  {/* 👂 EARRINGS */}
+                  {isEarring && (
+                    <Box sx={{ p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                        <Chip label="👂 EARRING SPECIFICATIONS" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.5px' }} />
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          CAD Dimensions & Backings (e.g. MJE2605013)
+                        </Typography>
+                      </Box>
+                      <Grid container spacing={2.5}>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Earring Height / Length (mm)"
+                            name="earringHeight"
+                            value={productData.earringHeight || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 13.65 mm"
+                            helperText="Vertical height of piece"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Earring Width (mm)"
+                            name="earringWidth"
+                            value={productData.earringWidth || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 13.60 mm"
+                            helperText="Horizontal width across piece"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Post Length / Depth (mm)"
+                            name="earringThickness"
+                            value={productData.earringThickness || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 4.45 mm"
+                            helperText="Depth / post length"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <FormControl fullWidth>
+                            <InputLabel sx={{ fontWeight: 600 }}>Backing / Finding Type</InputLabel>
+                            <StyledSelect
+                              label="Backing / Finding Type"
+                              name="backFinding"
+                              value={productData.backFinding || 'Screw Back'}
+                              onChange={handleChange}
+                            >
+                              <MenuItem value="Screw Back">Screw Back (Bombay Screw)</MenuItem>
+                              <MenuItem value="Push Back">Push Back (Butterfly Friction)</MenuItem>
+                              <MenuItem value="Lever Back">Lever Back</MenuItem>
+                              <MenuItem value="Huggie Latch">Huggie Latch / Clicker</MenuItem>
+                              <MenuItem value="Omega Clip">Omega Clip</MenuItem>
+                              <MenuItem value="Wire Hook">Fish Hook / Wire</MenuItem>
+                            </StyledSelect>
+                          </FormControl>
+                        </Grid>
                       </Grid>
-                    )}
+                    </Box>
+                  )}
 
-                    {/* Bracelet Length — only for bracelets */}
-                    {isBracelet && (
-                      <Grid item xs={12} sm={6}>
-                        <StyledTextField
-                          label="Bracelet Length"
-                          name="braceletLength"
-                          value={productData.braceletLength || ''}
-                          onChange={handleChange}
-                          fullWidth
-                          placeholder="e.g. 7 Inches / 18 cm"
-                          helperText="Total length of the bracelet"
-                        />
+                  {/* 💫 BRACELETS */}
+                  {isBracelet && (
+                    <Box sx={{ p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                        <Chip label="💫 BRACELET SPECIFICATIONS" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.5px' }} />
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          CAD Dimensions & Locks (e.g. MJB2605122)
+                        </Typography>
+                      </Box>
+                      <Grid container spacing={2.5}>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Bracelet Length"
+                            name="braceletLength"
+                            value={productData.braceletLength || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 7 INCH (18 cm)"
+                            helperText="Total wearing length"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Link / Setting Width (mm)"
+                            name="braceletWidth"
+                            value={productData.braceletWidth || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 4.90 mm"
+                            helperText="Width of diamond link setting"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Link Thickness (mm)"
+                            name="braceletThickness"
+                            value={productData.braceletThickness || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 6.60 mm"
+                            helperText="Height / profile of setting"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <FormControl fullWidth>
+                            <InputLabel sx={{ fontWeight: 600 }}>Clasp / Lock Type</InputLabel>
+                            <StyledSelect
+                              label="Clasp / Lock Type"
+                              name="claspType"
+                              value={productData.claspType || 'Box Clasp with Dual Safety'}
+                              onChange={handleChange}
+                            >
+                              <MenuItem value="Box Clasp with Dual Safety">Box Clasp with Dual Safety</MenuItem>
+                              <MenuItem value="Box Clasp with Single Safety">Box Clasp with Single Safety</MenuItem>
+                              <MenuItem value="Lobster Claw">Lobster Claw Clasp</MenuItem>
+                              <MenuItem value="Spring Ring">Spring Ring</MenuItem>
+                              <MenuItem value="Bolo Slider">Bolo / Adjustable Slide Lock</MenuItem>
+                            </StyledSelect>
+                          </FormControl>
+                        </Grid>
                       </Grid>
-                    )}
+                    </Box>
+                  )}
 
-                    {/* Chain details — only for items that typically have chains */}
-                    {hasChain && (
-                      <>
+                  {/* 📿 NECKLACES & CHAINS */}
+                  {isNecklace && (
+                    <Box sx={{ p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                        <Chip label="📿 NECKLACE & CHAIN SPECIFICATIONS" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.5px' }} />
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          CAD Dimensions & Clasp (e.g. MJN2605187)
+                        </Typography>
+                      </Box>
+                      <Grid container spacing={2.5}>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Necklace Length"
+                            name="necklaceLength"
+                            value={productData.necklaceLength || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 16 INCH / 18 INCH"
+                            helperText="Total wearing loop length"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Motif / Link Width (mm)"
+                            name="linkWidth"
+                            value={productData.linkWidth || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 3.30 mm"
+                            helperText="Width of each setting/link"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Link Thickness (mm)"
+                            name="linkThickness"
+                            value={productData.linkThickness || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 3.30 mm"
+                            helperText="Thickness of setting"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <FormControl fullWidth>
+                            <InputLabel sx={{ fontWeight: 600 }}>Clasp / Closure Type</InputLabel>
+                            <StyledSelect
+                              label="Clasp / Closure Type"
+                              name="claspType"
+                              value={productData.claspType || 'Tongue & Groove Box Clasp'}
+                              onChange={handleChange}
+                            >
+                              <MenuItem value="Tongue & Groove Box Clasp">Tongue & Groove Box Clasp with Safety</MenuItem>
+                              <MenuItem value="Lobster Claw">Lobster Claw Clasp</MenuItem>
+                              <MenuItem value="S-Hook">S-Hook Clasp</MenuItem>
+                              <MenuItem value="Spring Ring">Spring Ring</MenuItem>
+                            </StyledSelect>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <FormControl fullWidth>
+                            <InputLabel sx={{ fontWeight: 600 }}>Includes Chain</InputLabel>
+                            <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain || 'Yes'} onChange={handleChange}>
+                              <MenuItem value="Yes">Yes (Integrated / Fixed)</MenuItem>
+                              <MenuItem value="No">No (Pendant Only)</MenuItem>
+                              <MenuItem value="Optional">Optional</MenuItem>
+                            </StyledSelect>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <StyledTextField label="Chain Weight (g)" name="chainWeight" value={productData.chainWeight || ''} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <StyledTextField label="Chaki Weight (g)" name="chakiWeight" value={productData.chakiWeight || ''} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" />
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  )}
+
+                  {/* ⭕ BANGLES & KADAS */}
+                  {isBangle && (
+                    <Box sx={{ p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                        <Chip label="⭕ BANGLE & KADA SPECIFICATIONS" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.5px' }} />
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          Bangle Sizing & Mechanism
+                        </Typography>
+                      </Box>
+                      <Grid container spacing={2.5}>
+                        <Grid item xs={12} sm={3}>
+                          <FormControl fullWidth>
+                            <InputLabel sx={{ fontWeight: 600 }}>Bangle Size</InputLabel>
+                            <StyledSelect label="Bangle Size" name="bangleSize" value={productData.bangleSize || '2.4'} onChange={handleChange}>
+                              <MenuItem value="2.2">2.2 (54.0 mm)</MenuItem>
+                              <MenuItem value="2.4">2.4 (57.2 mm)</MenuItem>
+                              <MenuItem value="2.6">2.6 (60.3 mm)</MenuItem>
+                              <MenuItem value="2.8">2.8 (63.5 mm)</MenuItem>
+                              <MenuItem value="2.10">2.10 (66.7 mm)</MenuItem>
+                              <MenuItem value="Free Size">Free Size / Openable</MenuItem>
+                            </StyledSelect>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Inner Diameter (mm)"
+                            name="innerDiameter"
+                            value={productData.innerDiameter || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 57.2 mm"
+                            helperText="Inside diameter of circle"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Bangle Width (mm)"
+                            name="bangleWidth"
+                            value={productData.bangleWidth || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 4.50 mm"
+                            helperText="Band width across wrist"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <FormControl fullWidth>
+                            <InputLabel sx={{ fontWeight: 600 }}>Openable Lock?</InputLabel>
+                            <StyledSelect label="Openable Lock?" name="isOpenable" value={productData.isOpenable || 'No'} onChange={handleChange}>
+                              <MenuItem value="No">No (Round Solid / Slip-on)</MenuItem>
+                              <MenuItem value="Yes">Yes (Screw Lock / Hinge Clasp)</MenuItem>
+                            </StyledSelect>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  )}
+
+                  {/* 💎 PENDANTS, LOCKETS & MANGALSUTRA */}
+                  {isPendant && !isNecklace && (
+                    <Box sx={{ p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                        <Chip label="💎 PENDANT & MANGALSUTRA SPECIFICATIONS" sx={{ bgcolor: BRAND, color: '#fff', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.5px' }} />
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          Pendant Dimensions & Chain
+                        </Typography>
+                      </Box>
+                      <Grid container spacing={2.5}>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Pendant Height (mm)"
+                            name="pendantHeight"
+                            value={productData.pendantHeight || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 18.5 mm"
+                            helperText="Height including bail"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <StyledTextField
+                            label="Pendant Width (mm)"
+                            name="pendantWidth"
+                            value={productData.pendantWidth || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 12.0 mm"
+                            helperText="Widest point"
+                          />
+                        </Grid>
                         <Grid item xs={12} sm={3}>
                           <FormControl fullWidth>
                             <InputLabel sx={{ fontWeight: 600 }}>Includes Chain</InputLabel>
-                            <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain} onChange={handleChange}>
-                              <MenuItem value="Yes">Yes</MenuItem>
-                              <MenuItem value="No">No</MenuItem>
+                            <StyledSelect label="Includes Chain" name="includesChain" value={productData.includesChain || 'No'} onChange={handleChange}>
+                              <MenuItem value="No">No (Pendant Only)</MenuItem>
+                              <MenuItem value="Yes">Yes (Chain Included)</MenuItem>
                               <MenuItem value="Optional">Optional</MenuItem>
                             </StyledSelect>
                           </FormControl>
                         </Grid>
                         <Grid item xs={12} sm={3}>
-                          <StyledTextField label="Chain / Piece Length" name="chainLength" value={productData.chainLength} onChange={handleChange} fullWidth placeholder="e.g. 18 Inches / 45 cm" />
+                          <StyledTextField
+                            label="Chain / Piece Length"
+                            name="chainLength"
+                            value={productData.chainLength || ''}
+                            onChange={handleChange}
+                            fullWidth
+                            placeholder="e.g. 18 Inches / 45 cm"
+                          />
                         </Grid>
-                      </>
-                    )}
+                        {prodType === 'mangalsutra' && (
+                          <>
+                            <Grid item xs={12} sm={6}>
+                              <StyledTextField
+                                label="Mangalsutra Length"
+                                name="mangalsutraLength"
+                                value={productData.mangalsutraLength || ''}
+                                onChange={handleChange}
+                                fullWidth
+                                placeholder="e.g. 18 INCH / 22 INCH"
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <FormControl fullWidth>
+                                <InputLabel sx={{ fontWeight: 600 }}>Black Beads Structure</InputLabel>
+                                <StyledSelect label="Black Beads Structure" name="blackBeadsRows" value={productData.blackBeadsRows || 'Single Row'} onChange={handleChange}>
+                                  <MenuItem value="Single Row">Single Row Beads</MenuItem>
+                                  <MenuItem value="Double Row">Double Row Beads</MenuItem>
+                                  <MenuItem value="Beaded Chain">Beaded Gold Chain</MenuItem>
+                                  <MenuItem value="Bracelet Mangalsutra">Bracelet Mangalsutra</MenuItem>
+                                </StyledSelect>
+                              </FormControl>
+                            </Grid>
+                          </>
+                        )}
+                        <Grid item xs={12} sm={6}>
+                          <StyledTextField label="Chain Weight (g)" name="chainWeight" value={productData.chainWeight || ''} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <StyledTextField label="Chaki Weight (g)" name="chakiWeight" value={productData.chakiWeight || ''} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" />
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  )}
 
-                    <Grid item xs={12} sm={hasChain ? 3 : 6}>
-                      <StyledTextField label="Chain Weight" name="chainWeight" value={productData.chainWeight} onChange={handleChange} fullWidth placeholder="e.g. 1.80 g" />
-                    </Grid>
-                    <Grid item xs={12} sm={hasChain ? 3 : 6}>
-                      <StyledTextField label="Chaki Weight" name="chakiWeight" value={productData.chakiWeight} onChange={handleChange} fullWidth placeholder="e.g. 0.40 g" />
-                    </Grid>
-
-                  </Grid>
+                  {/* Fallback when no specific category is selected yet */}
+                  {!isRing && !isEarring && !isBracelet && !isNecklace && !isBangle && !isPendant && (
+                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+                      <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>
+                        Select a <strong>Sub Category (Item Type)</strong> above (e.g. Rings, Earrings, Bracelets, Necklaces) to view and configure product-specific CAD dimensions and fittings.
+                      </Typography>
+                    </Box>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

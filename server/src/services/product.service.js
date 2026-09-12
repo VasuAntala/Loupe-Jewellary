@@ -118,8 +118,13 @@ async function updateProduct(productId, reqData) {
 async function findProductById(id) {
     try {
         const product = await Product.findById(id)
-            .populate("category")
-            // .populate({ path: "category", populate: { path: "parentCategory" } })
+            .populate({
+                path: "category",
+                populate: {
+                    path: "parentCategory",
+                    populate: { path: "parentCategory" }
+                }
+            })
             .populate("reviews")
             .populate("ratings")
             .populate({ path: 'reviews', populate: { path: 'user' } })

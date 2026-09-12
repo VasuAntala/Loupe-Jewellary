@@ -11,42 +11,71 @@ cloudinary.config({
 });
 
 /**
- * Upload an image buffer to Cloudinary at maximum quality (100).
- * Images are stored in the loupe-jewels/products folder.
+ * Upload an image buffer to Cloudinary with automatic retries and 120s timeout.
  * @param {Buffer} fileBuffer - The file buffer from multer memoryStorage
  * @param {string} folder - Cloudinary folder path
  * @param {string} resourceType - 'image' or 'video'
+ * @param {number} retries - Maximum retry attempts on transient 5xx / timeout errors
  * @returns {Promise<{secure_url, public_id}>}
  */
-const uploadToCloudinary = (fileBuffer, folder = 'loupe-jewels/products', resourceType = 'image') => {
-    return new Promise((resolve, reject) => {
-        const uploadOptions = {
-            folder,
-            resource_type: resourceType,
-            // Store at quality:100 — maximum quality, no compression on upload
-            quality: 100,
-            // For videos: override with best quality encoding profile
-            ...(resourceType === 'video' ? { quality: 'auto:best', video_codec: 'auto' } : {}),
-        };
+const uploadToCloudinary = (fileBuffer, folder = 'loupe-jewels/products', resourceType = 'image', retries = 3) => {
+    const attemptUpload = (attempt) => {
+        return new Promise((resolve, reject) => {
+            const uploadOptions = {
+                folder,
+                resource_type: resourceType,
+                timeout: 120000, // 2 minutes timeout to prevent 502 Gateway Timeouts
+                // For videos: apply optimized encoding profile
+                ...(resourceType === 'video' ? { quality: 'auto:best', video_codec: 'auto' } : {}),
+            };
 
-        const uploadStream = cloudinary.uploader.upload_stream(
-            uploadOptions,
-            (error, result) => {
-                if (error) return reject(new Error(`Cloudinary upload failed: ${error.message}`));
-                resolve({
-                    secure_url: result.secure_url,
-                    public_id: result.public_id,
-                    format: result.format,
-                    width: result.width,
-                    height: result.height,
-                    bytes: result.bytes,
-                    duration: result.duration || null,   // for videos
-                });
-            }
-        );
+            const uploadStream = cloudinary.uploader.upload_stream(
+                uploadOptions,
+                (error, result) => {
+                    if (error) {
+                        const isRetryable =
+                            error.http_code === 502 ||
+                            error.http_code === 500 ||
+                            error.http_code === 503 ||
+                            error.http_code === 504 ||
+                            error.name === 'TimeoutError' ||
+                            (error.message && (
+                                error.message.includes('502') ||
+                                error.message.includes('503') ||
+                                error.message.includes('504') ||
+                                error.message.includes('Timeout') ||
+                                error.message.includes('ECONNRESET') ||
+                                error.message.includes('ETIMEDOUT')
+                            ));
 
-        uploadStream.end(fileBuffer);
-    });
+                        if (isRetryable && attempt < retries) {
+                            const delay = Math.pow(2, attempt) * 1000;
+                            console.warn(`[Cloudinary] Upload attempt ${attempt} failed (${error.message}). Retrying in ${delay}ms...`);
+                            return setTimeout(() => {
+                                attemptUpload(attempt + 1).then(resolve).catch(reject);
+                            }, delay);
+                        }
+
+                        return reject(new Error(`Cloudinary upload failed: ${error.message}`));
+                    }
+
+                    resolve({
+                        secure_url: result.secure_url,
+                        public_id: result.public_id,
+                        format: result.format,
+                        width: result.width,
+                        height: result.height,
+                        bytes: result.bytes,
+                        duration: result.duration || null, // for videos
+                    });
+                }
+            );
+
+            uploadStream.end(fileBuffer);
+        });
+    };
+
+    return attemptUpload(1);
 };
 
 /**

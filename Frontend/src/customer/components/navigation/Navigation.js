@@ -339,11 +339,11 @@ export default function Navigation() {
               <Dialog.Panel className="relative flex w-full max-w-[85vw] flex-col overflow-y-auto bg-white pb-12 shadow-2xl no-scrollbar">
                 {/* 1. Editorial Header Bar */}
                 <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 bg-white border-b border-gray-100">
-                  <Link to="/" onClick={() => setOpen(false)}>
+                  <Link to="/home1" onClick={() => setOpen(false)}>
                     <img
-                      src="/Loupe_Jeweler-logo.png"
+                      src="/Loupe-logo-cropped.png"
                       alt="Loupe Jeweler"
-                      className="h-10 w-auto object-contain"
+                      className="h-8 sm:h-9 w-auto object-contain"
                       style={{ filter: 'brightness(0)' }}
                     />
                   </Link>
@@ -549,13 +549,14 @@ export default function Navigation() {
               </IconButton>
               <Link to="/home1" className="flex items-center ml-1 lg:ml-0">
                 <img
-                  src="/Loupe-logo.png"
+                  src="/Loupe-logo-cropped.png"
                   alt="Loupe Jeweler"
-                  className="h-[180px] sm:h-[220px] lg:h-[260px] w-auto object-contain transition-all duration-300"
+                  className="h-8 sm:h-9 lg:h-11 w-auto object-contain transition-all duration-300"
                   style={{ filter: 'brightness(0)' }}
                 />
               </Link>
             </div>
+            
 
             {/* Center: Nav or Search */}
             <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-center px-10">
@@ -923,6 +924,31 @@ export default function Navigation() {
             </div>
           </div>
         </div>
+
+        {/* Mobile Search Bar Dropdown */}
+        {searchOpen && (
+          <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-3 shadow-md animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="relative flex items-center border border-[#1e3545]/30 rounded-full px-4 py-1.5 focus-within:border-[#1e3545] bg-[#f8fafc]">
+              <SearchIcon sx={{ color: '#1e3545', fontSize: 20, mr: 1, opacity: 0.6 }} />
+              <InputBase
+                autoFocus
+                placeholder="Search jewellery, diamonds..."
+                fullWidth
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                sx={{
+                  color: '#1e3545',
+                  fontSize: '0.9rem',
+                  '& input::placeholder': { color: '#64748b', opacity: 1 }
+                }}
+              />
+              <IconButton onClick={() => setSearchOpen(false)} sx={{ color: '#64748b', p: 0.5 }}>
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </div>
+          </div>
+        )}
       </header>
 
 

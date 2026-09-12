@@ -59,19 +59,21 @@ const uploadMultipleImages = async (req, res) => {
         }
 
         const folder = req.body.folder || 'loupe-jewels/products';
-        const uploads = await Promise.all(
-            req.files.map(file => uploadToCloudinary(file.buffer, folder, 'image'))
-        );
+        const results = [];
 
-        const results = uploads.map(result => ({
-            secure_url: result.secure_url,
-            optimized_url: getOptimizedUrl(result.secure_url, 'image'),
-            public_id: result.public_id,
-            format: result.format,
-            width: result.width,
-            height: result.height,
-            bytes: result.bytes,
-        }));
+        // Upload sequentially to prevent overloading Cloudinary edge connections and triggering 502 Bad Gateway
+        for (const file of req.files) {
+            const result = await uploadToCloudinary(file.buffer, folder, 'image');
+            results.push({
+                secure_url: result.secure_url,
+                optimized_url: getOptimizedUrl(result.secure_url, 'image'),
+                public_id: result.public_id,
+                format: result.format,
+                width: result.width,
+                height: result.height,
+                bytes: result.bytes,
+            });
+        }
 
         return res.status(200).json({ success: true, count: results.length, results });
     } catch (error) {

@@ -130,20 +130,10 @@ const METAL_OPTIONS = [
     textColor: "#96432f"
   },
   {
-    id: "white-gold",
-    label: "White Gold",
-    short: "White Gold",
-    gradient: "radial-gradient(circle at 35% 35%, #ffffff 0%, #d4dbdf 45%, #768792 100%)",
-    border: "#8597a4",
-    glow: "rgba(133,151,164,0.35)",
-    tagBg: "#f1f5f8",
-    textColor: "#475569"
-  },
-  {
     id: "silver",
-    label: "Sterling Silver",
-    short: "Silver",
-    gradient: "radial-gradient(circle at 35% 35%, #f5f5f5 0%, #c0c0c0 45%, #606060 100%)",
+    label: "Silver / White Gold",
+    short: "Silver / White",
+    gradient: "radial-gradient(circle at 35% 35%, #ffffff 0%, #c0c0c0 45%, #606060 100%)",
     border: "#9ca3af",
     glow: "rgba(156,163,175,0.35)",
     tagBg: "#f8fafc",
@@ -173,10 +163,29 @@ export default function ProductDetails() {
   }, [param.productId]);
 
   const product = products?.product;
-
-  // ── Derived values ──
   const priceRange = product ? formatPriceRange(product.minPrice, product.maxPrice) : null;
   const images = Array.isArray(product?.imageUrls) ? product.imageUrls : [];
+
+  // When product loads, if yellow-gold has no images but another color does, auto-select it
+  useEffect(() => {
+    if (images.length > 0) {
+      const availableColors = new Set(images.map((img) => img.color || 'yellow-gold'));
+      if (!availableColors.has('yellow-gold') && !availableColors.has('gold')) {
+        const firstMatch = METAL_OPTIONS.find((m) => {
+          if (m.id === 'silver') return availableColors.has('silver') || availableColors.has('white-gold');
+          return availableColors.has(m.id);
+        });
+        if (firstMatch) {
+          setSelectedMetal(firstMatch);
+        }
+      }
+    }
+  }, [product?._id]);
+
+  const handleSelectMetal = (metal) => {
+    setSelectedMetal(metal);
+    setActiveIndex(0);
+  };
 
   // ── Visibility flags ──
   const showDiamonds = product?.showDiamondDetails === true;
@@ -217,7 +226,23 @@ export default function ProductDetails() {
 
   if (!product) return null;
 
-  const currentImgUrl = images[activeIndex]?.imageUrl;
+  // ── Color-filtered image gallery ──
+  const activeColorId = selectedMetal?.id || 'yellow-gold';
+  const matchingImages = images.filter((img) => {
+    const c = img.color || 'yellow-gold';
+    if (activeColorId === 'silver' || activeColorId === 'white-gold') {
+      return c === 'silver' || c === 'white-gold';
+    }
+    if (activeColorId === 'yellow-gold' || activeColorId === 'gold') {
+      return c === 'yellow-gold' || c === 'gold';
+    }
+    return c === activeColorId;
+  });
+
+  // If matching images exist for the selected metal color, use them; otherwise fallback gracefully to all images
+  const displayImages = matchingImages.length > 0 ? matchingImages : images;
+  const currentImg = displayImages[activeIndex] || displayImages[0];
+  const currentImgUrl = currentImg?.imageUrl;
 
   return (
     <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", color: "#1e293b" }}>
@@ -249,7 +274,7 @@ export default function ProductDetails() {
               <Box sx={{ display: "flex", flexDirection: { xs: "column-reverse", sm: "row" }, gap: 2 }}>
 
                 {/* Vertical Thumbnails */}
-                {images.length > 1 && (
+                {displayImages.length > 1 && (
                   <Box sx={{
                     display: "flex",
                     flexDirection: { xs: "row", sm: "column" },
@@ -259,11 +284,11 @@ export default function ProductDetails() {
                     pb: { xs: 1, sm: 0 },
                     flexShrink: 0
                   }}>
-                    {images.map((item, i) => {
+                    {displayImages.map((item, i) => {
                       const isSelected = activeIndex === i;
                       return (
                         <Box
-                          key={i}
+                          key={item.imageUrl || i}
                           onClick={() => setActiveIndex(i)}
                           sx={{
                             width: { xs: 72, sm: 84 },
@@ -427,6 +452,30 @@ export default function ProductDetails() {
                       }}
                     />
 
+                    {/* Active Metal Color Pill */}
+                    <Box sx={{
+                      position: "absolute",
+                      bottom: 14,
+                      left: 14,
+                      px: 1.4, py: 0.5,
+                      borderRadius: "8px",
+                      bgcolor: "rgba(255, 255, 255, 0.94)",
+                      backdropFilter: "blur(6px)",
+                      border: `1.5px solid ${selectedMetal.border}`,
+                      color: selectedMetal.textColor,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.8,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                      pointerEvents: "none",
+                      zIndex: 2,
+                    }}>
+                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: selectedMetal.gradient, flexShrink: 0 }} />
+                      <Typography sx={{ fontSize: "0.72rem", fontWeight: 800 }}>
+                        {selectedMetal.label}
+                      </Typography>
+                    </Box>
+
                     {/* Hover Hint */}
                     {!mousePos.showing && (
                       <Box sx={{
@@ -455,14 +504,14 @@ export default function ProductDetails() {
               {/* Trust Features Bar */}
               <Box sx={{
                 mt: 3,
-                p: 2.5,
+                p: { xs: 2, sm: 2.5 },
                 bgcolor: "white",
                 borderRadius: "16px",
                 border: "1px solid #e9eff4",
                 boxShadow: "0 4px 16px rgba(0,0,0,0.02)",
                 display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: 1.5,
+                gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" },
+                gap: { xs: 2, sm: 1.5 },
                 textAlign: "center"
               }}>
                 {[
@@ -583,12 +632,19 @@ export default function ProductDetails() {
               <Grid container spacing={1.5}>
                 {METAL_OPTIONS.map((metal) => {
                   const isSelected = selectedMetal.id === metal.id;
+                  const matchingCount = images.filter((img) => {
+                    const c = img.color || 'yellow-gold';
+                    if (metal.id === 'silver') return c === 'silver' || c === 'white-gold';
+                    if (metal.id === 'yellow-gold') return c === 'yellow-gold' || c === 'gold';
+                    return c === metal.id;
+                  }).length;
+
                   return (
-                    <Grid item xs={6} sm={3} key={metal.id}>
+                    <Grid item xs={12} sm={4} key={metal.id}>
                       <Box
-                        onClick={() => setSelectedMetal(metal)}
+                        onClick={() => handleSelectMetal(metal)}
                         sx={{
-                          p: 1.2,
+                          p: 1.4,
                           borderRadius: "12px",
                           border: isSelected ? `2px solid ${metal.border}` : "1px solid #e2e8f0",
                           bgcolor: isSelected ? metal.tagBg : "#ffffff",
@@ -605,8 +661,8 @@ export default function ProductDetails() {
                         }}
                       >
                         <Box sx={{
-                          width: 26,
-                          height: 26,
+                          width: 28,
+                          height: 28,
                           borderRadius: "50%",
                           background: metal.gradient,
                           border: `1.5px solid ${metal.border}`,
@@ -616,17 +672,29 @@ export default function ProductDetails() {
                           alignItems: "center",
                           justifyContent: "center"
                         }}>
-                          {isSelected && <Check size={14} color="#ffffff" style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.5))" }} />}
+                          {isSelected && <Check size={15} color="#ffffff" style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.5))" }} />}
                         </Box>
                         
-                        <Typography sx={{
-                          fontSize: "0.74rem",
-                          fontWeight: isSelected ? 800 : 600,
-                          color: isSelected ? metal.textColor : "#475569",
-                          whiteSpace: "nowrap"
-                        }}>
-                          {metal.short}
-                        </Typography>
+                        <Box sx={{ display: "flex", flexDirection: "column" }}>
+                          <Typography sx={{
+                            fontSize: "0.78rem",
+                            fontWeight: isSelected ? 800 : 600,
+                            color: isSelected ? metal.textColor : "#475569",
+                            whiteSpace: "nowrap"
+                          }}>
+                            {metal.short}
+                          </Typography>
+                          {matchingCount > 0 && (
+                            <Typography sx={{
+                              fontSize: "0.65rem",
+                              color: isSelected ? metal.textColor : "#94a3b8",
+                              fontWeight: 600,
+                              opacity: 0.85
+                            }}>
+                              {matchingCount} {matchingCount === 1 ? 'photo' : 'photos'}
+                            </Typography>
+                          )}
+                        </Box>
                       </Box>
                     </Grid>
                   );
@@ -661,13 +729,13 @@ export default function ProductDetails() {
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
-                  py: 2,
-                  px: 3,
+                  py: { xs: 1.6, sm: 2 },
+                  px: { xs: 2, sm: 3 },
                   background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
                   color: "white",
                   borderRadius: "14px",
                   fontWeight: 800,
-                  fontSize: "1.02rem",
+                  fontSize: { xs: "0.88rem", sm: "1.02rem" },
                   textTransform: "none",
                   display: "flex",
                   alignItems: "center",

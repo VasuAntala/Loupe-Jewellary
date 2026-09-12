@@ -94,9 +94,9 @@ const StyleStory = () => {
             <Box
                 sx={{
                     display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: '1fr 1fr 1fr 1fr' },
-                    gap: 3,
-                    px: { xs: 2, md: 10 },
+                    gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+                    gap: { xs: 2, sm: 3 },
+                    px: { xs: 2, sm: 4, md: 10 },
                     maxWidth: 1600,
                     mx: 'auto'
                 }}
@@ -115,9 +115,9 @@ const StyleStory = () => {
                             sx={{
                                 position: 'relative',
                                 aspectRatio: '3/4',
-                                borderRadius: '12px',
+                                borderRadius: { xs: '8px', sm: '12px' },
                                 overflow: 'hidden',
-                                mb: 3,
+                                mb: { xs: 1.5, sm: 3 },
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
                                 transition: 'all 0.5s ease'
                             }}
@@ -129,14 +129,14 @@ const StyleStory = () => {
                             />
 
                             {/* Category Overlay */}
-                            <div className="absolute top-4 left-4">
-                                <span className="bg-white/90 backdrop-blur-md text-[#3c7399] text-[8px] font-black tracking-widest px-3 py-1.5 rounded-full shadow-sm">
+                            <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
+                                <span className="bg-white/90 backdrop-blur-md text-[#3c7399] text-[7px] sm:text-[8px] font-black tracking-widest px-2 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
                                     {story.category}
                                 </span>
                             </div>
 
                             {/* Hover Action Overlay */}
-                            <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/40 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                            <div className="hidden sm:block absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/40 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                                 <Button
                                     variant="contained"
                                     fullWidth
@@ -157,18 +157,19 @@ const StyleStory = () => {
                         <div className="px-1 text-center">
                             <Typography
                                 sx={{
-                                    fontSize: '0.9rem',
+                                    fontSize: { xs: '0.78rem', sm: '0.9rem' },
                                     fontWeight: 600,
                                     color: '#3c7399',
                                     fontFamily: "'Outfit', sans-serif",
-                                    mb: 1
+                                    mb: 0.5,
+                                    lineHeight: 1.2
                                 }}
                             >
                                 {story.title}
                             </Typography>
-                            <div className="flex items-center justify-center gap-3">
-                                <span className="text-[#3c7399] font-serif italic text-lg">₹{formatPriceINR(story.price)}</span>
-                                <span className="text-[#3c7399] text-[10px] font-black tracking-tighter uppercase">{story.discount}</span>
+                            <div className="flex items-center justify-center gap-2">
+                                <span className="text-[#3c7399] font-serif italic text-sm sm:text-lg">₹{formatPriceINR(story.price)}</span>
+                                <span className="text-[#3c7399] text-[9px] sm:text-[10px] font-black tracking-tighter uppercase">{story.discount}</span>
                             </div>
                         </div>
                     </motion.div>

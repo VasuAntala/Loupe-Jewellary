@@ -13,6 +13,7 @@ const NextArrow = ({ onClick }) => (
     <IconButton
         onClick={onClick}
         sx={{
+            display: { xs: 'none', md: 'flex' },
             position: 'absolute',
             right: { xs: 0, md: -30 },
             top: '40%',
@@ -34,6 +35,7 @@ const PrevArrow = ({ onClick }) => (
     <IconButton
         onClick={onClick}
         sx={{
+            display: { xs: 'none', md: 'flex' },
             position: 'absolute',
             left: { xs: 0, md: -30 },
             top: '40%',
@@ -103,7 +105,7 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                 <div className="w-16 h-[2px] bg-[#3c7399] mx-auto opacity-50" />
             </Box>
 
-            <div className="max-w-[1150px] mx-auto px-10 relative">
+            <div className="max-w-[1150px] mx-auto px-3 sm:px-8 md:px-10 relative">
                 <Slider {...settings}>
                     {products.map((product, idx) => (
                         <BestSellerCard key={product._id || product.id || idx} product={product} />
@@ -121,8 +123,8 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                     sx={{
                         bgcolor: '#3c7399', // Primary Slate
                         color: 'white',
-                        px: 8,
-                        py: 2,
+                        px: { xs: 4, sm: 8 },
+                        py: { xs: 1.5, sm: 2 },
                         borderRadius: '4px', // Subtle rounding for premium feel
                         fontSize: '0.8rem',
                         fontWeight: 700,

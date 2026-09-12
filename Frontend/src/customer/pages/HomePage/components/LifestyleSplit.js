@@ -14,8 +14,8 @@ const LifestyleSplit = () => {
     const y3 = useTransform(scrollYProgress, [0, 1], [120, -120]);
 
     return (
-        <Box ref={containerRef} sx={{ py: { xs: 10, md: 16 }, px: { xs: 3, md: 12 }, bgcolor: '#f8fafc', overflow: 'hidden' }}>
-            <div className="mx-auto max-w-[1400px] grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-24 items-center">
+        <Box ref={containerRef} sx={{ py: { xs: 6, sm: 10, md: 16 }, px: { xs: 3, sm: 6, md: 12 }, bgcolor: '#f8fafc', overflow: 'hidden' }}>
+            <div className="mx-auto max-w-[1400px] grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-24 items-center">
 
                 {/* Text Content */}
                 <motion.div
@@ -30,9 +30,9 @@ const LifestyleSplit = () => {
                             fontFamily: 'serif',
                             fontWeight: 400,
                             color: '#3c7399',
-                            fontSize: { xs: '2.5rem', md: '4rem' },
+                            fontSize: { xs: '2rem', sm: '2.8rem', md: '4rem' },
                             lineHeight: 1.1,
-                            mb: 4
+                            mb: { xs: 2, md: 4 }
                         }}
                     >
                         Crafted for <br />
@@ -42,9 +42,9 @@ const LifestyleSplit = () => {
                         variant="body1"
                         sx={{
                             color: '#64748b',
-                            fontSize: '1.15rem',
-                            lineHeight: 1.8,
-                            mb: 6,
+                            fontSize: { xs: '0.95rem', md: '1.15rem' },
+                            lineHeight: 1.7,
+                            mb: { xs: 3, md: 6 },
                             maxWidth: 500
                         }}
                     >
@@ -56,13 +56,13 @@ const LifestyleSplit = () => {
                         sx={{
                             borderColor: '#3c7399',
                             color: '#3c7399',
-                            px: 5,
-                            py: 1.8,
+                            px: { xs: 3.5, sm: 5 },
+                            py: { xs: 1.2, sm: 1.8 },
                             borderRadius: '100px',
                             fontWeight: 700,
                             letterSpacing: 2,
                             textTransform: 'uppercase',
-                            fontSize: '0.8rem',
+                            fontSize: { xs: '0.72rem', sm: '0.8rem' },
                             borderWidth: '2px',
                             '&:hover': {
                                 borderWidth: '2px',
@@ -78,7 +78,7 @@ const LifestyleSplit = () => {
                 </motion.div>
 
                 {/* Images Grid - Mosaic Style */}
-                <div className="grid grid-cols-3 gap-3 md:gap-5 items-center">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-5 items-center">
                     {/* First Image - Space on Top */}
                     <motion.div
                         style={{ y: y1 }}
@@ -86,11 +86,11 @@ const LifestyleSplit = () => {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8 }}
-                        className="mt-20"
+                        className="mt-6 sm:mt-12 md:mt-20"
                     >
                         <Box
                             sx={{
-                                borderRadius: '40px',
+                                borderRadius: { xs: '16px', sm: '28px', md: '40px' },
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
@@ -115,7 +115,7 @@ const LifestyleSplit = () => {
                     >
                         <Box
                             sx={{
-                                borderRadius: '40px',
+                                borderRadius: { xs: '16px', sm: '28px', md: '40px' },
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
@@ -137,11 +137,11 @@ const LifestyleSplit = () => {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="-mt-20"
+                        className="-mt-6 sm:-mt-12 md:-mt-20"
                     >
                         <Box
                             sx={{
-                                borderRadius: '40px',
+                                borderRadius: { xs: '16px', sm: '28px', md: '40px' },
                                 overflow: 'hidden',
                                 aspectRatio: '1/1.5',
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.12)',

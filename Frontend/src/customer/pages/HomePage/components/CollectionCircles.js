@@ -27,12 +27,19 @@ const CollectionCircles = () => {
         slidesToShow: 6,
         slidesToScroll: 1,
         autoplay: true,
-        speed: 3000,
+        speed: 3500,
         autoplaySpeed: 0,
         cssEase: "linear",
         arrows: false,
-        pauseOnHover: false,
+        pauseOnHover: true,
+        swipeToSlide: true,
         responsive: [
+            {
+                breakpoint: 1280,
+                settings: {
+                    slidesToShow: 5,
+                }
+            },
             {
                 breakpoint: 1024,
                 settings: {
@@ -40,23 +47,29 @@ const CollectionCircles = () => {
                 }
             },
             {
-                breakpoint: 640,
+                breakpoint: 768,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 3.5,
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 3.2,
                 }
             }
         ]
     };
 
     return (
-        <Box className="no-scrollbar" sx={{ pt: 3, pb: 8, bgcolor: '#ffffff', overflow: 'hidden', overflowY: 'hidden' }}>
-            <div className="max-w-[1600px] mx-auto no-scrollbar" style={{ overflowY: 'hidden' }}>
+        <Box className="no-scrollbar" sx={{ pt: { xs: 2, md: 3 }, pb: { xs: 4, md: 8 }, bgcolor: '#ffffff', overflow: 'hidden' }}>
+            <div className="max-w-[1600px] mx-auto no-scrollbar">
                 <Slider {...settings}>
                     {categories.map((cat, i) => (
                         <Box
                             key={i}
                             sx={{
-                                px: 2,
+                                px: { xs: 0.5, sm: 1, md: 2 },
                                 display: 'flex !important',
                                 flexDirection: 'column',
                                 alignItems: 'center',
@@ -68,17 +81,17 @@ const CollectionCircles = () => {
                         >
                             <Box
                                 sx={{
-                                    width: { xs: 150, md: 190 },
-                                    height: { xs: 150, md: 190 },
+                                    width: { xs: 85, sm: 115, md: 160 },
+                                    height: { xs: 85, sm: 115, md: 160 },
                                     borderRadius: '50%',
                                     overflow: 'hidden',
-                                    mb: 2,
+                                    mb: { xs: 1, md: 2 },
                                     border: '1px solid #f1f5f9',
                                     bgcolor: '#f8fafc',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    p: 1,
+                                    p: { xs: 0.5, md: 1 },
                                     position: 'relative'
                                 }}
                             >
@@ -86,20 +99,20 @@ const CollectionCircles = () => {
                                     src={cat.image}
                                     alt={cat.name}
                                     className="main-img w-full h-full object-cover rounded-full transition-all duration-500 absolute top-0 left-0"
-                                    style={{ padding: '8px' }}
+                                    style={{ padding: '6px' }}
                                 />
                                 <img
                                     src={cat.hoverImage}
                                     alt={`${cat.name} Model`}
                                     className="hover-img w-full h-full object-cover rounded-full transition-all duration-500 absolute top-0 left-0 opacity-0"
-                                    style={{ padding: '8px' }}
+                                    style={{ padding: '6px' }}
                                 />
                             </Box>
                             <Typography
                                 sx={{
-                                    fontSize: '0.7rem',
-                                    fontWeight: 900,
-                                    letterSpacing: 2,
+                                    fontSize: { xs: '0.62rem', sm: '0.7rem' },
+                                    fontWeight: 800,
+                                    letterSpacing: { xs: 1, sm: 2 },
                                     color: '#3c7399',
                                     textAlign: 'center',
                                     textTransform: 'uppercase'

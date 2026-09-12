@@ -21,6 +21,33 @@ const BRAND = '#3c7399';
 const BRAND_LIGHT = '#f0f9ff';
 const BRAND_DARK = '#2b526d';
 
+export const COLOR_TABS = [
+  {
+    id: 'yellow-gold',
+    label: 'Yellow Gold',
+    badge: '🟡 Gold',
+    colorCode: '#e5b024',
+    bgLight: '#fefce8',
+    borderColor: '#eab308',
+  },
+  {
+    id: 'rose-gold',
+    label: 'Rose Gold',
+    badge: '🌸 Rose Gold',
+    colorCode: '#d88972',
+    bgLight: '#fff1f2',
+    borderColor: '#f43f5e',
+  },
+  {
+    id: 'silver',
+    label: 'Silver / White Gold',
+    badge: '⚪ Silver',
+    colorCode: '#9ca3af',
+    bgLight: '#f8fafc',
+    borderColor: '#64748b',
+  },
+];
+
 const StyledTextField = styled(TextField)({
   '& label.Mui-focused': { color: BRAND },
   '& .MuiOutlinedInput-root': {
@@ -71,6 +98,7 @@ const EditProductForm = () => {
   const [imageUploading, setImageUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [activeColorTab, setActiveColorTab] = useState('yellow-gold');
 
   const [productData, setProductData] = useState({
     title: '',
@@ -120,15 +148,64 @@ const EditProductForm = () => {
   useEffect(() => {
     if (products?.product && products.product._id === productId && !loaded) {
       const p = products.product;
+      const rawImages = Array.isArray(p.imageUrls) ? p.imageUrls : [];
+      const normalizedImages = rawImages.map((img) => {
+        if (typeof img === 'string') {
+          return { imageUrl: img, publicId: '', color: 'yellow-gold' };
+        }
+        return {
+          ...img,
+          color: img.color || 'yellow-gold',
+        };
+      });
+
+      // Resolve categories
+      let resolvedTop = p.topLevelCategory;
+      let resolvedSecond = p.secondLevelCategory;
+      let resolvedThird = p.thirdLevelCategory;
+
+      if (!resolvedSecond || !resolvedTop) {
+        if (p.category?.level === 3) {
+          if (!resolvedThird) resolvedThird = p.category.name;
+          if (!resolvedSecond) resolvedSecond = p.category.parentCategory?.name;
+          if (!resolvedTop) resolvedTop = p.category.parentCategory?.parentCategory?.name;
+        } else if (p.category?.level === 2) {
+          if (!resolvedSecond) resolvedSecond = p.category.name;
+          if (!resolvedTop) resolvedTop = p.category.parentCategory?.name;
+        } else if (p.category?.level === 1) {
+          if (!resolvedTop) resolvedTop = p.category.name;
+        }
+      }
+
+      // Normalization helper for secondLevelCategory (pluralized standard)
+      const normalizeSecondLevel = (val) => {
+        if (!val) return '';
+        const v = String(val).toLowerCase().trim();
+        const map = {
+          ring: 'rings',
+          earring: 'earrings',
+          necklace: 'necklaces',
+          pendant: 'pendants',
+          bracelet: 'bracelets',
+          bangle: 'bangles',
+          chain: 'chains',
+          anklet: 'anklets',
+          locket: 'lockets',
+          'nose-pin': 'nose-pins',
+          mangalsutra: 'mangalsutra',
+        };
+        return map[v] || v;
+      };
+
       setProductData({
         title: p.title || '',
         productCode: p.productCode || '',
-        topLevelCategory: p.topLevelCategory || p.category?.parentCategory?.parentCategory?.name || 'diamond',
-        secondLevelCategory: p.secondLevelCategory || p.category?.parentCategory?.name || '',
-        thirdLevelCategory: p.thirdLevelCategory || p.category?.name || '',
+        topLevelCategory: resolvedTop || 'diamond',
+        secondLevelCategory: normalizeSecondLevel(resolvedSecond),
+        thirdLevelCategory: (resolvedThird || '').trim(),
         description: p.description || '',
         details: p.details || '',
-        imageUrls: Array.isArray(p.imageUrls) ? p.imageUrls : [],
+        imageUrls: normalizedImages,
         status: p.status || 'active',
         brand: p.brand || 'Loupe Jeweler',
         quantity: p.quantity || 1,
@@ -169,23 +246,25 @@ const EditProductForm = () => {
     setProductData((prev) => ({ ...prev, [name]: e.target.checked }));
   };
 
-  // Image Upload
+  // Image Upload (tags images with activeColorTab)
   const handleImageUpload = async (e) => {
     const { files } = e.target;
     if (!files || files.length === 0) return;
-    const selectedFiles = Array.from(files).filter((f) => f.type?.startsWith('image/')).slice(0, 4);
+    const selectedFiles = Array.from(files).filter((f) => f.type?.startsWith('image/'));
     if (selectedFiles.length === 0) return;
     setImageUploading(true);
     setUploadProgress(0);
     try {
       const results = await uploadMultipleImagesViaBackend(selectedFiles);
       setUploadProgress(100);
+      const newImages = results.map((r) => ({
+        imageUrl: r.secure_url,
+        publicId: r.public_id,
+        color: activeColorTab,
+      }));
       setProductData((prev) => ({
         ...prev,
-        imageUrls: results.slice(0, 4).map((r) => ({
-          imageUrl: r.secure_url,
-          publicId: r.public_id,
-        })),
+        imageUrls: [...prev.imageUrls, ...newImages],
       }));
     } catch (err) {
       console.error('Image upload error:', err.message);
@@ -196,14 +275,13 @@ const EditProductForm = () => {
     }
   };
 
-  const handleRemoveImage = async (index) => {
-    const img = productData.imageUrls[index];
-    if (img?.publicId) {
-      try { await deleteAssetViaBackend(img.publicId, 'image'); } catch (e) { /* non-blocking */ }
+  const handleRemoveImage = async (imageToRemove) => {
+    if (imageToRemove?.publicId) {
+      try { await deleteAssetViaBackend(imageToRemove.publicId, 'image'); } catch (e) { /* non-blocking */ }
     }
     setProductData((prev) => ({
       ...prev,
-      imageUrls: prev.imageUrls.filter((_, i) => i !== index),
+      imageUrls: prev.imageUrls.filter((img) => img !== imageToRemove),
     }));
   };
 
@@ -253,8 +331,11 @@ const EditProductForm = () => {
       return;
     }
 
+    const uniqueColors = Array.from(new Set(productData.imageUrls.map((img) => img.color || 'yellow-gold')));
+
     const finalData = {
       ...productData,
+      color: uniqueColors.length > 0 ? uniqueColors : (productData.color?.length ? productData.color : ['yellow-gold']),
       price: min || productData.price,
       discountedPrice: min || productData.discountedPrice,
       metalType: productData.metalDetails[0]?.metalType || 'Gold',
@@ -295,9 +376,15 @@ const EditProductForm = () => {
       { value: 'cocktail-ring', label: 'Cocktail Ring' },
       { value: 'pearl-ring', label: 'Pearl Ring' },
       { value: 'couple-ring', label: 'Couple Rings' },
+      { value: 'engagement-rings', label: 'Engagement Rings' },
+      { value: 'solitaire-rings', label: 'Solitaire Rings' },
+      { value: 'diamond-rings', label: 'Diamond Rings' },
+      { value: 'eternity-rings', label: 'Eternity Rings' },
+      { value: 'halo-rings', label: 'Halo Rings' },
+      { value: 'daily-wear-rings', label: 'Daily Wear Rings' },
+      { value: 'rings', label: 'General Rings' },
     ],
     earrings: [
-      { value: 'earring', label: 'Earring (General)' },
       { value: 'diamond-studs', label: 'Diamond Studs / Studs' },
       { value: 'hoops-huggies', label: 'Hoops & Huggies' },
       { value: 'dangle-drops', label: 'Dangle & Drops' },
@@ -305,6 +392,15 @@ const EditProductForm = () => {
       { value: 'cuffs', label: 'Ear Cuffs' },
       { value: 'climbers', label: 'Ear Climbers' },
       { value: 'jhumka', label: 'Jhumkas' },
+      { value: 'earring', label: 'Earring (General)' },
+      { value: 'diamond-stud', label: 'Diamond Studs' },
+      { value: 'studs', label: 'Studs' },
+      { value: 'stud', label: 'Stud' },
+      { value: 'hoop', label: 'Hoops' },
+      { value: 'hoops', label: 'Hoops' },
+      { value: 'earrings', label: 'Earrings (General)' },
+      { value: 'jhumkas', label: 'Jhumkas' },
+      { value: 'chandelier', label: 'Chandeliers' },
     ],
     necklaces: [
       { value: 'diamond-necklace', label: 'Diamond Necklaces' },
@@ -317,6 +413,12 @@ const EditProductForm = () => {
       { value: 'statement-necklace', label: 'Statement Necklace' },
       { value: 'layered-necklace', label: 'Layered Necklace' },
       { value: 'lariat', label: 'Lariat' },
+      { value: 'diamond-necklaces', label: 'Diamond Necklaces' },
+      { value: 'pendant-necklaces', label: 'Pendant Necklaces' },
+      { value: 'tennis-necklaces', label: 'Tennis Necklaces' },
+      { value: 'choker-necklaces', label: 'Choker Necklaces' },
+      { value: 'necklaces', label: 'Necklaces (General)' },
+      { value: 'choker', label: 'Choker' },
     ],
     pendants: [
       { value: 'diamond-pendant', label: 'Diamond Pendants' },
@@ -325,38 +427,61 @@ const EditProductForm = () => {
       { value: 'pendant', label: 'Pendant (General)' },
       { value: 'gemstone-pendant', label: 'Gemstone Pendant' },
       { value: 'initial-pendant', label: 'Initial & Alphabet Pendant' },
+      { value: 'diamond-pendants', label: 'Diamond Pendants' },
+      { value: 'solitaire-pendants', label: 'Solitaire Pendants' },
+      { value: 'pendants', label: 'Pendants (General)' },
     ],
     mangalsutra: [
       { value: 'mangal-sutra', label: 'Mangal Sutra' },
+      { value: 'mangalsutra', label: 'Mangalsutra' },
       { value: 'solitaire-mangalsutra', label: 'Solitaire Mangalsutra' },
       { value: 'modern-mangalsutra', label: 'Modern Bracelet Mangalsutra' },
     ],
     bracelets: [
-      { value: 'bracelet', label: 'Bracelet' },
+      { value: 'tennis-bracelets', label: 'Tennis Bracelets' },
       { value: 'tennis-bracelet', label: 'Tennis Bracelet' },
+      { value: 'chain-bracelets', label: 'Chain Bracelets' },
       { value: 'chain-bracelet', label: 'Chain Bracelet' },
+      { value: 'cuff-bracelets', label: 'Cuff Bracelets' },
       { value: 'cuff-bracelet', label: 'Cuff Bracelet' },
+      { value: 'charm-bracelets', label: 'Charm Bracelets' },
       { value: 'charm-bracelet', label: 'Charm Bracelet' },
+      { value: 'bracelet', label: 'Bracelet (General)' },
+      { value: 'bracelets', label: 'Bracelets (General)' },
+      { value: 'bangles', label: 'Bangles' },
+      { value: 'bangle', label: 'Bangle' },
+      { value: 'cuffs', label: 'Cuffs' },
+      { value: 'charms', label: 'Charms' },
+      { value: 'anklets', label: 'Anklets' },
     ],
     bangles: [
       { value: 'bangle', label: 'Bangle' },
+      { value: 'bangles', label: 'Bangles' },
       { value: 'kada', label: 'Kada' },
+      { value: 'kadas', label: 'Kadas' },
       { value: 'stackable-bangle', label: 'Stackable Bangle' },
+      { value: 'stackable-bangles', label: 'Stackable Bangles' },
     ],
     chains: [
       { value: 'chain', label: 'Chain' },
+      { value: 'chains', label: 'Chains' },
       { value: 'gold-chain', label: 'Gold Chain' },
+      { value: 'gold-chains', label: 'Gold Chains' },
       { value: 'rope-chain', label: 'Rope Chain' },
+      { value: 'rope-chains', label: 'Rope Chains' },
     ],
     lockets: [
       { value: 'locket', label: 'Locket' },
+      { value: 'lockets', label: 'Lockets' },
       { value: 'photo-locket', label: 'Photo Locket' },
     ],
     anklets: [
       { value: 'anklet', label: 'Anklet' },
+      { value: 'anklets', label: 'Anklets' },
     ],
     'nose-pins': [
       { value: 'nose-pin', label: 'Nose Pin' },
+      { value: 'nose-pins', label: 'Nose Pins' },
     ],
     other: [
       { value: 'brooch', label: 'Brooch' },
@@ -433,19 +558,37 @@ const EditProductForm = () => {
                   <Grid item xs={12} sm={4}>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontWeight: 600 }}>Sub Category (Item Type)</InputLabel>
-                      <StyledSelect label="Sub Category (Item Type)" name="secondLevelCategory" value={productData.secondLevelCategory} onChange={handleChange}>
+                      <StyledSelect
+                        label="Sub Category (Item Type)"
+                        name="secondLevelCategory"
+                        value={productData.secondLevelCategory || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setProductData((prev) => ({
+                            ...prev,
+                            secondLevelCategory: val,
+                            thirdLevelCategory: '',
+                          }));
+                        }}
+                      >
                         <MenuItem value="rings">Rings</MenuItem>
                         <MenuItem value="earrings">Earrings</MenuItem>
                         <MenuItem value="necklaces">Necklaces</MenuItem>
                         <MenuItem value="pendants">Pendants</MenuItem>
-                        {/* <MenuItem value="mangalsutra">Mangalsutra</MenuItem> */}
                         <MenuItem value="bracelets">Bracelets</MenuItem>
                         <MenuItem value="bangles">Bangles</MenuItem>
                         <MenuItem value="chains">Chains</MenuItem>
-                        {/* <MenuItem value="lockets">Lockets</MenuItem> */}
-                        {/* <MenuItem value="anklets">Anklets</MenuItem> */}
-                        {/* <MenuItem value="nose-pins">Nose Pins</MenuItem> */}
+                        <MenuItem value="mangalsutra">Mangalsutra</MenuItem>
+                        <MenuItem value="lockets">Lockets</MenuItem>
+                        <MenuItem value="anklets">Anklets</MenuItem>
+                        <MenuItem value="nose-pins">Nose Pins</MenuItem>
                         <MenuItem value="other">Other Accessories</MenuItem>
+                        {productData.secondLevelCategory &&
+                          !['rings', 'earrings', 'necklaces', 'pendants', 'bracelets', 'bangles', 'chains', 'mangalsutra', 'lockets', 'anklets', 'nose-pins', 'other'].includes(productData.secondLevelCategory) && (
+                            <MenuItem value={productData.secondLevelCategory}>
+                              {productData.secondLevelCategory.charAt(0).toUpperCase() + productData.secondLevelCategory.slice(1)}
+                            </MenuItem>
+                          )}
                       </StyledSelect>
                     </FormControl>
                   </Grid>
@@ -453,10 +596,26 @@ const EditProductForm = () => {
                   <Grid item xs={12} sm={4}>
                     <FormControl fullWidth disabled={!prodType}>
                       <InputLabel sx={{ fontWeight: 600 }}>Specific Style</InputLabel>
-                      <StyledSelect label="Specific Style" name="thirdLevelCategory" value={productData.thirdLevelCategory} onChange={handleChange}>
-                        {filteredStyles.map((s) => (
+                      <StyledSelect
+                        label="Specific Style"
+                        name="thirdLevelCategory"
+                        value={productData.thirdLevelCategory || ''}
+                        onChange={handleChange}
+                      >
+                        {Array.from(
+                          new Map(filteredStyles.map((s) => [s.value, s])).values()
+                        ).map((s) => (
                           <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>
                         ))}
+                        {productData.thirdLevelCategory &&
+                          !filteredStyles.some((s) => s.value === productData.thirdLevelCategory) && (
+                            <MenuItem value={productData.thirdLevelCategory}>
+                              {productData.thirdLevelCategory
+                                .split('-')
+                                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                                .join(' ')}
+                            </MenuItem>
+                          )}
                       </StyledSelect>
                     </FormControl>
                   </Grid>
@@ -555,41 +714,237 @@ const EditProductForm = () => {
                     <StyledTextField label="Product Description" name="description" value={productData.description} onChange={handleChange} fullWidth multiline rows={3} />
                   </Grid>
 
-                  {/* Images */}
+                  {/* Product Images by Metal Color */}
                   <Grid item xs={12}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#334155', mb: 1.5 }}>Product Images</Typography>
-                    <Box
-                      component="label"
-                      sx={{
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        p: 3, border: `2px dashed ${BRAND}`, borderRadius: '16px', bgcolor: BRAND_LIGHT, cursor: 'pointer',
-                        '&:hover': { bgcolor: '#e0f2fe' },
-                      }}
-                    >
-                      <Upload size={22} color={BRAND} />
-                      <Typography variant="body2" sx={{ fontWeight: 800, mt: 1 }}>Upload / Replace Images</Typography>
-                      <Typography variant="caption" sx={{ color: '#64748b' }}>PNG, JPG, WEBP (up to 4 images)</Typography>
-                      <input type="file" accept="image/*" multiple hidden onChange={handleImageUpload} />
-                    </Box>
-                    {imageUploading && (
-                      <Box sx={{ mt: 1.5 }}>
-                        <LinearProgress variant="indeterminate" sx={{ borderRadius: 4, height: 6, bgcolor: '#e2e8f0', '& .MuiLinearProgress-bar': { bgcolor: BRAND } }} />
+                    <Box sx={{ mb: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, flexWrap: 'wrap', gap: 1 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#334155' }}>
+                          Product Images by Metal Color
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          Total: {productData.imageUrls.length} {productData.imageUrls.length === 1 ? 'image' : 'images'}
+                        </Typography>
                       </Box>
-                    )}
-                    {productData.imageUrls.length > 0 && (
-                      <Grid container spacing={2} sx={{ mt: 1 }}>
-                        {productData.imageUrls.map((image, index) => (
-                          <Grid item xs={6} sm={3} key={index}>
-                            <Box sx={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: `2px solid ${BRAND}40` }}>
-                              <img src={getOptimizedCloudinaryUrl(image.imageUrl, 'image')} alt="" style={{ width: '100%', height: 110, objectFit: 'cover', display: 'block' }} />
-                              <IconButton size="small" onClick={() => handleRemoveImage(index)} sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(244,63,94,0.9)', color: '#fff', width: 24, height: 24, '&:hover': { bgcolor: '#f43f5e' } }}>
-                                <Trash2 size={13} />
-                              </IconButton>
-                            </Box>
-                          </Grid>
-                        ))}
+                      <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mb: 2 }}>
+                        Select a metal color tab below to manage photos specifically for that metal color. On the product page, customers see photos matching their selected metal color.
+                      </Typography>
+
+                      {/* 3 Color Tabs */}
+                      <Grid container spacing={1.5}>
+                        {COLOR_TABS.map((tab) => {
+                          const isTabActive = activeColorTab === tab.id;
+                          const tabImageCount = productData.imageUrls.filter(
+                            (img) => (img.color || 'yellow-gold') === tab.id
+                          ).length;
+                          return (
+                            <Grid item xs={12} sm={4} key={tab.id}>
+                              <Box
+                                onClick={() => setActiveColorTab(tab.id)}
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: '12px',
+                                  cursor: 'pointer',
+                                  border: isTabActive ? `2px solid ${tab.borderColor}` : '1px solid #e2e8f0',
+                                  bgcolor: isTabActive ? tab.bgLight : '#ffffff',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  transition: 'all 0.2s ease',
+                                  boxShadow: isTabActive ? `0 4px 12px ${tab.colorCode}30` : 'none',
+                                  '&:hover': {
+                                    borderColor: tab.borderColor,
+                                    transform: 'translateY(-1px)',
+                                  },
+                                }}
+                              >
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Box
+                                    sx={{
+                                      width: 14,
+                                      height: 14,
+                                      borderRadius: '50%',
+                                      bgcolor: tab.colorCode,
+                                      border: '1px solid rgba(0,0,0,0.15)',
+                                      flexShrink: 0,
+                                    }}
+                                  />
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      fontWeight: isTabActive ? 800 : 600,
+                                      color: isTabActive ? '#0f172a' : '#475569',
+                                      fontSize: '0.85rem',
+                                    }}
+                                  >
+                                    {tab.label}
+                                  </Typography>
+                                </Box>
+                                <Chip
+                                  label={`${tabImageCount} ${tabImageCount === 1 ? 'img' : 'imgs'}`}
+                                  size="small"
+                                  sx={{
+                                    height: 22,
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700,
+                                    bgcolor: tabImageCount > 0 ? (isTabActive ? tab.borderColor : '#e2e8f0') : '#f1f5f9',
+                                    color: tabImageCount > 0 && isTabActive ? '#ffffff' : '#64748b',
+                                  }}
+                                />
+                              </Box>
+                            </Grid>
+                          );
+                        })}
                       </Grid>
-                    )}
+                    </Box>
+
+                    {/* Dropzone & Preview for Active Tab */}
+                    {(() => {
+                      const activeTabInfo = COLOR_TABS.find((t) => t.id === activeColorTab) || COLOR_TABS[0];
+                      const currentTabImages = productData.imageUrls.filter(
+                        (img) => (img.color || 'yellow-gold') === activeColorTab
+                      );
+
+                      return (
+                        <Box>
+                          <Box
+                            component="label"
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              p: 3,
+                              border: `2px dashed ${imageUploading ? '#94a3b8' : activeTabInfo.borderColor}`,
+                              borderRadius: '16px',
+                              bgcolor: imageUploading ? '#f8fafc' : activeTabInfo.bgLight,
+                              cursor: imageUploading ? 'not-allowed' : 'pointer',
+                              transition: 'all 0.3s',
+                              '&:hover': {
+                                bgcolor: imageUploading ? '#f8fafc' : activeTabInfo.bgLight,
+                                opacity: 0.9,
+                              },
+                            }}
+                          >
+                            <Avatar
+                              sx={{
+                                bgcolor: '#fff',
+                                color: imageUploading ? '#94a3b8' : activeTabInfo.colorCode,
+                                width: 48,
+                                height: 48,
+                                mb: 1,
+                                boxShadow: `0 4px 14px ${activeTabInfo.colorCode}30`,
+                              }}
+                            >
+                              {imageUploading ? <CircularProgress size={22} sx={{ color: '#94a3b8' }} /> : <Upload size={22} />}
+                            </Avatar>
+                            <Typography variant="body2" sx={{ fontWeight: 800, color: imageUploading ? '#94a3b8' : '#1e293b' }}>
+                              {imageUploading ? `Uploading ${activeTabInfo.label} Images…` : `Upload ${activeTabInfo.label} Images`}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                              Click or Drag &amp; Drop photos specifically for {activeTabInfo.label} (PNG, JPG, WEBP)
+                            </Typography>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              hidden
+                              disabled={imageUploading}
+                              onChange={handleImageUpload}
+                            />
+                          </Box>
+
+                          {imageUploading && (
+                            <Box sx={{ mt: 1.5 }}>
+                              <LinearProgress
+                                variant={uploadProgress > 0 ? 'determinate' : 'indeterminate'}
+                                value={uploadProgress}
+                                sx={{
+                                  borderRadius: 4,
+                                  height: 6,
+                                  bgcolor: '#e2e8f0',
+                                  '& .MuiLinearProgress-bar': { bgcolor: activeTabInfo.borderColor },
+                                }}
+                              />
+                            </Box>
+                          )}
+
+                          {/* Active Tab Thumbnails */}
+                          {currentTabImages.length > 0 ? (
+                            <Box sx={{ mt: 2 }}>
+                              <Typography variant="caption" sx={{ fontWeight: 700, color: '#475569', mb: 1, display: 'block' }}>
+                                Photos for {activeTabInfo.label} ({currentTabImages.length}):
+                              </Typography>
+                              <Grid container spacing={2}>
+                                {currentTabImages.map((image, index) => (
+                                  <Grid item xs={6} sm={3} key={image.imageUrl || index}>
+                                    <Box
+                                      sx={{
+                                        position: 'relative',
+                                        borderRadius: '14px',
+                                        overflow: 'hidden',
+                                        border: `2px solid ${activeTabInfo.borderColor}60`,
+                                        bgcolor: '#fff',
+                                      }}
+                                    >
+                                      <img
+                                        src={getOptimizedCloudinaryUrl(image.imageUrl, 'image')}
+                                        alt={`${activeTabInfo.label} ${index + 1}`}
+                                        style={{ width: '100%', height: 110, objectFit: 'cover', display: 'block' }}
+                                      />
+                                      <Chip
+                                        label={`${activeTabInfo.badge} #${index + 1}`}
+                                        size="small"
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 6,
+                                          left: 6,
+                                          bgcolor: activeTabInfo.borderColor,
+                                          color: '#fff',
+                                          fontWeight: 800,
+                                          fontSize: '0.65rem',
+                                          height: 20,
+                                        }}
+                                      />
+                                      <IconButton
+                                        size="small"
+                                        onClick={() => handleRemoveImage(image)}
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 4,
+                                          right: 4,
+                                          bgcolor: 'rgba(244,63,94,0.9)',
+                                          color: '#fff',
+                                          width: 24,
+                                          height: 24,
+                                          '&:hover': { bgcolor: '#f43f5e' },
+                                        }}
+                                      >
+                                        <Trash2 size={13} />
+                                      </IconButton>
+                                    </Box>
+                                  </Grid>
+                                ))}
+                              </Grid>
+                            </Box>
+                          ) : (
+                            <Box
+                              sx={{
+                                mt: 2,
+                                p: 2,
+                                bgcolor: '#f8fafc',
+                                borderRadius: '12px',
+                                border: '1px dashed #cbd5e1',
+                                textAlign: 'center',
+                              }}
+                            >
+                              <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                                No images uploaded for <strong>{activeTabInfo.label}</strong> yet. Click or drop images above to add photos for this metal color.
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      );
+                    })()}
                   </Grid>
                 </Grid>
               </CardContent>

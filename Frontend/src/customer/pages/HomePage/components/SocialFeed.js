@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import { motion } from 'framer-motion';
@@ -14,17 +14,17 @@ const socialImages = [
 
 const SocialFeed = () => {
     return (
-        <Box sx={{ py: { xs: 10, md: 16 }, px: { xs: 3, md: 12 }, bgcolor: '#ffffff' }}>
+        <Box sx={{ py: { xs: 6, md: 14 }, px: { xs: 3, sm: 6, md: 12 }, bgcolor: '#ffffff' }}>
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                style={{ textAlign: 'center', marginBottom: '60px' }}
+                style={{ textAlign: 'center', marginBottom: '32px' }}
             >
                 <Typography
                     variant="overline"
-                    sx={{ letterSpacing: 4, fontWeight: 800, color: '#3c7399', fontSize: '0.8rem' }}
+                    sx={{ letterSpacing: { xs: 2, sm: 4 }, fontWeight: 800, color: '#3c7399', fontSize: { xs: '0.75rem', sm: '0.8rem' } }}
                 >
                     FOLLOW @LOUPE_DIAMONDS
                 </Typography>

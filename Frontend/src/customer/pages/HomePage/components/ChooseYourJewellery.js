@@ -44,8 +44,8 @@ const ChooseYourJewellery = ({ products = [] }) => {
   const displayProducts = filteredProducts.slice(0, 4);
 
   return (
-    <Box sx={{ py: { xs: 8, md: 14 }, bgcolor: '#ffffff', overflow: 'hidden' }}>
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12 text-center">
+    <Box sx={{ py: { xs: 6, md: 12 }, bgcolor: '#ffffff', overflow: 'hidden' }}>
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-6 md:px-12 text-center">
         
         {/* Top small title */}
         <Typography
@@ -64,11 +64,11 @@ const ChooseYourJewellery = ({ products = [] }) => {
         {/* Main Title */}
         <Typography
           sx={{
-            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+            fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' },
             fontWeight: 500,
             fontFamily: "'Playfair Display', serif",
             color: '#000000',
-            mb: 2
+            mb: 1.5
           }}
         >
           Choose Your Jewellery
@@ -77,24 +77,25 @@ const ChooseYourJewellery = ({ products = [] }) => {
         {/* Subtitle */}
         <Typography
           sx={{
-            fontSize: { xs: '0.9rem', md: '1rem' },
+            fontSize: { xs: '0.85rem', md: '1rem' },
             color: '#666666',
             fontWeight: 400,
             maxWidth: '600px',
             mx: 'auto',
-            mb: 5
+            mb: { xs: 3, md: 5 },
+            px: 2
           }}
         >
           Get your stunning diamond jewellery with fast, one-day shipping for ultimate convenience and style.
         </Typography>
 
         {/* Category Filter Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
+        <div className="flex items-center justify-start sm:justify-center gap-2 md:gap-3 overflow-x-auto no-scrollbar py-2 px-1 mb-6 sm:mb-10 flex-nowrap sm:flex-wrap">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => handleCategoryClick(category)}
-              className={`px-6 py-2 rounded-md font-medium text-sm transition-all duration-300 ${
+              className={`px-4 py-1.5 sm:px-6 sm:py-2 rounded-full font-medium text-xs sm:text-sm whitespace-nowrap transition-all duration-300 flex-shrink-0 ${
                 activeCategory === category
                   ? 'bg-[#3c7399] text-white shadow-md'
                   : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
@@ -106,7 +107,7 @@ const ChooseYourJewellery = ({ products = [] }) => {
         </div>
 
         {/* Products Grid */}
-        <div className="min-h-[400px]">
+        <div className="min-h-[350px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCategory}
@@ -114,7 +115,7 @@ const ChooseYourJewellery = ({ products = [] }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
+              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6"
             >
               {displayProducts.length > 0 ? (
                 displayProducts.map((product, index) => (

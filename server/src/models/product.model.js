@@ -137,6 +137,7 @@ const ProductSchema = new mongoose.Schema({
         {
             imageUrl: { type: String },
             publicId: { type: String },
+            color: { type: String, default: 'yellow-gold' },
         }
     ],
     ratings: [

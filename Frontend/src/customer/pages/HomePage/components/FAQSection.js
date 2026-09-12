@@ -34,16 +34,16 @@ const FAQSection = () => {
     };
 
     return (
-        <Box sx={{ py: { xs: 10, md: 16 }, px: 3, bgcolor: '#ffffff' }}>
+        <Box sx={{ py: { xs: 6, md: 14 }, px: { xs: 2.5, sm: 3 }, bgcolor: '#ffffff' }}>
             <Box sx={{ maxWidth: 900, mx: 'auto' }}>
                 <Typography 
                     variant="h2" 
                     sx={{ 
-                        fontSize: { xs: '2.2rem', md: '3.5rem' }, 
+                        fontSize: { xs: '1.6rem', sm: '2.2rem', md: '3.2rem' }, 
                         fontWeight: 300, 
                         textAlign: 'center', 
                         color: '#3c7399', 
-                        mb: 2,
+                        mb: 1.5,
                         fontFamily: 'serif',
                         letterSpacing: 1
                     }}
@@ -54,8 +54,8 @@ const FAQSection = () => {
                     sx={{ 
                         textAlign: 'center', 
                         color: '#64748b', 
-                        mb: 8, 
-                        fontSize: '1.1rem',
+                        mb: { xs: 4, md: 8 }, 
+                        fontSize: { xs: '0.9rem', md: '1.1rem' },
                         maxWidth: 600,
                         mx: 'auto'
                     }}

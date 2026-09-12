@@ -23,6 +23,7 @@ const NextArrow = ({ onClick }) => (
     <IconButton
         onClick={onClick}
         sx={{
+            display: { xs: 'none', md: 'flex' },
             position: 'absolute', right: { xs: 0, md: -20 }, top: '45%',
             transform: 'translateY(-50%)', zIndex: 10, bgcolor: 'white', color: '#3c7399',
             width: 40, height: 40, boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)',
@@ -37,6 +38,7 @@ const PrevArrow = ({ onClick }) => (
     <IconButton
         onClick={onClick}
         sx={{
+            display: { xs: 'none', md: 'flex' },
             position: 'absolute', left: { xs: 0, md: -20 }, top: '45%',
             transform: 'translateY(-50%)', zIndex: 10, bgcolor: 'white', color: '#3c7399',
             width: 40, height: 40, boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)',
@@ -70,19 +72,19 @@ const PerfectSparkleSection = () => {
 
     const settings = {
         dots: false,
-        infinite: videos.length >= 4,  // only loop when enough slides to fill the row
+        infinite: videos.length >= 4,
         speed: 500,
         slidesToShow: 4,
         slidesToScroll: 1,
         autoplay: false,
-        rows: 1,           // prevent react-slick from ever wrapping into multiple rows
+        rows: 1,
         slidesPerRow: 1,
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
         responsive: [
             { breakpoint: 1280, settings: { slidesToShow: 3, rows: 1, slidesPerRow: 1, infinite: videos.length >= 3 } },
             { breakpoint: 1024, settings: { slidesToShow: 2, rows: 1, slidesPerRow: 1, infinite: videos.length >= 2 } },
-            { breakpoint: 640,  settings: { slidesToShow: 1, rows: 1, slidesPerRow: 1, infinite: videos.length >= 1 } }
+            { breakpoint: 640,  settings: { slidesToShow: 1.15, rows: 1, slidesPerRow: 1, infinite: false } }
         ]
     };
 
@@ -100,7 +102,7 @@ const PerfectSparkleSection = () => {
                 </Typography>
             </Box>
 
-            <div className="max-w-[1400px] mx-auto px-10 relative">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 md:px-10 relative">
                 {loading ? (
                     /* Loading skeleton */
                     <Box sx={{ display: 'flex', gap: 3 }}>

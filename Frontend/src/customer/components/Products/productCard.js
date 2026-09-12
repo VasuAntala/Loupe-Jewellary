@@ -41,10 +41,10 @@ const ProductCard = ({ product, index }) => {
       onMouseEnter={() => setMouseHover(true)}
       onMouseLeave={() => setMouseHover(false)}
       onClick={() => navigate(`/product/${product?._id}`)}
-      className="group relative flex flex-col items-center p-4 transition-all duration-700 cursor-pointer w-full max-w-[19rem] hover:bg-white hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] rounded-[32px]"
+      className="group relative flex flex-col items-center p-1.5 sm:p-4 transition-all duration-700 cursor-pointer w-full max-w-[19rem] hover:bg-white hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] rounded-[18px] sm:rounded-[32px] bg-white sm:bg-transparent border border-slate-100 sm:border-transparent"
     >
       {/* Product Image Container */}
-      <div className="relative w-full aspect-[4/5] overflow-hidden rounded-[24px] bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] mb-6 transition-all duration-700 group-hover:translate-y-[-8px]">
+      <div className="relative w-full aspect-[4/5] overflow-hidden rounded-[14px] sm:rounded-[24px] bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] mb-2 sm:mb-6 transition-all duration-700 group-hover:translate-y-[-8px]">
         <img
           src={!isMouseHover ? primaryImageUrl : hoverImageUrl}
           alt={product?.title}
@@ -53,8 +53,8 @@ const ProductCard = ({ product, index }) => {
 
         {/* New Arrival Badge */}
         {index < 3 && (
-          <div className="absolute top-5 right-5 bg-[#3c7399]/90 backdrop-blur-xl px-3 py-1.5 rounded-full shadow-sm z-10">
-            <p className="text-[0.6rem] font-bold text-white uppercase tracking-widest flex items-center gap-1.5">
+          <div className="absolute top-2 right-2 sm:top-5 sm:right-5 bg-[#3c7399]/90 backdrop-blur-xl px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm z-10">
+            <p className="text-[0.55rem] sm:text-[0.6rem] font-bold text-white uppercase tracking-widest flex items-center gap-1">
               <span className="w-1 h-1 rounded-full bg-white" />
               New
             </p>
@@ -63,14 +63,14 @@ const ProductCard = ({ product, index }) => {
       </div>
 
       {/* Product Information Stack */}
-      <div className="w-full text-center space-y-3 px-2">
+      <div className="w-full text-center space-y-1.5 sm:space-y-3 px-1 sm:px-2">
         <Typography
           sx={{
-            fontSize: '0.6rem',
+            fontSize: { xs: '0.55rem', sm: '0.6rem' },
             fontWeight: 800,
             color: '#94a3b8',
             textTransform: 'uppercase',
-            letterSpacing: '0.25em',
+            letterSpacing: '0.2em',
             transition: 'color 0.3s'
           }}
           className="group-hover:text-[#3c7399]"
@@ -78,23 +78,23 @@ const ProductCard = ({ product, index }) => {
           {product?.type || "Fine Jewellery"}
         </Typography>
 
-        <h3 className="text-[1.05rem] font-medium text-[#3c7399] font-serif leading-tight line-clamp-2 min-h-[2.5rem]">
+        <h3 className="text-[0.82rem] sm:text-[1.05rem] font-medium text-[#3c7399] font-serif leading-tight line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
           {product?.title || "Untitled Masterpiece"}
         </h3>
 
         {/* Approx Price Display */}
-        <div className="flex flex-col items-center pt-1 space-y-2">
+        <div className="flex flex-col items-center pt-0.5 sm:pt-1 space-y-1 sm:space-y-2">
           {priceRange ? (
             <div className="flex flex-col items-center">
-              <span className="text-[0.6rem] font-bold text-[#94a3b8] uppercase tracking-widest">
+              <span className="text-[0.55rem] sm:text-[0.6rem] font-bold text-[#94a3b8] uppercase tracking-widest">
                 Approx. Price
               </span>
-              <span className="text-[1.05rem] font-bold text-[#1e3545] font-sans tracking-tight">
+              <span className="text-[0.85rem] sm:text-[1.05rem] font-bold text-[#1e3545] font-sans tracking-tight">
                 {priceRange}
               </span>
             </div>
           ) : (
-            <span className="text-[0.85rem] font-semibold text-[#94a3b8] italic">
+            <span className="text-[0.75rem] sm:text-[0.85rem] font-semibold text-[#94a3b8] italic">
               Contact for Price
             </span>
           )}
@@ -102,7 +102,7 @@ const ProductCard = ({ product, index }) => {
           {/* WhatsApp CTA */}
           <button
             onClick={handleWhatsAppClick}
-            className="flex items-center justify-center gap-1.5 w-full mt-1 py-2 px-3 rounded-full text-white text-[0.7rem] font-bold uppercase tracking-wider transition-all duration-300"
+            className="flex items-center justify-center gap-1 sm:gap-1.5 w-full mt-1 py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white text-[0.65rem] sm:text-[0.7rem] font-bold uppercase tracking-wider transition-all duration-300"
             style={{
               background: 'linear-gradient(135deg, #25D366, #1ebe5a)',
               boxShadow: '0 4px 12px rgba(37,211,102,0.35)',
@@ -110,7 +110,8 @@ const ProductCard = ({ product, index }) => {
             aria-label="Chat on WhatsApp"
           >
             {WA_ICON}
-            Chat on WhatsApp
+            <span className="hidden sm:inline">Chat on WhatsApp</span>
+            <span className="sm:hidden">WhatsApp</span>
           </button>
 
           {/* Collection Signature on hover */}

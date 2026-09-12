@@ -7,14 +7,14 @@ import "slick-carousel/slick/slick-theme.css";
 
 const categories = [
     { name: "RINGS", image: "/product/product4.jpeg", hoverImage: "/product/product4.jpeg", id: "rings" },
-    { name: "EARRINGS", image: "/product/_.jpeg", hoverImage: "/product/_.jpeg", id: "earrings" },
-    { name: "NECKLACES", image: "/product/Necklace.jpeg", hoverImage: "/product/Necklace.jpeg", id: "necklaces" },
-    { name: "PENDANTS", image: "/product/product7.jpeg", hoverImage: "/product/product7.jpeg", id: "pendants" },
-    { name: "BRACELETS", image: "/product/product 2.png", hoverImage: "/product/product 2.png", id: "bracelets" },
-    { name: "BANGLES", image: "/product/product 3.png", hoverImage: "/product/product 3.png", id: "bangles" },
+    { name: "EARRINGS", image: "/product/earring-1.jpg", hoverImage: "/product/earring-2.jpg", id: "earrings" },
+    { name: "NECKLACES", image: "/product/necklace-1.jpg", hoverImage: "/product/necklace-2.jpg", id: "necklaces" },
+    { name: "PENDANTS", image: "/product/necklace-2.jpg", hoverImage: "/product/necklace-1.jpg", id: "pendants" },
+    { name: "BRACELETS", image: "/product/bracelet-1.jpg", hoverImage: "/product/bracelet-1.jpg", id: "bracelets" },
+    { name: "BANGLES", image: "/product/bracelet-1.jpg", hoverImage: "/product/bracelet-1.jpg", id: "bangles" },
     { name: "MANGALSUTRA", image: "/product/product5.jpeg", hoverImage: "/product/product5.jpeg", id: "mangalsutra" },
-    { name: "CHAINS", image: "/product/product 3.png", hoverImage: "/product/product 3.png", id: "chains" },
-    { name: "LOCKETS", image: "/product/product7.jpeg", hoverImage: "/product/product7.jpeg", id: "lockets" },
+    { name: "CHAINS", image: "/product/necklace-1.jpg", hoverImage: "/product/necklace-1.jpg", id: "chains" },
+    { name: "LOCKETS", image: "/product/necklace-2.jpg", hoverImage: "/product/necklace-2.jpg", id: "lockets" },
     { name: "ANKLETS", image: "/product/product5.jpeg", hoverImage: "/product/product5.jpeg", id: "anklets" },
 ];
 
@@ -75,7 +75,7 @@ const CollectionCircles = () => {
                                 alignItems: 'center',
                                 cursor: 'pointer',
                                 '&:hover .main-img': { opacity: 0 },
-                                '&:hover .hover-img': { opacity: 1, transform: 'scale(1.05)' }
+                                '&:hover .hover-img': { opacity: 1, transform: 'scale(1.08)' }
                             }}
                             onClick={() => navigate(`/all-jewellery/category/${cat.id}`)}
                         >
@@ -86,26 +86,32 @@ const CollectionCircles = () => {
                                     borderRadius: '50%',
                                     overflow: 'hidden',
                                     mb: { xs: 1, md: 2 },
-                                    border: '1px solid #f1f5f9',
-                                    bgcolor: '#f8fafc',
+                                    border: '1.5px solid #edf2f7',
+                                    bgcolor: '#ffffff',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     p: { xs: 0.5, md: 1 },
-                                    position: 'relative'
+                                    position: 'relative',
+                                    transition: 'all 0.3s ease',
+                                    '&:hover': {
+                                        borderColor: '#3c7399',
+                                        boxShadow: '0 8px 25px rgba(60,115,153,0.12)'
+                                    }
                                 }}
                             >
                                 <img
                                     src={cat.image}
                                     alt={cat.name}
-                                    className="main-img w-full h-full object-cover rounded-full transition-all duration-500 absolute top-0 left-0"
-                                    style={{ padding: '6px' }}
+                                    className="main-img w-full h-full object-contain rounded-full transition-all duration-500 absolute top-0 left-0"
+                                    style={{ padding: '8px' }}
                                 />
                                 <img
                                     src={cat.hoverImage}
-                                    alt={`${cat.name} Model`}
-                                    className="hover-img w-full h-full object-cover rounded-full transition-all duration-500 absolute top-0 left-0 opacity-0"
-                                    style={{ padding: '6px' }}
+                                    alt={`${cat.name} Preview`}
+                                    className="hover-img w-full h-full object-contain rounded-full transition-all duration-500 absolute top-0 left-0 opacity-0"
+                                    style={{ padding: '8px' }}
                                 />
                             </Box>
                             <Typography

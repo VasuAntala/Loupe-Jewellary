@@ -75,6 +75,14 @@ const HomePage = () => {
   // Show all products if no best-sellers tagged, as fallback
   const displayBestSellers = bestSellerProducts.length > 0 ? bestSellerProducts : allProductsList;
 
+  // Style Stories: products with 'style-stories' in tags or collectionName
+  const styleStoryProducts = allProductsList.filter(
+    (p) =>
+      (Array.isArray(p.tags) && (p.tags.includes('style-stories') || p.tags.includes('style-story'))) ||
+      p.collectionName === 'style-stories' ||
+      p.collectionName === 'style-story'
+  );
+
   return (
     <div
       ref={containerRef}
@@ -117,7 +125,7 @@ const HomePage = () => {
 
       {/* Style Stories - Lifestyle Grid */}
       <section className="reveal">
-        <StyleStory />
+        <StyleStory products={styleStoryProducts} />
       </section>
 
       {/* Crafted for Every Moment */}

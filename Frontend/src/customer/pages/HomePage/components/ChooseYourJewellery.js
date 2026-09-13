@@ -45,7 +45,7 @@ const ChooseYourJewellery = ({ products = [] }) => {
 
   return (
     <Box sx={{ py: { xs: 6, md: 12 }, bgcolor: '#ffffff', overflow: 'hidden' }}>
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-6 md:px-12 text-center">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
         
         {/* Top small title */}
         <Typography
@@ -135,19 +135,23 @@ const ChooseYourJewellery = ({ products = [] }) => {
         <div className="mt-12">
           <Button
             onClick={handleViewFullCollection}
-            variant="outlined"
+            variant="contained"
             sx={{
-              borderColor: '#e5e7eb',
-              color: '#374151',
-              px: 4,
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 600,
-              borderRadius: '8px',
+              bgcolor: '#3c7399',
+              color: '#ffffff',
+              px: { xs: 4, sm: 6 },
+              py: { xs: 1.5, sm: 1.8 },
+              borderRadius: '100px',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              boxShadow: '0 4px 15px rgba(60, 115, 153, 0.25)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                borderColor: '#3c7399',
-                backgroundColor: 'transparent',
-                color: '#3c7399'
+                bgcolor: '#2c5775',
+                boxShadow: '0 8px 25px rgba(60, 115, 153, 0.4)',
+                transform: 'translateY(-2px)'
               }
             }}
           >

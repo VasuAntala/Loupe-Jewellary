@@ -47,7 +47,7 @@ const ShopByOccasion = () => {
 
   return (
     <Box sx={{ py: { xs: 6, md: 12 }, bgcolor: '#ffffff' }}>
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-6 md:px-12">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
         {/* Header section */}
         <div className="text-center mb-8 md:mb-14">
           <Typography
@@ -123,12 +123,6 @@ const ShopByOccasion = () => {
                 >
                   {occasion.subtitle}
                 </Typography>
-
-                {/* Explore Button / Pill */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[9px] sm:text-xs text-white uppercase tracking-wider font-semibold border border-white/30 group-hover:bg-white group-hover:text-[#3c7399] transition-all duration-300">
-                  <span>Explore Collection</span>
-                  <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
-                </div>
               </div>
             </motion.div>
           ))}

@@ -11,11 +11,7 @@ const categories = [
     { name: "NECKLACES", image: "/product/necklace-1.jpg", hoverImage: "/product/necklace-2.jpg", id: "necklaces" },
     { name: "PENDANTS", image: "/product/necklace-2.jpg", hoverImage: "/product/necklace-1.jpg", id: "pendants" },
     { name: "BRACELETS", image: "/product/bracelet-1.jpg", hoverImage: "/product/bracelet-1.jpg", id: "bracelets" },
-    { name: "BANGLES", image: "/product/bracelet-1.jpg", hoverImage: "/product/bracelet-1.jpg", id: "bangles" },
-    { name: "MANGALSUTRA", image: "/product/product5.jpeg", hoverImage: "/product/product5.jpeg", id: "mangalsutra" },
     { name: "CHAINS", image: "/product/necklace-1.jpg", hoverImage: "/product/necklace-1.jpg", id: "chains" },
-    { name: "LOCKETS", image: "/product/necklace-2.jpg", hoverImage: "/product/necklace-2.jpg", id: "lockets" },
-    { name: "ANKLETS", image: "/product/product5.jpeg", hoverImage: "/product/product5.jpeg", id: "anklets" },
 ];
 
 const CollectionCircles = () => {
@@ -63,7 +59,7 @@ const CollectionCircles = () => {
 
     return (
         <Box className="no-scrollbar" sx={{ pt: { xs: 2, md: 3 }, pb: { xs: 4, md: 8 }, bgcolor: '#ffffff', overflow: 'hidden' }}>
-            <div className="max-w-[1600px] mx-auto no-scrollbar">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 no-scrollbar">
                 <Slider {...settings}>
                     {categories.map((cat, i) => (
                         <Box

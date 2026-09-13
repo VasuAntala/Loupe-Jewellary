@@ -16,8 +16,8 @@ const LifestyleSplit = () => {
     const y3 = useTransform(scrollYProgress, [0, 1], [90, -90]);
 
     return (
-        <Box ref={containerRef} sx={{ py: { xs: 6, sm: 10, md: 16 }, px: { xs: 3, sm: 6, md: 12 }, bgcolor: '#f8fafc', overflow: 'hidden' }}>
-            <div className="mx-auto max-w-[1400px] grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-24 items-center">
+        <Box ref={containerRef} sx={{ py: { xs: 6, sm: 10, md: 16 }, px: 0, bgcolor: '#f8fafc', overflow: 'hidden' }}>
+            <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-24 items-center">
 
                 {/* Text Content */}
                 <motion.div
@@ -58,22 +58,25 @@ const LifestyleSplit = () => {
                         onClick={() => navigate('/all-jewellery/all/jewellery')}
                         sx={{
                             borderColor: '#3c7399',
-                            color: '#3c7399',
-                            px: { xs: 3.5, sm: 5 },
-                            py: { xs: 1.2, sm: 1.8 },
-                            borderRadius: '100px',
-                            fontWeight: 700,
-                            letterSpacing: 2,
-                            textTransform: 'uppercase',
-                            fontSize: { xs: '0.72rem', sm: '0.8rem' },
                             borderWidth: '2px',
+                            color: '#3c7399',
+                            px: { xs: 4, sm: 6 },
+                            py: { xs: 1.5, sm: 1.8 },
+                            borderRadius: '100px',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                            letterSpacing: '2px',
+                            textTransform: 'uppercase',
+                            bgcolor: 'transparent',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                             '&:hover': {
                                 borderWidth: '2px',
-                                borderColor: '#7ea9bd',
-                                bgcolor: 'rgba(151,194,213,0.05)',
+                                borderColor: '#3c7399',
+                                bgcolor: '#3c7399',
+                                color: '#ffffff',
+                                boxShadow: '0 6px 20px rgba(60, 115, 153, 0.3)',
                                 transform: 'translateY(-2px)'
-                            },
-                            transition: 'all 0.3s'
+                            }
                         }}
                     >
                         Explore Lookbook

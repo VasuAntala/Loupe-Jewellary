@@ -34,7 +34,7 @@ const FAQSection = () => {
     };
 
     return (
-        <Box sx={{ py: { xs: 6, md: 14 }, px: { xs: 2.5, sm: 3 }, bgcolor: '#ffffff' }}>
+        <Box sx={{ py: { xs: 6, md: 14 }, px: { xs: 2, sm: 3, md: 4, lg: 6 }, bgcolor: '#ffffff' }}>
             <Box sx={{ maxWidth: 900, mx: 'auto' }}>
                 <Typography 
                     variant="h2" 

@@ -15,7 +15,7 @@ const NextArrow = ({ onClick }) => (
         sx={{
             display: { xs: 'none', md: 'flex' },
             position: 'absolute',
-            right: { xs: 0, md: -30 },
+            right: { xs: 0, md: 12 },
             top: '40%',
             transform: 'translateY(-50%)',
             zIndex: 10,
@@ -37,7 +37,7 @@ const PrevArrow = ({ onClick }) => (
         sx={{
             display: { xs: 'none', md: 'flex' },
             position: 'absolute',
-            left: { xs: 0, md: -30 },
+            left: { xs: 0, md: 12 },
             top: '40%',
             transform: 'translateY(-50%)',
             zIndex: 10,
@@ -105,7 +105,7 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                 <div className="w-16 h-[2px] bg-[#3c7399] mx-auto opacity-50" />
             </Box>
 
-            <div className="max-w-[1150px] mx-auto px-3 sm:px-8 md:px-10 relative">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative">
                 <Slider {...settings}>
                     {products.map((product, idx) => (
                         <BestSellerCard key={product._id || product.id || idx} product={product} />
@@ -121,26 +121,21 @@ const BestSellerSection = ({ title = "Best Sellers", products = [] }) => {
                         navigate('/best-sellers/jewellery/jewellery');
                     }}
                     sx={{
-                        bgcolor: '#3c7399', // Primary Slate
-                        color: 'white',
-                        px: { xs: 4, sm: 8 },
-                        py: { xs: 1.5, sm: 2 },
-                        borderRadius: '4px', // Subtle rounding for premium feel
+                        bgcolor: '#3c7399',
+                        color: '#ffffff',
+                        px: { xs: 4, sm: 6 },
+                        py: { xs: 1.5, sm: 1.8 },
+                        borderRadius: '100px',
                         fontSize: '0.8rem',
                         fontWeight: 700,
-                        letterSpacing: 3,
-                        boxShadow: '0 4px 14px 0 rgba(30, 41, 59, 0.2)',
-                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        letterSpacing: '2px',
                         textTransform: 'uppercase',
-                        position: 'relative',
-                        overflow: 'hidden',
+                        boxShadow: '0 4px 15px rgba(60, 115, 153, 0.25)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         '&:hover': {
-                            bgcolor: '#3c7399', // Loupe Blue Hover
-                            boxShadow: '0 8px 25px rgba(151, 194, 213, 0.4)',
+                            bgcolor: '#2c5775',
+                            boxShadow: '0 8px 25px rgba(60, 115, 153, 0.4)',
                             transform: 'translateY(-2px)'
-                        },
-                        '&:active': {
-                            transform: 'translateY(0)'
                         }
                     }}
                 >

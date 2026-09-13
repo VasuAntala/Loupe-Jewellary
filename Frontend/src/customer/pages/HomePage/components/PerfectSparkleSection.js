@@ -24,7 +24,7 @@ const NextArrow = ({ onClick }) => (
         onClick={onClick}
         sx={{
             display: { xs: 'none', md: 'flex' },
-            position: 'absolute', right: { xs: 0, md: -20 }, top: '45%',
+            position: 'absolute', right: { xs: 0, md: 12 }, top: '45%',
             transform: 'translateY(-50%)', zIndex: 10, bgcolor: 'white', color: '#3c7399',
             width: 40, height: 40, boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)',
             '&:hover': { bgcolor: '#f8fafc' }, transition: 'all 0.3s'
@@ -39,7 +39,7 @@ const PrevArrow = ({ onClick }) => (
         onClick={onClick}
         sx={{
             display: { xs: 'none', md: 'flex' },
-            position: 'absolute', left: { xs: 0, md: -20 }, top: '45%',
+            position: 'absolute', left: { xs: 0, md: 12 }, top: '45%',
             transform: 'translateY(-50%)', zIndex: 10, bgcolor: 'white', color: '#3c7399',
             width: 40, height: 40, boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)',
             '&:hover': { bgcolor: '#f8fafc' }, transition: 'all 0.3s'
@@ -102,7 +102,7 @@ const PerfectSparkleSection = () => {
                 </Typography>
             </Box>
 
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 md:px-10 relative">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative">
                 {loading ? (
                     /* Loading skeleton */
                     <Box sx={{ display: 'flex', gap: 3 }}>

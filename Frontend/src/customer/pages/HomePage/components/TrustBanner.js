@@ -23,7 +23,7 @@ const features = [
 
 const TrustBanner = () => {
     return (
-        <Box sx={{ py: { xs: 8, md: 12 }, px: { xs: 2, md: 8 }, bgcolor: '#ffffff' }}>
+        <Box sx={{ py: { xs: 8, md: 12 }, px: { xs: 2, sm: 3, md: 4, lg: 6 }, bgcolor: '#ffffff' }}>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
                 <Typography
                     sx={{
@@ -58,7 +58,7 @@ const TrustBanner = () => {
                     display: 'grid',
                     gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: '1fr 1fr 1fr' },
                     gap: 3,
-                    maxWidth: 1200,
+                    maxWidth: 1600,
                     mx: 'auto'
                 }}
             >

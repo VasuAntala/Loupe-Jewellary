@@ -14,8 +14,9 @@ const socialImages = [
 
 const SocialFeed = () => {
     return (
-        <Box sx={{ py: { xs: 6, md: 14 }, px: { xs: 3, sm: 6, md: 12 }, bgcolor: '#ffffff' }}>
-            <motion.div
+        <Box sx={{ py: { xs: 6, md: 14 }, px: 0, bgcolor: '#ffffff' }}>
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+                <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -88,6 +89,7 @@ const SocialFeed = () => {
                     </motion.div>
                 ))}
             </motion.div>
+            </div>
         </Box>
     );
 };

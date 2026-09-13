@@ -145,7 +145,7 @@ const StyleStory = ({ products = [] }) => {
                     display: 'grid',
                     gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
                     gap: { xs: 2, sm: 3 },
-                    px: { xs: 2, sm: 4, md: 10 },
+                    px: { xs: 2, sm: 3, md: 4, lg: 6 },
                     maxWidth: 1600,
                     mx: 'auto'
                 }}
@@ -157,7 +157,7 @@ const StyleStory = ({ products = [] }) => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
-                        className="group relative cursor-pointer"
+                        className="group relative cursor-pointer p-2 rounded-[16px] sm:rounded-[20px] transition-all duration-500 hover:bg-[rgb(169,206,229)]"
                         onClick={() => handleCardClick(story)}
                     >
                         {/* Vertical Image Frame */}
@@ -170,7 +170,10 @@ const StyleStory = ({ products = [] }) => {
                                 mb: { xs: 1.5, sm: 3 },
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
                                 transition: 'all 0.5s ease',
-                                bgcolor: '#f8fafc'
+                                bgcolor: '#f8fafc',
+                                '&:hover': {
+                                    bgcolor: 'rgb(169, 206, 229)'
+                                }
                             }}
                         >
                             <img
@@ -196,11 +199,16 @@ const StyleStory = ({ products = [] }) => {
                                         handleCardClick(story);
                                     }}
                                     sx={{
-                                        bgcolor: 'white',
-                                        color: '#3c7399',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 900,
-                                        '&:hover': { bgcolor: '#3c7399', color: 'white' }
+                                        bgcolor: '#3c7399',
+                                        color: '#ffffff',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 700,
+                                        letterSpacing: '1.5px',
+                                        textTransform: 'uppercase',
+                                        borderRadius: '100px',
+                                        py: 1,
+                                        boxShadow: '0 4px 15px rgba(60, 115, 153, 0.25)',
+                                        '&:hover': { bgcolor: '#2c5775', color: '#ffffff' }
                                     }}
                                 >
                                     Shop the look

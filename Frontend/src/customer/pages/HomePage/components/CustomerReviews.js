@@ -260,7 +260,7 @@ const CustomerReviews = () => {
     <Box
       sx={{
         py: { xs: 10, md: 16 },
-        px: { xs: 2, sm: 4, md: 6 },
+        px: { xs: 2, sm: 3, md: 4, lg: 6 },
         background: 'linear-gradient(160deg, #f0f7fc 0%, #fdfcf7 40%, #f0f7fc 100%)',
         position: 'relative',
         overflow: 'hidden',
@@ -292,7 +292,7 @@ const CustomerReviews = () => {
         }}
       />
 
-      <Box sx={{ maxWidth: 1280, mx: 'auto', position: 'relative', zIndex: 1 }}>
+      <Box sx={{ maxWidth: 1600, mx: 'auto', position: 'relative', zIndex: 1 }}>
         {/* Section Header */}
         <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
           {/* Eyebrow Label */}

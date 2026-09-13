@@ -39,11 +39,11 @@ const BestSellerCard = ({ product }) => {
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="group relative bg-white px-1.5 py-1.5 sm:px-2 sm:py-2 transition-all duration-500 w-full mx-auto"
+            className="group relative bg-white px-1.5 py-1.5 sm:px-2 sm:py-2 transition-all duration-500 w-full mx-auto rounded-[16px] sm:rounded-[22px] hover:bg-[rgb(169,206,229)]"
         >
             {/* 1. Luxury Image Frame */}
             <Box
-                className="relative aspect-[4/5] w-full mb-2 sm:mb-3 overflow-hidden rounded-[14px] sm:rounded-[20px] bg-gradient-to-br from-[#fcfcfc] to-[#f3f4f6]/30 border border-gray-100/50 transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] group-hover:-translate-y-1 flex items-center justify-center cursor-pointer"
+                className="relative aspect-[4/5] w-full mb-2 sm:mb-3 overflow-hidden rounded-[14px] sm:rounded-[20px] bg-gradient-to-br from-[#fcfcfc] to-[#f3f4f6]/30 group-hover:bg-[rgb(169,206,229)] border border-gray-100/50 transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] group-hover:-translate-y-1 flex items-center justify-center cursor-pointer"
                 onClick={handleNavigate}
             >
                 {/* Floating "New Tier" Badge */}
@@ -71,7 +71,7 @@ const BestSellerCard = ({ product }) => {
                 </AnimatePresence>
 
                 {/* Glass Action Overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-[rgb(169,206,229)]/20 transition-colors duration-700" />
 
                 {/* Persistent Wishlist */}
                 <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20">
@@ -95,7 +95,7 @@ const BestSellerCard = ({ product }) => {
                     >
                         <MessageCircle size={14} />
                     </IconButton>
-                    <button onClick={handleNavigate} className="flex-1 bg-white text-[#1e293b] text-[9px] font-black tracking-widest uppercase rounded-full shadow-md hover:bg-[#1e293b] hover:text-white transition-all duration-300 transform active:scale-95 border border-white py-1.5">
+                    <button onClick={handleNavigate} className="flex-1 bg-[#3c7399] text-white text-[9px] font-bold tracking-widest uppercase rounded-full shadow-md hover:bg-[#2c5775] transition-all duration-300 transform active:scale-95 border border-[#3c7399] py-1.5">
                         Discovery
                     </button>
                     <IconButton

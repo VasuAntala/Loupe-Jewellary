@@ -341,10 +341,14 @@ export default function Navigation() {
                 <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 bg-white border-b border-gray-100">
                   <Link to="/home1" onClick={() => setOpen(false)}>
                     <img
-                      src="/Loupe-logo-cropped.png"
+                      src="/Loupe-logo-theme.png"
                       alt="Loupe Jeweler"
                       className="h-8 sm:h-9 w-auto object-contain"
-                      style={{ filter: 'brightness(0)' }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/Loupe-logo-cropped.png';
+                        e.target.style.filter = 'brightness(0) invert(42%) sepia(28%) saturate(1020%) hue-rotate(162deg) brightness(92%) contrast(89%)';
+                      }}
                     />
                   </Link>
                   <IconButton onClick={() => setOpen(false)} sx={{ color: '#3c7399' }}>
@@ -505,7 +509,7 @@ export default function Navigation() {
         </Dialog>
       </Transition.Root>
 
-      <header className="relative z-50 w-full shadow-md" style={{ backgroundColor: '#a9cee5', color: '#1e3545' }}>
+      <header className="relative z-50 w-full bg-white border-b border-gray-100 shadow-xs" style={{ backgroundColor: '#ffffff', color: '#3c7399' }}>
         {/* Premium Top Announcement / Notice Bar */}
         <div
           className="w-full py-1.5 px-4 text-[0.75rem] font-medium tracking-wider border-b border-white/5"
@@ -540,19 +544,23 @@ export default function Navigation() {
                 onClick={() => setOpen(true)}
                 sx={{
                   display: { xs: 'flex', lg: 'none' },
-                  color: '#1e3545',
+                  color: '#3c7399',
                   ml: -1,
-                  '&:hover': { bgcolor: 'rgba(30,53,69,0.08)' }
+                  '&:hover': { bgcolor: 'rgba(60,115,153,0.08)' }
                 }}
               >
                 <MenuIcon sx={{ fontSize: 28 }} />
               </IconButton>
               <Link to="/home1" className="flex items-center ml-1 lg:ml-0">
                 <img
-                  src="/Loupe-logo-cropped.png"
+                  src="/Loupe-logo-theme.png"
                   alt="Loupe Jeweler"
                   className="h-8 sm:h-9 lg:h-11 w-auto object-contain transition-all duration-300"
-                  style={{ filter: 'brightness(0)' }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/Loupe-logo-cropped.png';
+                    e.target.style.filter = 'brightness(0) invert(42%) sepia(28%) saturate(1020%) hue-rotate(162deg) brightness(92%) contrast(89%)';
+                  }}
                 />
               </Link>
             </div>
@@ -571,7 +579,7 @@ export default function Navigation() {
                     >
                       {({ close }) => (
                         <>
-                          <Popover.Button className={classNames(hoveredIndex === index ? "border-[#1e3545] font-bold" : "border-transparent", "z-10 flex items-center text-[0.8rem] tracking-widest uppercase text-[#1e3545] outline-none border-b-2 transition-all pb-1")}>
+                          <Popover.Button className={classNames(hoveredIndex === index ? "border-[#3c7399] font-black text-[#3c7399]" : "border-transparent text-[#3c7399] font-bold hover:text-[#2b5470]", "z-10 flex items-center text-[0.8rem] tracking-widest uppercase outline-none border-b-2 transition-all pb-1")}>
                             {category.name}
                           </Popover.Button>
                           <Transition
@@ -602,10 +610,10 @@ export default function Navigation() {
                                           fontFamily: "'Playfair Display', serif",
                                           fontWeight: 700,
                                           fontSize: '0.88rem',
-                                          color: '#1e3545',
+                                          color: '#3c7399',
                                           mb: 2.5,
                                           pb: 1,
-                                          borderBottom: '2px solid #a9cee5'
+                                          borderBottom: '2px solid rgba(60, 115, 153, 0.25)'
                                         }}>
                                           {section.name}
                                         </Typography>
@@ -678,7 +686,7 @@ export default function Navigation() {
                                     </Typography>
                                     <button
                                       onClick={() => { navigate(`/${category.id}`); close(); setHoveredIndex(null); }}
-                                      className="inline-flex items-center gap-2 text-[0.68rem] font-black tracking-[0.18em] uppercase text-white border border-white/50 px-4 py-2 rounded-full hover:bg-white hover:text-[#1e3545] transition-all duration-300"
+                                      className="inline-flex items-center gap-2 text-[0.68rem] font-black tracking-[0.18em] uppercase text-white border border-white/50 px-4 py-2 rounded-full hover:bg-white hover:text-[#3c7399] transition-all duration-300"
                                     >
                                       Discover All
                                       <span className="text-base leading-none">→</span>
@@ -695,7 +703,7 @@ export default function Navigation() {
                 </Popover.Group>
               ) : (
                 <div className="w-full max-w-xl animate-in fade-in slide-in-from-top-4 duration-300">
-                  <div className="relative flex items-center border-b-2 border-[#1e3545]/70 py-1 group focus-within:border-[#1e3545] transition-all">
+                  <div className="relative flex items-center border-b-2 border-[#3c7399]/70 py-1 group focus-within:border-[#3c7399] transition-all">
                     <InputBase
                       autoFocus
                       placeholder="Search for products..."
@@ -704,13 +712,13 @@ export default function Navigation() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={handleSearch}
                       sx={{
-                        color: '#1e3545',
+                        color: '#3c7399',
                         fontSize: '1.1rem',
                         fontFamily: 'serif',
-                        '& input::placeholder': { color: '#1e3545', opacity: 0.7 }
+                        '& input::placeholder': { color: '#3c7399', opacity: 0.7 }
                       }}
                     />
-                    <IconButton onClick={() => setSearchOpen(false)} sx={{ color: '#1e3545', p: 0.5 }}>
+                    <IconButton onClick={() => setSearchOpen(false)} sx={{ color: '#3c7399', p: 0.5, '&:hover': { bgcolor: 'rgba(60,115,153,0.08)' } }}>
                       <CloseIcon sx={{ fontSize: 20 }} />
                     </IconButton>
                   </div>
@@ -723,15 +731,15 @@ export default function Navigation() {
 
               {/* Premium Country Selector */}
               <div
-                className="hidden xl:flex items-center text-[#1e3545] text-[0.7rem] font-black cursor-pointer py-2 px-4 rounded-full hover:bg-[#1e3545]/10 transition-all border border-[#1e3545]/20 group"
+                className="hidden xl:flex items-center text-[#3c7399] text-[0.7rem] font-black cursor-pointer py-2 px-4 rounded-full hover:bg-[#3c7399]/10 transition-all border border-[#3c7399]/25 group"
                 onClick={handleCountryOpen}
               >
                 <span className="mr-2.5 text-lg filter drop-shadow-sm">{selectedCountry.flag}</span>
                 <div className="flex flex-col items-start leading-tight">
-                  <span className="uppercase tracking-[0.15em] opacity-80 text-[0.6rem]">Shipping to</span>
-                  <span className="uppercase tracking-[0.1em] font-black">{selectedCountry.name} ({selectedCountry.currency.split(' ')[1] || selectedCountry.currency.split(' ')[0]})</span>
+                  <span className="uppercase tracking-[0.15em] text-[#3c7399]/70 text-[0.6rem] font-bold">Shipping to</span>
+                  <span className="uppercase tracking-[0.1em] font-black text-[#3c7399]">{selectedCountry.name} ({selectedCountry.currency.split(' ')[1] || selectedCountry.currency.split(' ')[0]})</span>
                 </div>
-                <KeyboardArrowDownIcon sx={{ fontSize: 18, ml: 1, opacity: 0.6, transition: 'transform 0.3s', transform: Boolean(countryAnchorEl) ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                <KeyboardArrowDownIcon sx={{ fontSize: 18, ml: 1, color: '#3c7399', opacity: 0.8, transition: 'transform 0.3s', transform: Boolean(countryAnchorEl) ? 'rotate(180deg)' : 'rotate(0deg)' }} />
               </div>
 
               <Menu
@@ -811,10 +819,10 @@ export default function Navigation() {
                 <IconButton
                   onClick={handleProfileClick}
                   sx={{
-                    color: '#1e3545',
+                    color: '#3c7399',
                     p: 1,
-                    '&:hover': { bgcolor: 'rgba(30, 53, 69, 0.08)' },
-                    bgcolor: Boolean(anchorEl) ? 'rgba(30, 53, 69, 0.12)' : 'transparent'
+                    '&:hover': { bgcolor: 'rgba(60, 115, 153, 0.08)' },
+                    bgcolor: Boolean(anchorEl) ? 'rgba(60, 115, 153, 0.12)' : 'transparent'
                   }}
                 >
                   <PermIdentityOutlinedIcon sx={{ width: "24px", height: "24px" }} />
@@ -910,13 +918,13 @@ export default function Navigation() {
               </div>
 
               {/* Search Toggle */}
-              <IconButton onClick={() => setSearchOpen(!searchOpen)} sx={{ color: '#1e3545', p: 1 }}>
+              <IconButton onClick={() => setSearchOpen(!searchOpen)} sx={{ color: '#3c7399', p: 1, '&:hover': { bgcolor: 'rgba(60, 115, 153, 0.08)' } }}>
                 <SearchIcon sx={{ width: "24px", height: "24px" }} />
               </IconButton>
 
               {/* Cart */}
-              <IconButton onClick={() => setCartOpen(true)} sx={{ color: '#1e3545', p: 1 }}>
-                <Badge badgeContent={cart.cart?.totalItem} sx={{ '& .MuiBadge-badge': { backgroundColor: '#1e3545', color: 'white', fontWeight: 'bold' } }}>
+              <IconButton onClick={() => setCartOpen(true)} sx={{ color: '#3c7399', p: 1, '&:hover': { bgcolor: 'rgba(60, 115, 153, 0.08)' } }}>
+                <Badge badgeContent={cart.cart?.totalItem} sx={{ '& .MuiBadge-badge': { backgroundColor: '#3c7399', color: 'white', fontWeight: 'bold' } }}>
                   <AddShoppingCartIcon sx={{ width: "23px", height: "23px" }} />
                 </Badge>
               </IconButton>
@@ -928,8 +936,8 @@ export default function Navigation() {
         {/* Mobile Search Bar Dropdown */}
         {searchOpen && (
           <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-3 shadow-md animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="relative flex items-center border border-[#1e3545]/30 rounded-full px-4 py-1.5 focus-within:border-[#1e3545] bg-[#f8fafc]">
-              <SearchIcon sx={{ color: '#1e3545', fontSize: 20, mr: 1, opacity: 0.6 }} />
+            <div className="relative flex items-center border border-[#3c7399]/30 rounded-full px-4 py-1.5 focus-within:border-[#3c7399] bg-[#f8fafc]">
+              <SearchIcon sx={{ color: '#3c7399', fontSize: 20, mr: 1, opacity: 0.8 }} />
               <InputBase
                 autoFocus
                 placeholder="Search jewellery, diamonds..."
@@ -938,12 +946,12 @@ export default function Navigation() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
                 sx={{
-                  color: '#1e3545',
+                  color: '#3c7399',
                   fontSize: '0.9rem',
-                  '& input::placeholder': { color: '#64748b', opacity: 1 }
+                  '& input::placeholder': { color: '#3c7399', opacity: 0.6 }
                 }}
               />
-              <IconButton onClick={() => setSearchOpen(false)} sx={{ color: '#64748b', p: 0.5 }}>
+              <IconButton onClick={() => setSearchOpen(false)} sx={{ color: '#3c7399', p: 0.5, '&:hover': { bgcolor: 'rgba(60, 115, 153, 0.08)' } }}>
                 <CloseIcon sx={{ fontSize: 18 }} />
               </IconButton>
             </div>

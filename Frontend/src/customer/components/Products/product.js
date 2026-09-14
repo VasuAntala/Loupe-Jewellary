@@ -72,6 +72,24 @@ const filters = [
   },
 ];
 
+const occasionTitleMap = {
+  office: "Workwear Elegance Jewellery",
+  bridal: "Bridal Collection Jewellery",
+  casual: "Everyday Essentials Jewellery",
+  "traditional-ethenic": "Festive Glam Jewellery",
+  engagement: "Engagement Jewellery",
+  modern: "Modern Wear Jewellery",
+};
+
+const occasionLabelMap = {
+  office: "Workwear Elegance",
+  bridal: "Bridal Collection",
+  casual: "Everyday Essentials",
+  "traditional-ethenic": "Festive Glam",
+  engagement: "Engagement",
+  modern: "Modern Wear",
+};
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -185,6 +203,28 @@ export default function Product() {
     navigate({ search: `?${query}` });
   }
 
+  const handleRemoveSingleFilter = (sectionId, value) => {
+    const searchParams = new URLSearchParams(location.search);
+    let filterValues = searchParams.get(sectionId)?.split(',') || [];
+    filterValues = filterValues.filter((v) => v !== value);
+    if (filterValues.length > 0) {
+      searchParams.set(sectionId, filterValues.join(','));
+    } else {
+      searchParams.delete(sectionId);
+    }
+    const query = searchParams.toString();
+    navigate({ search: query ? `?${query}` : '' });
+  }
+
+  const handleClearAllFilters = () => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.delete('occasion');
+    searchParams.delete('color');
+    searchParams.delete('price');
+    searchParams.delete('search');
+    const query = searchParams.toString();
+    navigate({ search: query ? `?${query}` : '' });
+  }
 
   // Handle PRICE range filters on cards
   const handlePriceRangeFilter = (sectionId) => {
@@ -221,6 +261,19 @@ export default function Product() {
     navigate({ search: `?${query}` })
   }
 
+  const getPageTitle = () => {
+    if (occasionValue) {
+      const selectedOccasions = occasionValue.split(',');
+      if (selectedOccasions.length === 1 && occasionTitleMap[selectedOccasions[0]]) {
+        return occasionTitleMap[selectedOccasions[0]];
+      }
+      return "Occasion Jewellery Collection";
+    }
+    if (searchValue) return `Search: ${searchValue}`;
+    if (location.pathname === '/product-catalogue') return "Product Catalogue";
+    return param.levelThree || param.levelOne || "All Jewellery";
+  };
+
   return (
     <div className="bg-[#fafafa] min-h-screen">
       <main className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
@@ -238,9 +291,7 @@ export default function Product() {
               textTransform: 'capitalize'
             }}
           >
-            {searchValue ? `Search: ${searchValue}` :
-              location.pathname === '/product-catalogue' ? "Product Catalogue" :
-                param.levelThree || param.levelOne || "All Jewellery"}
+            {getPageTitle()}
           </Typography>
           <Typography
             sx={{
@@ -254,6 +305,59 @@ export default function Product() {
             {products.products?.totalElements ? `${products.products.totalElements} Masterpieces Found` : "Timeless Designs, Exceptional Craftsmanship"}
           </Typography>
         </div>
+
+        {/* Active Occasion & Filters Highlight Bar */}
+        {(occasionValue || colorValue || searchValue) && (
+          <Box className="flex flex-wrap items-center gap-2 mb-6 p-3 sm:p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+            <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, color: '#3c7399', textTransform: 'uppercase', mr: 1, letterSpacing: 1 }}>
+              Active Highlights:
+            </Typography>
+
+            {/* Occasion Chips */}
+            {occasionValue?.split(',').map((occ) => (
+              <Chip
+                key={occ}
+                label={`Occasion: ${occasionLabelMap[occ] || occ}`}
+                onDelete={() => handleRemoveSingleFilter('occasion', occ)}
+                sx={{
+                  bgcolor: '#3c7399',
+                  color: '#ffffff',
+                  fontWeight: 600,
+                  fontSize: '0.78rem',
+                  borderRadius: '10px',
+                  boxShadow: '0 2px 6px rgba(60,115,153,0.25)',
+                  '& .MuiChip-deleteIcon': { color: '#ffffff', '&:hover': { color: '#e2e8f0' } }
+                }}
+              />
+            ))}
+
+            {/* Color Chips */}
+            {colorValue?.split(',').map((col) => (
+              <Chip
+                key={col}
+                label={`Color: ${col}`}
+                onDelete={() => handleRemoveSingleFilter('color', col)}
+                sx={{
+                  bgcolor: '#3c7399',
+                  color: '#ffffff',
+                  fontWeight: 600,
+                  fontSize: '0.78rem',
+                  borderRadius: '10px',
+                  boxShadow: '0 2px 6px rgba(60,115,153,0.25)',
+                  '& .MuiChip-deleteIcon': { color: '#ffffff', '&:hover': { color: '#e2e8f0' } }
+                }}
+              />
+            ))}
+
+            <Button
+              onClick={handleClearAllFilters}
+              size="small"
+              sx={{ color: '#ef4444', fontWeight: 700, fontSize: '0.75rem', textTransform: 'none', ml: 'auto' }}
+            >
+              Clear All
+            </Button>
+          </Box>
+        )}
 
         <Divider sx={{ mb: { xs: 3, md: 6 }, opacity: 0.1 }} />
 

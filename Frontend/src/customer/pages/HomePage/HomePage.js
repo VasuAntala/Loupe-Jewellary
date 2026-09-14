@@ -15,6 +15,7 @@ import SocialFeed from "./components/SocialFeed";
 import PerfectSparkleSection from "./components/PerfectSparkleSection";
 import ChooseYourJewellery from "./components/ChooseYourJewellery";
 import ShopByOccasion from "./components/ShopByOccasion";
+import CustomJewellerySection from "./components/CustomJewellerySection";
 import FAQSection from "./components/FAQSection";
 import CustomerReviews from "./components/CustomerReviews";
 
@@ -115,6 +116,11 @@ const HomePage = () => {
       {/* Shop By Occasion */}
       <section className="reveal">
         <ShopByOccasion />
+      </section>
+
+      {/* Bespoke & Custom Jewellery Section */}
+      <section className="reveal">
+        <CustomJewellerySection products={allProductsList} />
       </section>
 
 

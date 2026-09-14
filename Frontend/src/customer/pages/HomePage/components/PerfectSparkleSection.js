@@ -62,12 +62,18 @@ const PerfectSparkleSection = () => {
     }, []);
 
     const handleWhatsAppInquiry = (video) => {
-        openWhatsApp({
-            title: video.title,
-            minPrice: video.minPrice,
-            maxPrice: video.maxPrice,
-            productCode: video._id ? video._id.slice(-6).toUpperCase() : null
-        });
+        openWhatsApp(
+            {
+                title: video.title,
+                minPrice: video.minPrice,
+                maxPrice: video.maxPrice,
+                videoUrl: video.videoUrl,
+                productCode: video._id ? video._id.slice(-6).toUpperCase() : null
+            },
+            {
+                videoUrl: video.videoUrl
+            }
+        );
     };
 
     const settings = {

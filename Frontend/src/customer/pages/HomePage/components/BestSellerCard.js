@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatPriceINR } from "../../../../utils/price";
 import { MessageCircle, ShoppingBag, Sparkles } from 'lucide-react';
 
+import { openWhatsApp } from '../../../../utils/whatsapp';
+
 const PLACEHOLDER_IMAGE_URL = "https://res.cloudinary.com/deq0hxr3t/image/upload/v1709462235/no-found_mnvvpf.svg";
 
 const BestSellerCard = ({ product }) => {
@@ -91,7 +93,10 @@ const BestSellerCard = ({ product }) => {
                     <IconButton
                         size="small"
                         sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#25D366', color: 'white' }, transition: 'all 0.3s', boxShadow: '0 4px 14px rgba(0,0,0,0.1)', p: 1 }}
-                        onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/919909109074`, '_blank'); }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            openWhatsApp(product, { imageUrl: currentImage, metalColor: colorOptions[selectedColorIndex]?.colorName });
+                        }}
                     >
                         <MessageCircle size={14} />
                     </IconButton>

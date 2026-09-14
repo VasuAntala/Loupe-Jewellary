@@ -219,20 +219,6 @@ export default function ProductDetails() {
     setMousePos((prev) => ({ ...prev, showing: false }));
   };
 
-  // Build WhatsApp URL injecting chosen metal colour
-  const whatsAppHrefWithMetal = (() => {
-    try {
-      const base = buildWhatsAppUrl(product);
-      const url = new URL(base);
-      const existing = url.searchParams.get("text") || "";
-      const colorLine = `\nMetal Colour Preference: ${selectedMetal.label}`;
-      url.searchParams.set("text", existing + colorLine);
-      return url.toString();
-    } catch {
-      return buildWhatsAppUrl(product);
-    }
-  })();
-
   if (!product) return null;
 
   // ── Color-filtered image gallery ──
@@ -252,6 +238,13 @@ export default function ProductDetails() {
   const displayImages = matchingImages.length > 0 ? matchingImages : images;
   const currentImg = displayImages[activeIndex] || displayImages[0];
   const currentImgUrl = currentImg?.imageUrl;
+
+  // Build WhatsApp URL injecting chosen metal colour, exact image reference & full product page URL
+  const whatsAppHrefWithMetal = buildWhatsAppUrl(product, {
+    metalColor: selectedMetal?.label,
+    imageUrl: currentImgUrl || getProductImageUrl(product),
+    pageUrl: typeof window !== 'undefined' ? window.location.href : null,
+  });
 
   return (
     <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", color: "#1e293b" }}>

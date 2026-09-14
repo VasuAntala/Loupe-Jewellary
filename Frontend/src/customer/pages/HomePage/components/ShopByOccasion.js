@@ -7,34 +7,46 @@ const occasions = [
   {
     id: 1,
     title: 'Workwear Elegance',
-    subtitle: 'Office & Everyday Professional',
-    image: '/Occasion/Workwear Elegance.png',
+    badgeText: 'WORKWEAR ELEGANCE',
+    subtitle: 'Solitaire Ring & Tennis Bracelet',
+    image: '',
+    fallback: '/lifestyle/lifestyle_earrings.jpg',
     alt: 'Workwear Elegance',
     occasionKey: 'office',
+    objectPos: 'center center',
   },
   {
     id: 2,
-    title: 'Bridal Collection',
-    subtitle: 'Timeless Grand Wedding Sets',
-    image: '/Occasion/Bridal Collection.png',
-    alt: 'Bridal Collection',
-    occasionKey: 'bridal',
+    title: 'Everyday Essentials',
+    badgeText: 'EVERYDAY ESSENTIALS',
+    subtitle: 'Solitaire Diamond Pendant',
+    image: '',
+    fallback: '/lifestyle/lifestyle_ring.jpg',
+    alt: 'Everyday Essentials',
+    occasionKey: 'casual',
+    objectPos: 'center center',
   },
   {
     id: 3,
-    title: 'Everyday Essentials',
-    subtitle: 'Lightweight Daily Radiance',
-    image: '/Occasion/EveryDay Essential.png',
-    alt: 'Everyday Essentials',
-    occasionKey: 'casual',
+    title: 'Bridal Collection',
+    badgeText: 'BRIDAL COLLECTION',
+    subtitle: 'Royal Diamond Mangalsutra',
+    image: '',
+    fallback: '/lifestyle/lifestyle_necklace.jpg',
+    alt: 'Bridal Collection',
+    occasionKey: 'bridal',
+    objectPos: 'center center',
   },
   {
     id: 4,
     title: 'Festive Glam',
-    subtitle: 'Traditional & Ethnic Celebrations',
-    image: '/Occasion/Festival Glam.jpeg',
+    badgeText: 'FESTIVE GLAM',
+    subtitle: 'Traditional Emerald Kundan Set',
+    image: '',
+    fallback: '/Occasion/Festival Glam.jpeg',
     alt: 'Festive Glam',
     occasionKey: 'traditional-ethenic',
+    objectPos: 'center 30%',
   },
 ];
 
@@ -74,8 +86,8 @@ const ShopByOccasion = () => {
           </Typography>
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
+        {/* Cards Grid - Highlight Worn Jewellery */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
           {occasions.map((occasion, index) => (
             <motion.div
               key={occasion.id}
@@ -84,45 +96,31 @@ const ShopByOccasion = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               onClick={() => handleOccasionClick(occasion.occasionKey)}
-              className="relative group cursor-pointer rounded-[18px] sm:rounded-[30px] overflow-hidden aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500"
+              className="relative group cursor-pointer overflow-hidden aspect-[3/4.2] sm:aspect-[3/4.4] shadow-md hover:shadow-2xl transition-all duration-500 rounded-sm sm:rounded-md bg-slate-100"
             >
-              {/* Image */}
+              {/* Highlighted Model Jewellery Image */}
               <img
                 src={occasion.image}
                 alt={occasion.alt}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                style={{ objectPosition: occasion.objectPos }}
+                onError={(e) => {
+                  if (occasion.fallback && e.target.src !== occasion.fallback) {
+                    e.target.src = occasion.fallback;
+                  }
+                }}
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter brightness-[1.03] contrast-[1.06] group-hover:brightness-[1.08]"
               />
               
-              {/* Overlay Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-85 group-hover:opacity-95 transition-opacity duration-300" />
+              {/* Soft Gradient Overlay for Jewellery Clarity */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 group-hover:from-black/65 transition-colors duration-500" />
 
-              {/* Text & Action */}
-              <div className="absolute bottom-0 left-0 w-full p-3 sm:p-6 text-center transition-transform duration-300 group-hover:-translate-y-1">
-                <Typography
-                  sx={{
-                    color: '#ffffff',
-                    fontSize: { xs: '0.95rem', sm: '1.25rem', md: '1.5rem' },
-                    fontWeight: 600,
-                    textShadow: '0px 2px 4px rgba(0,0,0,0.6)',
-                    fontFamily: '"Playfair Display", serif',
-                    lineHeight: 1.2,
-                    mb: 0.5
-                  }}
-                >
-                  {occasion.title}
-                </Typography>
-                
-                <Typography
-                  sx={{
-                    color: 'rgba(255,255,255,0.8)',
-                    fontSize: { xs: '0.65rem', sm: '0.78rem' },
-                    display: { xs: 'none', sm: 'block' },
-                    mb: 1.5,
-                    fontFamily: "'Outfit', sans-serif"
-                  }}
-                >
-                  {occasion.subtitle}
-                </Typography>
+              {/* Centered White Rectangular Badge Button */}
+              <div className="absolute bottom-5 sm:bottom-7 left-1/2 transform -translate-x-1/2 w-[85%] sm:w-[80%] z-10 text-center">
+                <div className="bg-white text-slate-900 px-2 sm:px-4 py-2 sm:py-3 shadow-lg group-hover:bg-[#3c7399] group-hover:text-white transition-all duration-300">
+                  <span className="text-[0.65rem] sm:text-[0.78rem] font-semibold tracking-[0.2em] sm:tracking-[0.25em] uppercase font-sans block line-clamp-1">
+                    {occasion.badgeText}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}

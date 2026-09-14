@@ -33,7 +33,7 @@ const ProductCard = ({ product, index }) => {
 
   const handleWhatsAppClick = (e) => {
     e.stopPropagation(); // Prevent navigating to product page
-    openWhatsApp(product);
+    openWhatsApp(product, { imageUrl: primaryImageUrl });
   };
 
   return (

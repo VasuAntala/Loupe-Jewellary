@@ -29,7 +29,7 @@ const HeroSection = () => {
         >
             <Box
                 component="img"
-                src="/loupe-banner.png"
+                src="/Loupe_theme _banner.png"
                 alt="B.Brother Loupe - Crafted to Perfection. Made to Be Yours."
                 sx={{
                     width: '100%',

@@ -15,7 +15,7 @@ import {
   ShieldCheck, Truck, RefreshCw, Gift,
   Headset, Video, Package, Star, MessageCircle,
   Share2, Heart, Maximize2, ZoomIn, X, Check,
-  Sparkles, Award, Lock, HelpCircle
+  Sparkles, Award, Lock, HelpCircle, Play
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────
@@ -236,8 +236,32 @@ export default function ProductDetails() {
 
   // If matching images exist for the selected metal color, use them; otherwise fallback gracefully to all images
   const displayImages = matchingImages.length > 0 ? matchingImages : images;
-  const currentImg = displayImages[activeIndex] || displayImages[0];
-  const currentImgUrl = currentImg?.imageUrl;
+
+  // Combined media items: images + video placed after 4 images (at 5th place)
+  const galleryItems = (() => {
+    const items = displayImages.map((img) => ({
+      type: 'image',
+      url: img.imageUrl,
+      color: img.color,
+    }));
+
+    if (product?.videoUrl) {
+      const videoItem = {
+        type: 'video',
+        url: product.videoUrl,
+      };
+      if (items.length >= 4) {
+        items.splice(4, 0, videoItem);
+      } else {
+        items.push(videoItem);
+      }
+    }
+    return items;
+  })();
+
+  const currentMedia = galleryItems[activeIndex] || galleryItems[0];
+  const isVideoSelected = currentMedia?.type === 'video';
+  const currentImgUrl = currentMedia?.type === 'image' ? currentMedia.url : (displayImages[0]?.imageUrl || '');
 
   // Build WhatsApp URL injecting chosen metal colour, exact image reference & full product page URL
   const whatsAppHrefWithMetal = buildWhatsAppUrl(product, {
@@ -276,7 +300,7 @@ export default function ProductDetails() {
               <Box sx={{ display: "flex", flexDirection: { xs: "column-reverse", sm: "row" }, gap: 2 }}>
 
                 {/* Vertical Thumbnails */}
-                {displayImages.length > 1 && (
+                {galleryItems.length > 1 && (
                   <Box sx={{
                     display: "flex",
                     flexDirection: { xs: "row", sm: "column" },
@@ -286,11 +310,13 @@ export default function ProductDetails() {
                     pb: { xs: 1, sm: 0 },
                     flexShrink: 0
                   }}>
-                    {displayImages.map((item, i) => {
+                    {galleryItems.map((item, i) => {
                       const isSelected = activeIndex === i;
+                      const isItemVideo = item.type === 'video';
+
                       return (
                         <Box
-                          key={item.imageUrl || i}
+                          key={item.url || i}
                           onClick={() => setActiveIndex(i)}
                           sx={{
                             width: { xs: 72, sm: 84 },
@@ -299,7 +325,7 @@ export default function ProductDetails() {
                             overflow: "hidden",
                             cursor: "pointer",
                             position: "relative",
-                            bgcolor: "white",
+                            bgcolor: isItemVideo ? "#0f172a" : "white",
                             border: isSelected ? "2.5px solid #3c7399" : "1px solid #e2e8f0",
                             boxShadow: isSelected ? "0 4px 14px rgba(60, 115, 153, 0.25)" : "0 2px 6px rgba(0,0,0,0.03)",
                             transform: isSelected ? "scale(1.03)" : "scale(1)",
@@ -310,16 +336,52 @@ export default function ProductDetails() {
                             },
                           }}
                         >
-                          <img
-                            src={item.imageUrl}
-                            alt=""
-                            style={{
+                          {isItemVideo ? (
+                            <Box sx={{
                               width: "100%",
                               height: "100%",
-                              objectFit: "cover",
-                              display: "block"
-                            }}
-                          />
+                              position: "relative",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+                            }}>
+                              <Box sx={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: "50%",
+                                bgcolor: isSelected ? "#3c7399" : "rgba(255,255,255,0.2)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                transition: "all 0.2s",
+                              }}>
+                                <Play size={16} fill="white" color="white" style={{ marginLeft: 2 }} />
+                              </Box>
+                              <Typography sx={{
+                                mt: 0.5,
+                                fontSize: "0.62rem",
+                                fontWeight: 800,
+                                color: "#ffffff",
+                                letterSpacing: "0.5px",
+                                textTransform: "uppercase"
+                              }}>
+                                Video
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <img
+                              src={item.url}
+                              alt=""
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                display: "block"
+                              }}
+                            />
+                          )}
                           {isSelected && (
                             <Box sx={{
                               position: "absolute",
@@ -405,100 +467,133 @@ export default function ProductDetails() {
                         <Share2 size={18} />
                       </IconButton>
 
-                      <IconButton
-                        size="small"
-                        onClick={() => setZoomOpen(true)}
-                        sx={{
-                          bgcolor: "white",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                          color: "#3c7399",
-                          transition: "all 0.2s ease",
-                          "&:hover": { bgcolor: "#fff", transform: "scale(1.1)" }
-                        }}
-                      >
-                        <Maximize2 size={18} />
-                      </IconButton>
+                      {!isVideoSelected && (
+                        <IconButton
+                          size="small"
+                          onClick={() => setZoomOpen(true)}
+                          sx={{
+                            bgcolor: "white",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                            color: "#3c7399",
+                            transition: "all 0.2s ease",
+                            "&:hover": { bgcolor: "#fff", transform: "scale(1.1)" }
+                          }}
+                        >
+                          <Maximize2 size={18} />
+                        </IconButton>
+                      )}
                     </Box>
                   </Box>
 
-                  {/* Main Image Container with Lens Zoom */}
-                  <Box
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                    onClick={() => setZoomOpen(true)}
-                    sx={{
-                      borderRadius: "20px",
-                      overflow: "hidden",
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e9eff4",
-                      boxShadow: "0 10px 30px -10px rgba(60, 115, 153, 0.12)",
-                      position: "relative",
-                      cursor: "zoom-in",
-                      aspectRatio: "1/1",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <img
-                      src={currentImgUrl}
-                      alt={product.title}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                        transform: mousePos.showing ? "scale(1.4)" : "scale(1)",
-                        transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-                        transition: mousePos.showing ? "transform 0.1s ease-out" : "transform 0.3s ease-in-out"
+                  {/* Main Media Container (Image with Lens Zoom OR Video Player) */}
+                  {isVideoSelected ? (
+                    <Box
+                      sx={{
+                        borderRadius: "20px",
+                        overflow: "hidden",
+                        bgcolor: "#000000",
+                        border: "1px solid #e9eff4",
+                        boxShadow: "0 10px 30px -10px rgba(60, 115, 153, 0.12)",
+                        position: "relative",
+                        aspectRatio: "1/1",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
                       }}
-                    />
-
-                    {/* Active Metal Color Pill */}
-                    <Box sx={{
-                      position: "absolute",
-                      bottom: 14,
-                      left: 14,
-                      px: 1.4, py: 0.5,
-                      borderRadius: "8px",
-                      bgcolor: "rgba(255, 255, 255, 0.94)",
-                      backdropFilter: "blur(6px)",
-                      border: `1.5px solid ${selectedMetal.border}`,
-                      color: selectedMetal.textColor,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.8,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                      pointerEvents: "none",
-                      zIndex: 2,
-                    }}>
-                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: selectedMetal.gradient, flexShrink: 0 }} />
-                      <Typography sx={{ fontSize: "0.72rem", fontWeight: 800 }}>
-                        {selectedMetal.label}
-                      </Typography>
+                    >
+                      <video
+                        key={currentMedia.url}
+                        src={currentMedia.url}
+                        controls
+                        autoPlay
+                        playsInline
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          display: "block"
+                        }}
+                      />
                     </Box>
+                  ) : (
+                    <Box
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => setZoomOpen(true)}
+                      sx={{
+                        borderRadius: "20px",
+                        overflow: "hidden",
+                        bgcolor: "#ffffff",
+                        border: "1px solid #e9eff4",
+                        boxShadow: "0 10px 30px -10px rgba(60, 115, 153, 0.12)",
+                        position: "relative",
+                        cursor: "zoom-in",
+                        aspectRatio: "1/1",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
+                      <img
+                        src={currentImgUrl}
+                        alt={product.title}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                          transform: mousePos.showing ? "scale(1.4)" : "scale(1)",
+                          transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
+                          transition: mousePos.showing ? "transform 0.1s ease-out" : "transform 0.3s ease-in-out"
+                        }}
+                      />
 
-                    {/* Hover Hint */}
-                    {!mousePos.showing && (
+                      {/* Active Metal Color Pill */}
                       <Box sx={{
                         position: "absolute",
                         bottom: 14,
-                        right: 14,
-                        px: 1.5, py: 0.6,
+                        left: 14,
+                        px: 1.4, py: 0.5,
                         borderRadius: "8px",
-                        bgcolor: "rgba(15, 23, 42, 0.65)",
-                        backdropFilter: "blur(4px)",
-                        color: "white",
+                        bgcolor: "rgba(255, 255, 255, 0.94)",
+                        backdropFilter: "blur(6px)",
+                        border: `1.5px solid ${selectedMetal.border}`,
+                        color: selectedMetal.textColor,
                         display: "flex",
                         alignItems: "center",
                         gap: 0.8,
-                        pointerEvents: "none"
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                        pointerEvents: "none",
+                        zIndex: 2,
                       }}>
-                        <ZoomIn size={14} />
-                        <Typography sx={{ fontSize: "0.7rem", fontWeight: 500 }}>Hover to zoom</Typography>
+                        <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: selectedMetal.gradient, flexShrink: 0 }} />
+                        <Typography sx={{ fontSize: "0.72rem", fontWeight: 800 }}>
+                          {selectedMetal.label}
+                        </Typography>
                       </Box>
-                    )}
-                  </Box>
+
+                      {/* Hover Hint */}
+                      {!mousePos.showing && (
+                        <Box sx={{
+                          position: "absolute",
+                          bottom: 14,
+                          right: 14,
+                          px: 1.5, py: 0.6,
+                          borderRadius: "8px",
+                          bgcolor: "rgba(15, 23, 42, 0.65)",
+                          backdropFilter: "blur(4px)",
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.8,
+                          pointerEvents: "none"
+                        }}>
+                          <ZoomIn size={14} />
+                          <Typography sx={{ fontSize: "0.7rem", fontWeight: 500 }}>Hover to zoom</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  )}
 
                 </Box>
               </Box>

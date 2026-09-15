@@ -93,6 +93,8 @@ async function createProduct(reqData) {
         showDiamondDetails: reqData.showDiamondDetails || false,
         showMetalDetails: reqData.showMetalDetails || false,
         showWeightDetails: reqData.showWeightDetails || false,
+        videoUrl: reqData.videoUrl || '',
+        videoPublicId: reqData.videoPublicId || '',
     });
 
     const savedProduct = await product.save();
@@ -113,6 +115,7 @@ async function deleteProduct(productId) {
 async function updateProduct(productId, reqData) {
     // Also update flat category strings if provided
     const updateData = { ...reqData };
+    delete updateData._id;
     return await Product.findByIdAndUpdate(productId, updateData, { new: true });
 }
 

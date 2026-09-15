@@ -11,7 +11,7 @@ async function connectWithFallback() {
 
   try {
     await mongoose.connect(mongoURL, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000,
     });
     console.log("MongoDB connected successfully to:", maskedURL);
     return;

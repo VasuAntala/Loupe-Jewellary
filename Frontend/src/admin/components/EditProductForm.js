@@ -15,7 +15,7 @@ import {
   Info, Tag, Eye,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { uploadMultipleImagesViaBackend, deleteAssetViaBackend, getOptimizedCloudinaryUrl } from '../../utils/cloudinaryUtils';
+import { uploadMultipleImagesViaBackend, uploadVideoViaBackend, deleteAssetViaBackend, getOptimizedCloudinaryUrl } from '../../utils/cloudinaryUtils';
 
 const BRAND = '#3c7399';
 const BRAND_LIGHT = '#f0f9ff';
@@ -99,6 +99,8 @@ const EditProductForm = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [activeColorTab, setActiveColorTab] = useState('yellow-gold');
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoUploadProgress, setVideoUploadProgress] = useState(0);
 
   const [productData, setProductData] = useState({
     title: '',
@@ -109,6 +111,8 @@ const EditProductForm = () => {
     description: '',
     details: '',
     imageUrls: [],
+    videoUrl: '',
+    videoPublicId: '',
     status: 'active',
     brand: 'Loupe Jeweler',
     quantity: 1,
@@ -229,6 +233,8 @@ const EditProductForm = () => {
         description: p.description || '',
         details: p.details || '',
         imageUrls: normalizedImages,
+        videoUrl: p.videoUrl || '',
+        videoPublicId: p.videoPublicId || '',
         status: p.status || 'active',
         brand: p.brand || 'Loupe Jeweler',
         quantity: p.quantity || 1,
@@ -329,6 +335,39 @@ const EditProductForm = () => {
       ...prev,
       imageUrls: prev.imageUrls.filter((img) => img !== imageToRemove),
     }));
+  };
+
+  // Video Upload
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setVideoUploading(true);
+    setVideoUploadProgress(0);
+    try {
+      const result = await uploadVideoViaBackend(
+        file,
+        'loupe-jewels/product-videos',
+        (pct) => setVideoUploadProgress(pct)
+      );
+      setProductData((prev) => ({
+        ...prev,
+        videoUrl: result.secure_url,
+        videoPublicId: result.public_id,
+      }));
+    } catch (err) {
+      console.error('Video upload error:', err.message);
+      alert('Video upload failed. Please try again.');
+    } finally {
+      setVideoUploading(false);
+      setTimeout(() => setVideoUploadProgress(0), 1500);
+    }
+  };
+
+  const handleRemoveVideo = async () => {
+    if (productData.videoPublicId) {
+      try { await deleteAssetViaBackend(productData.videoPublicId, 'video'); } catch (e) { /* non-blocking */ }
+    }
+    setProductData((prev) => ({ ...prev, videoUrl: '', videoPublicId: '' }));
   };
 
   // Dimensions
@@ -1666,6 +1705,126 @@ const EditProductForm = () => {
                 </Grid>
               </CardContent>
             </Card>
+          </Grid>
+
+          {/* ===== 9. PRODUCT VIDEO ===== */}
+          <Grid item xs={12}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.42 }}>
+              <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
+                  <SectionHeader step="9" icon={<Eye size={20} color={BRAND} />} title="PRODUCT SHOWCASE VIDEO" description="Upload a short video (MP4 / WEBM / MOV) — shown to customers on the product page" />
+
+                  <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '12px', border: '1px solid #bae6fd', mb: 3, display: 'flex', gap: 1.5 }}>
+                    <Info size={18} color="#0369a1" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <Typography variant="body2" sx={{ color: '#0c4a6e', fontWeight: 600 }}>
+                      Upload one product showcase video. Recommended: 10–60 seconds, under 100 MB, MP4 format. The video will be displayed below the product images on the customer product page.
+                    </Typography>
+                  </Box>
+
+                  {!productData.videoUrl ? (
+                    <Box>
+                      <Box
+                        component="label"
+                        sx={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center',
+                          justifyContent: 'center', p: 4,
+                          border: `2px dashed ${videoUploading ? '#94a3b8' : BRAND}`,
+                          borderRadius: '16px',
+                          bgcolor: videoUploading ? '#f8fafc' : BRAND_LIGHT,
+                          cursor: videoUploading ? 'not-allowed' : 'pointer',
+                          transition: 'all 0.3s',
+                          '&:hover': { opacity: videoUploading ? 1 : 0.85 },
+                        }}
+                      >
+                        <Avatar sx={{ bgcolor: '#fff', color: videoUploading ? '#94a3b8' : BRAND, width: 56, height: 56, mb: 1.5, boxShadow: `0 4px 14px ${BRAND}20` }}>
+                          {videoUploading ? <CircularProgress size={26} sx={{ color: '#94a3b8' }} /> : <Upload size={26} />}
+                        </Avatar>
+                        <Typography variant="body1" sx={{ fontWeight: 800, color: videoUploading ? '#94a3b8' : '#1e293b' }}>
+                          {videoUploading ? `Uploading Video… ${videoUploadProgress}%` : 'Upload Product Video'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, mt: 0.5 }}>
+                          Click or Drag &amp; Drop — MP4, WEBM, MOV (max 100 MB)
+                        </Typography>
+                        <input
+                          type="file"
+                          accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo"
+                          hidden
+                          disabled={videoUploading}
+                          onChange={handleVideoUpload}
+                        />
+                      </Box>
+
+                      {videoUploading && (
+                        <Box sx={{ mt: 1.5 }}>
+                          <LinearProgress
+                            variant={videoUploadProgress > 0 ? 'determinate' : 'indeterminate'}
+                            value={videoUploadProgress}
+                            sx={{
+                              borderRadius: 4, height: 8, bgcolor: '#e2e8f0',
+                              '& .MuiLinearProgress-bar': { bgcolor: BRAND },
+                            }}
+                          />
+                          <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, mt: 0.5, display: 'block', textAlign: 'center' }}>
+                            Uploading to Cloudinary… please wait
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  ) : (
+                    <Box>
+                      <Box sx={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', border: `2px solid ${BRAND}30`, bgcolor: '#000' }}>
+                        <video
+                          src={productData.videoUrl}
+                          controls
+                          style={{ width: '100%', maxHeight: 380, display: 'block', objectFit: 'contain' }}
+                        />
+                        <Chip
+                          label="✅ Video Uploaded"
+                          size="small"
+                          sx={{
+                            position: 'absolute', top: 12, left: 12,
+                            bgcolor: BRAND, color: '#fff', fontWeight: 800,
+                            fontSize: '0.75rem', height: 26,
+                          }}
+                        />
+                      </Box>
+                      <Box sx={{ mt: 2, display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, flex: 1 }}>
+                          Video uploaded successfully. It will be shown on the product page.
+                        </Typography>
+                        <Button
+                          onClick={handleRemoveVideo}
+                          variant="outlined"
+                          size="small"
+                          startIcon={<Trash2 size={15} />}
+                          sx={{
+                            borderRadius: '10px', textTransform: 'none', fontWeight: 800,
+                            borderColor: '#f43f5e', color: '#f43f5e',
+                            '&:hover': { bgcolor: '#fff1f2', borderColor: '#f43f5e' },
+                          }}
+                        >
+                          Remove Video
+                        </Button>
+                        <Button
+                          component="label"
+                          variant="outlined"
+                          size="small"
+                          startIcon={<Upload size={15} />}
+                          sx={{
+                            borderRadius: '10px', textTransform: 'none', fontWeight: 800,
+                            borderColor: BRAND, color: BRAND,
+                            '&:hover': { bgcolor: BRAND_LIGHT },
+                          }}
+                        >
+                          Replace Video
+                          <input type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo" hidden onChange={handleVideoUpload} />
+                        </Button>
+                      </Box>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
           </Grid>
 
           {/* ===== SAVE BUTTON ===== */}

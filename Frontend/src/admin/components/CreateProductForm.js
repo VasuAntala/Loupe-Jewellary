@@ -92,6 +92,7 @@ const CreateProductForm = () => {
   const [imageUploading, setImageUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [activeColorTab, setActiveColorTab] = useState('yellow-gold');
+  const [activeVideoColorTab, setActiveVideoColorTab] = useState('yellow-gold');
   const [videoUploading, setVideoUploading] = useState(false);
   const [videoUploadProgress, setVideoUploadProgress] = useState(0);
 
@@ -104,6 +105,7 @@ const CreateProductForm = () => {
     description: '',
     details: '',
     imageUrls: [],
+    videoUrls: [],
     videoUrl: '',
     videoPublicId: '',
     status: 'active',
@@ -209,7 +211,7 @@ const CreateProductForm = () => {
     }));
   };
 
-  // Video Upload
+  // Video Upload (color-specific for 3 colors)
   const handleVideoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -221,25 +223,45 @@ const CreateProductForm = () => {
         'loupe-jewels/product-videos',
         (pct) => setVideoUploadProgress(pct)
       );
-      setProductData((prev) => ({
-        ...prev,
+      const newVideo = {
         videoUrl: result.secure_url,
-        videoPublicId: result.public_id,
-      }));
+        publicId: result.public_id,
+        color: activeVideoColorTab,
+      };
+      setProductData((prev) => {
+        const filtered = (prev.videoUrls || []).filter((v) => v.color !== activeVideoColorTab);
+        const updatedVideos = [...filtered, newVideo];
+        return {
+          ...prev,
+          videoUrls: updatedVideos,
+          videoUrl: updatedVideos.find((v) => v.color === 'yellow-gold')?.videoUrl || updatedVideos[0]?.videoUrl || '',
+          videoPublicId: updatedVideos.find((v) => v.color === 'yellow-gold')?.publicId || updatedVideos[0]?.publicId || '',
+        };
+      });
     } catch (err) {
       console.error('Video upload error:', err.message);
       alert('Video upload failed. Please try again.');
     } finally {
+      if (e?.target) e.target.value = '';
       setVideoUploading(false);
       setTimeout(() => setVideoUploadProgress(0), 1500);
     }
   };
 
   const handleRemoveVideo = async () => {
-    if (productData.videoPublicId) {
-      try { await deleteAssetViaBackend(productData.videoPublicId, 'video'); } catch (e) { /* non-blocking */ }
+    const targetVideo = productData.videoUrls?.find((v) => v.color === activeVideoColorTab);
+    if (targetVideo?.publicId) {
+      try { await deleteAssetViaBackend(targetVideo.publicId, 'video'); } catch (e) { /* non-blocking */ }
     }
-    setProductData((prev) => ({ ...prev, videoUrl: '', videoPublicId: '' }));
+    setProductData((prev) => {
+      const updatedVideos = (prev.videoUrls || []).filter((v) => v.color !== activeVideoColorTab);
+      return {
+        ...prev,
+        videoUrls: updatedVideos,
+        videoUrl: updatedVideos.find((v) => v.color === 'yellow-gold')?.videoUrl || updatedVideos[0]?.videoUrl || '',
+        videoPublicId: updatedVideos.find((v) => v.color === 'yellow-gold')?.publicId || updatedVideos[0]?.publicId || '',
+      };
+    });
   };
 
   // Dimensions
@@ -312,6 +334,7 @@ const CreateProductForm = () => {
       description: '',
       details: '',
       imageUrls: [],
+      videoUrls: [],
       videoUrl: '',
       videoPublicId: '',
       status: 'active',
@@ -1700,116 +1723,198 @@ const CreateProductForm = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.42 }}>
               <Card sx={{ borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                 <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-                  <SectionHeader step="9" icon={<Eye size={20} color={BRAND} />} title="PRODUCT SHOWCASE VIDEO" description="Upload a short video (MP4 / WEBM / MOV) — shown to customers on the product page" />
+                  <SectionHeader step="9" icon={<Eye size={20} color={BRAND} />} title="PRODUCT SHOWCASE VIDEOS (BY METAL COLOR)" description="Upload showcase videos for Yellow Gold, Rose Gold, and Silver — shown dynamically on the product page" />
 
                   <Box sx={{ p: 2, bgcolor: '#f0f9ff', borderRadius: '12px', border: '1px solid #bae6fd', mb: 3, display: 'flex', gap: 1.5 }}>
                     <Info size={18} color="#0369a1" style={{ flexShrink: 0, marginTop: 2 }} />
                     <Typography variant="body2" sx={{ color: '#0c4a6e', fontWeight: 600 }}>
-                      Upload one product showcase video. Recommended: 10–60 seconds, under 100 MB, MP4 format. The video will be displayed below the product images on the customer product page.
+                      Upload separate showcase videos for each metal color (Yellow Gold, Rose Gold, Silver). Recommended: 10–60 seconds, under 100 MB, MP4 format. When a customer selects a metal color on the product details page, the matching video will appear at the 5th place in the gallery!
                     </Typography>
                   </Box>
 
-                  {!productData.videoUrl ? (
-                    <Box>
-                      <Box
-                        component="label"
-                        sx={{
-                          display: 'flex', flexDirection: 'column', alignItems: 'center',
-                          justifyContent: 'center', p: 4,
-                          border: `2px dashed ${videoUploading ? '#94a3b8' : BRAND}`,
-                          borderRadius: '16px',
-                          bgcolor: videoUploading ? '#f8fafc' : BRAND_LIGHT,
-                          cursor: videoUploading ? 'not-allowed' : 'pointer',
-                          transition: 'all 0.3s',
-                          '&:hover': { opacity: videoUploading ? 1 : 0.85 },
-                        }}
-                      >
-                        <Avatar sx={{ bgcolor: '#fff', color: videoUploading ? '#94a3b8' : BRAND, width: 56, height: 56, mb: 1.5, boxShadow: `0 4px 14px ${BRAND}20` }}>
-                          {videoUploading ? <CircularProgress size={26} sx={{ color: '#94a3b8' }} /> : <Upload size={26} />}
-                        </Avatar>
-                        <Typography variant="body1" sx={{ fontWeight: 800, color: videoUploading ? '#94a3b8' : '#1e293b' }}>
-                          {videoUploading ? `Uploading Video… ${videoUploadProgress}%` : 'Upload Product Video'}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, mt: 0.5 }}>
-                          Click or Drag &amp; Drop — MP4, WEBM, MOV (max 100 MB)
-                        </Typography>
-                        <input
-                          type="file"
-                          accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo"
-                          hidden
-                          disabled={videoUploading}
-                          onChange={handleVideoUpload}
-                        />
-                      </Box>
+                  {/* 3 Color Tabs for Video */}
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', mb: 1.5 }}>
+                      Select Metal Color to Upload Video:
+                    </Typography>
+                    <Grid container spacing={1.5}>
+                      {COLOR_TABS.map((tab) => {
+                        const isTabActive = activeVideoColorTab === tab.id;
+                        const currentVideo = (productData.videoUrls || []).find((v) => v.color === tab.id && v.videoUrl);
+                        const hasVideo = Boolean(currentVideo);
+                        return (
+                          <Grid item xs={12} sm={4} key={tab.id}>
+                            <Box
+                              onClick={() => setActiveVideoColorTab(tab.id)}
+                              sx={{
+                                p: 1.5,
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                border: isTabActive ? `2px solid ${tab.borderColor}` : '1px solid #e2e8f0',
+                                bgcolor: isTabActive ? tab.bgLight : '#ffffff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                transition: 'all 0.2s ease',
+                                boxShadow: isTabActive ? `0 4px 12px ${tab.colorCode}30` : 'none',
+                                '&:hover': {
+                                  borderColor: tab.borderColor,
+                                  transform: 'translateY(-1px)',
+                                },
+                              }}
+                            >
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box
+                                  sx={{
+                                    width: 14,
+                                    height: 14,
+                                    borderRadius: '50%',
+                                    bgcolor: tab.colorCode,
+                                    border: '1px solid rgba(0,0,0,0.15)',
+                                    flexShrink: 0,
+                                  }}
+                                />
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: isTabActive ? 800 : 600,
+                                    color: isTabActive ? '#0f172a' : '#475569',
+                                    fontSize: '0.85rem',
+                                  }}
+                                >
+                                  {tab.label}
+                                </Typography>
+                              </Box>
+                              <Chip
+                                label={hasVideo ? 'Video Added' : 'No Video'}
+                                size="small"
+                                sx={{
+                                  height: 22,
+                                  fontSize: '0.7rem',
+                                  fontWeight: 700,
+                                  bgcolor: hasVideo ? (isTabActive ? tab.borderColor : '#10b981') : '#f1f5f9',
+                                  color: hasVideo ? '#ffffff' : '#64748b',
+                                }}
+                              />
+                            </Box>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </Box>
 
-                      {videoUploading && (
-                        <Box sx={{ mt: 1.5 }}>
-                          <LinearProgress
-                            variant={videoUploadProgress > 0 ? 'determinate' : 'indeterminate'}
-                            value={videoUploadProgress}
+                  {(() => {
+                    const activeTabInfo = COLOR_TABS.find((t) => t.id === activeVideoColorTab) || COLOR_TABS[0];
+                    const activeVideoObj = (productData.videoUrls || []).find((v) => v.color === activeVideoColorTab);
+                    const activeVideoUrl = activeVideoObj?.videoUrl;
+
+                    if (!activeVideoUrl) {
+                      return (
+                        <Box>
+                          <Box
+                            component="label"
                             sx={{
-                              borderRadius: 4, height: 8, bgcolor: '#e2e8f0',
-                              '& .MuiLinearProgress-bar': { bgcolor: BRAND },
+                              display: 'flex', flexDirection: 'column', alignItems: 'center',
+                              justifyContent: 'center', p: 4,
+                              border: `2px dashed ${videoUploading ? '#94a3b8' : activeTabInfo.borderColor || BRAND}`,
+                              borderRadius: '16px',
+                              bgcolor: videoUploading ? '#f8fafc' : (activeTabInfo.bgLight || BRAND_LIGHT),
+                              cursor: videoUploading ? 'not-allowed' : 'pointer',
+                              transition: 'all 0.3s',
+                              '&:hover': { opacity: videoUploading ? 1 : 0.85 },
+                            }}
+                          >
+                            <Avatar sx={{ bgcolor: '#fff', color: videoUploading ? '#94a3b8' : (activeTabInfo.borderColor || BRAND), width: 56, height: 56, mb: 1.5, boxShadow: `0 4px 14px ${activeTabInfo.colorCode}25` }}>
+                              {videoUploading ? <CircularProgress size={26} sx={{ color: '#94a3b8' }} /> : <Upload size={26} />}
+                            </Avatar>
+                            <Typography variant="body1" sx={{ fontWeight: 800, color: videoUploading ? '#94a3b8' : '#1e293b' }}>
+                              {videoUploading ? `Uploading ${activeTabInfo.label} Video… ${videoUploadProgress}%` : `Upload ${activeTabInfo.label} Video`}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, mt: 0.5 }}>
+                              Click or Drag &amp; Drop — MP4, WEBM, MOV (max 100 MB)
+                            </Typography>
+                            <input
+                              type="file"
+                              accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo"
+                              hidden
+                              disabled={videoUploading}
+                              onChange={handleVideoUpload}
+                            />
+                          </Box>
+
+                          {videoUploading && (
+                            <Box sx={{ mt: 1.5 }}>
+                              <LinearProgress
+                                variant={videoUploadProgress > 0 ? 'determinate' : 'indeterminate'}
+                                value={videoUploadProgress}
+                                sx={{
+                                  borderRadius: 4, height: 8, bgcolor: '#e2e8f0',
+                                  '& .MuiLinearProgress-bar': { bgcolor: activeTabInfo.borderColor || BRAND },
+                                }}
+                              />
+                              <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, mt: 0.5, display: 'block', textAlign: 'center' }}>
+                                Uploading {activeTabInfo.label} video to Cloudinary… please wait
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      );
+                    }
+
+                    return (
+                      <Box>
+                        <Box sx={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', border: `2px solid ${activeTabInfo.borderColor || BRAND}`, bgcolor: '#000' }}>
+                          <video
+                            key={activeVideoUrl}
+                            src={activeVideoUrl}
+                            controls
+                            style={{ width: '100%', maxHeight: 380, display: 'block', objectFit: 'contain' }}
+                          />
+                          <Chip
+                            label={`✅ ${activeTabInfo.label} Video Uploaded`}
+                            size="small"
+                            sx={{
+                              position: 'absolute', top: 12, left: 12,
+                              bgcolor: activeTabInfo.borderColor || BRAND, color: '#fff', fontWeight: 800,
+                              fontSize: '0.75rem', height: 26,
                             }}
                           />
-                          <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, mt: 0.5, display: 'block', textAlign: 'center' }}>
-                            Uploading to Cloudinary… please wait
-                          </Typography>
                         </Box>
-                      )}
-                    </Box>
-                  ) : (
-                    <Box>
-                      <Box sx={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', border: `2px solid ${BRAND}30`, bgcolor: '#000' }}>
-                        <video
-                          src={productData.videoUrl}
-                          controls
-                          style={{ width: '100%', maxHeight: 380, display: 'block', objectFit: 'contain' }}
-                        />
-                        <Chip
-                          label="✅ Video Uploaded"
-                          size="small"
-                          sx={{
-                            position: 'absolute', top: 12, left: 12,
-                            bgcolor: BRAND, color: '#fff', fontWeight: 800,
-                            fontSize: '0.75rem', height: 26,
-                          }}
-                        />
+                        <Box sx={{ mt: 2, display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, flex: 1 }}>
+                            {activeTabInfo.label} video uploaded successfully. It will be shown on the product page when {activeTabInfo.label} is selected.
+                          </Typography>
+                          <Button
+                            onClick={handleRemoveVideo}
+                            variant="outlined"
+                            size="small"
+                            startIcon={<Trash2 size={15} />}
+                            sx={{
+                              borderRadius: '10px', textTransform: 'none', fontWeight: 800,
+                              borderColor: '#f43f5e', color: '#f43f5e',
+                              '&:hover': { bgcolor: '#fff1f2', borderColor: '#f43f5e' },
+                            }}
+                          >
+                            Remove {activeTabInfo.label} Video
+                          </Button>
+                          <Button
+                            component="label"
+                            variant="outlined"
+                            size="small"
+                            startIcon={<Upload size={15} />}
+                            sx={{
+                              borderRadius: '10px', textTransform: 'none', fontWeight: 800,
+                              borderColor: activeTabInfo.borderColor || BRAND, color: activeTabInfo.borderColor || BRAND,
+                              '&:hover': { bgcolor: activeTabInfo.bgLight || BRAND_LIGHT },
+                            }}
+                          >
+                            Replace Video
+                            <input type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo" hidden onChange={handleVideoUpload} />
+                          </Button>
+                        </Box>
                       </Box>
-                      <Box sx={{ mt: 2, display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, flex: 1 }}>
-                          Video uploaded successfully. It will be shown on the product page.
-                        </Typography>
-                        <Button
-                          onClick={handleRemoveVideo}
-                          variant="outlined"
-                          size="small"
-                          startIcon={<Trash2 size={15} />}
-                          sx={{
-                            borderRadius: '10px', textTransform: 'none', fontWeight: 800,
-                            borderColor: '#f43f5e', color: '#f43f5e',
-                            '&:hover': { bgcolor: '#fff1f2', borderColor: '#f43f5e' },
-                          }}
-                        >
-                          Remove Video
-                        </Button>
-                        <Button
-                          component="label"
-                          variant="outlined"
-                          size="small"
-                          startIcon={<Upload size={15} />}
-                          sx={{
-                            borderRadius: '10px', textTransform: 'none', fontWeight: 800,
-                            borderColor: BRAND, color: BRAND,
-                            '&:hover': { bgcolor: BRAND_LIGHT },
-                          }}
-                        >
-                          Replace Video
-                          <input type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo" hidden onChange={handleVideoUpload} />
-                        </Button>
-                      </Box>
-                    </Box>
-                  )}
+                    );
+                  })()}
                 </CardContent>
               </Card>
             </motion.div>

@@ -245,10 +245,26 @@ export default function ProductDetails() {
       color: img.color,
     }));
 
-    if (product?.videoUrl) {
+    // Resolve showcase video matching selected metal color
+    const vList = Array.isArray(product?.videoUrls) ? product.videoUrls : [];
+    const matchingVideoObj = vList.find((v) => {
+      const c = v.color || 'yellow-gold';
+      if (activeColorId === 'silver' || activeColorId === 'white-gold') {
+        return c === 'silver' || c === 'white-gold';
+      }
+      if (activeColorId === 'yellow-gold' || activeColorId === 'gold') {
+        return c === 'yellow-gold' || c === 'gold';
+      }
+      return c === activeColorId;
+    });
+
+    const activeVideoUrl = matchingVideoObj?.videoUrl || vList[0]?.videoUrl || product?.videoUrl || '';
+
+    if (activeVideoUrl) {
       const videoItem = {
         type: 'video',
-        url: product.videoUrl,
+        url: activeVideoUrl,
+        color: matchingVideoObj?.color || 'yellow-gold',
       };
       if (items.length >= 4) {
         items.splice(4, 0, videoItem);

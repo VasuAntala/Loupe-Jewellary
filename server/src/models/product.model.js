@@ -181,6 +181,13 @@ const ProductSchema = new mongoose.Schema({
     // --- Product Showcase Video ---
     videoUrl: { type: String, default: '' },
     videoPublicId: { type: String, default: '' },
+    videoUrls: [
+        {
+            videoUrl: { type: String },
+            publicId: { type: String },
+            color: { type: String, default: 'yellow-gold' },
+        }
+    ],
     ratings: [
         {
             type: mongoose.Schema.Types.ObjectId,

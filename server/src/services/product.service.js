@@ -93,8 +93,9 @@ async function createProduct(reqData) {
         showDiamondDetails: reqData.showDiamondDetails || false,
         showMetalDetails: reqData.showMetalDetails || false,
         showWeightDetails: reqData.showWeightDetails || false,
-        videoUrl: reqData.videoUrl || '',
-        videoPublicId: reqData.videoPublicId || '',
+        videoUrl: reqData.videoUrl || (reqData.videoUrls?.[0]?.videoUrl || ''),
+        videoPublicId: reqData.videoPublicId || (reqData.videoUrls?.[0]?.publicId || ''),
+        videoUrls: Array.isArray(reqData.videoUrls) ? reqData.videoUrls : [],
     });
 
     const savedProduct = await product.save();
@@ -116,6 +117,16 @@ async function updateProduct(productId, reqData) {
     // Also update flat category strings if provided
     const updateData = { ...reqData };
     delete updateData._id;
+    if (Array.isArray(reqData.videoUrls)) {
+        updateData.videoUrls = reqData.videoUrls;
+        if (!updateData.videoUrl && reqData.videoUrls.length > 0) {
+            const first = reqData.videoUrls.find(v => v.videoUrl);
+            if (first) {
+                updateData.videoUrl = first.videoUrl;
+                updateData.videoPublicId = first.publicId || '';
+            }
+        }
+    }
     return await Product.findByIdAndUpdate(productId, updateData, { new: true });
 }
 

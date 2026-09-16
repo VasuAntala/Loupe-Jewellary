@@ -4,12 +4,12 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import { motion } from 'framer-motion';
 
 const socialImages = [
-    "/product/product4.jpeg",
-    "/product/Necklace.jpeg",
-    "/product/product.png",
-    "/product/product 2.png",
-    "/product/_.jpeg",
-    "/product/product5.jpeg"
+    "/instagram/instagram_collection.png",
+    "/instagram/instagram_collection3.png",
+    "/instagram/instagram_collection1.jpg",
+    "/instagram/instagram_collection4.png",
+    "/instagram/instagram_collection2.jpg",
+    "/instagram/instagram_collection5.jpg"
 ];
 
 const INSTAGRAM_URL = "https://www.instagram.com/loupe__jewels/";

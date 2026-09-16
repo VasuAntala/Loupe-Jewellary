@@ -187,26 +187,42 @@ export default function ProductDetails() {
     setActiveIndex(0);
   };
 
-  // ── Visibility flags ──
-  const showDiamonds = product?.showDiamondDetails === true;
-  const showMetals = product?.showMetalDetails === true;
+  // ── Category detection ──
+  const prodType = (product?.secondLevelCategory || product?.category?.name || '').toLowerCase().trim();
+  const thirdType = (product?.thirdLevelCategory || '').toLowerCase().trim();
+  const prodTitle = (product?.title || '').toLowerCase();
+
+  const isEarring = prodType.includes('earring') || thirdType.includes('earring') || thirdType.includes('stud') || thirdType.includes('jhumka') || thirdType.includes('hoop') || prodTitle.includes('earring') || prodTitle.includes('stud') || prodTitle.includes('hoop');
+  const isBracelet = prodType.includes('bracelet') || thirdType.includes('bracelet') || prodTitle.includes('bracelet');
+  const isBangle = prodType.includes('bangle') || prodType.includes('kada') || thirdType.includes('bangle') || thirdType.includes('kada') || prodTitle.includes('bangle') || prodTitle.includes('kada');
+  const isMangalsutra = prodType.includes('mangalsutra') || thirdType.includes('mangalsutra') || prodTitle.includes('mangalsutra');
+  const isPendant = prodType.includes('pendant') || prodType.includes('locket') || thirdType.includes('pendant') || thirdType.includes('locket') || prodTitle.includes('pendant') || prodTitle.includes('locket');
+  const isNecklace = !isBracelet && (prodType.includes('necklace') || prodType.includes('choker') || thirdType.includes('necklace') || thirdType.includes('choker') || prodTitle.includes('necklace') || prodTitle.includes('choker') || prodType === 'chains');
+  const isRing = !isEarring && (prodType === 'rings' || prodType === 'ring' || (thirdType.includes('ring') && !thirdType.includes('earring')) || (/\bring(s)?\b/).test(prodTitle));
+
+  // ── Visibility & Data flags ──
+  const hasDiamondEntries = Array.isArray(product?.diamondDetails) && product.diamondDetails.some(d => (d.diamondType && d.diamondType.trim()) || (d.diamondName && d.diamondName.trim()) || (d.totalWeight && String(d.totalWeight).trim()));
+  const hasMetalEntries = Array.isArray(product?.metalDetails) && product.metalDetails.some(m => m.metalType && m.metalType.trim());
+  const showDiamonds = hasDiamondEntries;
+  const showMetals = hasMetalEntries;
   const showWeights = product?.showWeightDetails === true;
 
-  // ── Dynamic sections ──
   const hasCategorySpecs = Boolean(
-    product?.ringSize || product?.topWidth || product?.shankWidth || product?.topThickness || product?.shankThickness ||
-    product?.earringHeight || product?.earringWidth || product?.earringThickness || product?.backFinding ||
-    product?.braceletLength || product?.braceletWidth || product?.braceletThickness || product?.claspType ||
-    product?.necklaceLength || product?.linkWidth || product?.linkThickness ||
-    product?.pendantHeight || product?.pendantWidth ||
-    product?.bangleSize || product?.innerDiameter || product?.bangleWidth || product?.isOpenable ||
-    product?.mangalsutraLength || product?.blackBeadsRows
+    (isRing && (product?.ringSize || product?.topWidth || product?.shankWidth || product?.topThickness || product?.shankThickness)) ||
+    (isEarring && (product?.earringHeight || product?.earringWidth || product?.earringThickness || product?.backFinding)) ||
+    (isBracelet && (product?.braceletLength || product?.braceletWidth || product?.braceletThickness || product?.claspType)) ||
+    (isNecklace && (product?.necklaceLength || product?.linkWidth || product?.linkThickness)) ||
+    (isPendant && (product?.pendantHeight || product?.pendantWidth)) ||
+    (isBangle && (product?.bangleSize || product?.innerDiameter || product?.bangleWidth || product?.isOpenable)) ||
+    (isMangalsutra && (product?.mangalsutraLength || product?.blackBeadsRows))
   );
-  const hasDimensions = (Array.isArray(product?.dimensionsList) && product.dimensionsList.some(d => d.label || d.value)) || hasCategorySpecs;
-  const hasDiamonds = showDiamonds && Array.isArray(product?.diamondDetails) && product.diamondDetails.some(d => d.diamondType);
-  const hasMetals = showMetals && Array.isArray(product?.metalDetails) && product.metalDetails.some(m => m.metalType);
-  const hasAdditionalSpecs = Array.isArray(product?.additionalSpecifications) && product.additionalSpecifications.some(s => s.label);
-  const hasChain = product?.includesChain === "Yes" || product?.includesChain === "Optional";
+
+  const hasDimensionsList = Array.isArray(product?.dimensionsList) && product.dimensionsList.some(d => (d.label && d.label.trim()) || (d.value && d.value.trim()));
+  const hasAdditionalSpecs = Array.isArray(product?.additionalSpecifications) && product.additionalSpecifications.some(s => (s.label && s.label.trim()) || (s.value && s.value.trim()));
+  const hasDimensions = hasDimensionsList || hasCategorySpecs || hasAdditionalSpecs || Boolean(product?.productCode || product?.collectionName);
+  const hasDiamonds = showDiamonds && hasDiamondEntries;
+  const hasMetals = showMetals && hasMetalEntries;
+  const hasChain = (isPendant || isNecklace) && (product?.includesChain === "Yes" || product?.includesChain === "Optional");
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -894,20 +910,53 @@ export default function ProductDetails() {
                   </Grid>
                 )}
 
-                {hasDiamonds && product.diamondDetails[0]?.totalWeight && (
+                {hasDiamonds && (product.diamondDetails[0]?.totalWeight || product.diamondDetails[0]?.diamondName || product.diamondDetails[0]?.diamondType) && (
                   <Grid item xs={6}>
                     <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
-                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Diamond Carat</Typography>
-                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.diamondDetails[0].totalWeight} Ct</Typography>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>
+                        {product.diamondDetails[0]?.totalWeight ? 'Diamond Carat' : 'Diamond'}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>
+                        {product.diamondDetails[0].totalWeight
+                          ? (String(product.diamondDetails[0].totalWeight).toUpperCase().includes('CT') ? product.diamondDetails[0].totalWeight : `${product.diamondDetails[0].totalWeight} Ct`)
+                          : (product.diamondDetails[0]?.diamondName || 'Lab Grown Diamond')}
+                      </Typography>
                     </Box>
                   </Grid>
                 )}
 
-                {product.braceletLength && (
+                {isRing && product.ringSize && (
+                  <Grid item xs={6}>
+                    <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Ring Size</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>Size {product.ringSize}</Typography>
+                    </Box>
+                  </Grid>
+                )}
+
+                {isBracelet && product.braceletLength && (
                   <Grid item xs={6}>
                     <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
                       <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Length</Typography>
                       <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.braceletLength}</Typography>
+                    </Box>
+                  </Grid>
+                )}
+
+                {isNecklace && product.necklaceLength && (
+                  <Grid item xs={6}>
+                    <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Necklace Length</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.necklaceLength}</Typography>
+                    </Box>
+                  </Grid>
+                )}
+
+                {isBangle && product.bangleSize && (
+                  <Grid item xs={6}>
+                    <Box sx={{ p: 1.8, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #edf2f7" }}>
+                      <Typography sx={{ fontSize: "0.72rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700, mb: 0.4 }}>Bangle Size</Typography>
+                      <Typography sx={{ fontSize: "0.95rem", color: "#3c7399", fontWeight: 800 }}>{product.bangleSize}</Typography>
                     </Box>
                   </Grid>
                 )}
@@ -943,49 +992,109 @@ export default function ProductDetails() {
               {hasDimensions && (
                 <Accordion title="Product Dimensions & Specifications" defaultOpen icon={<Sparkles size={18} color="#3c7399" />}>
                   <Box>
+                    {/* General Product Info */}
+                    {product.productCode && <SpecRow label="Product Code (SKU)" value={product.productCode} />}
+                    {product.collectionName && <SpecRow label="Collection" value={product.collectionName} />}
+
                     {/* Ring Specifics */}
-                    {product.ringSize && <SpecRow label="Default Ring Size" value={product.ringSize} />}
-                    {product.topWidth && <SpecRow label="Top Crown Width" value={`${product.topWidth} mm`} />}
-                    {product.topThickness && <SpecRow label="Top Crown Thickness" value={`${product.topThickness} mm`} />}
-                    {product.shankWidth && <SpecRow label="Bottom Shank Width" value={`${product.shankWidth} mm`} />}
-                    {product.shankThickness && <SpecRow label="Bottom Shank Thickness" value={`${product.shankThickness} mm`} />}
+                    {isRing && (
+                      <>
+                        {product.ringSize && <SpecRow label="Default Ring Size" value={product.ringSize} />}
+                        {product.topWidth && <SpecRow label="Top Crown Width" value={`${product.topWidth} mm`} />}
+                        {product.topThickness && <SpecRow label="Top Crown Thickness" value={`${product.topThickness} mm`} />}
+                        {product.shankWidth && <SpecRow label="Bottom Shank Width" value={`${product.shankWidth} mm`} />}
+                        {product.shankThickness && <SpecRow label="Bottom Shank Thickness" value={`${product.shankThickness} mm`} />}
+                      </>
+                    )}
 
                     {/* Earring Specifics */}
-                    {product.earringHeight && <SpecRow label="Earring Height" value={`${product.earringHeight} mm`} />}
-                    {product.earringWidth && <SpecRow label="Earring Width" value={`${product.earringWidth} mm`} />}
-                    {product.earringThickness && <SpecRow label="Post Length / Depth" value={`${product.earringThickness} mm`} />}
-                    {product.backFinding && <SpecRow label="Backing Mechanism" value={product.backFinding} />}
+                    {isEarring && (
+                      <>
+                        {product.earringHeight && <SpecRow label="Earring Height" value={`${product.earringHeight} mm`} />}
+                        {product.earringWidth && <SpecRow label="Earring Width" value={`${product.earringWidth} mm`} />}
+                        {product.earringThickness && <SpecRow label="Post Length / Depth" value={`${product.earringThickness} mm`} />}
+                        {product.backFinding && <SpecRow label="Backing Mechanism" value={product.backFinding} />}
+                      </>
+                    )}
 
                     {/* Bracelet Specifics */}
-                    {product.braceletLength && <SpecRow label="Bracelet Length" value={product.braceletLength} />}
-                    {product.braceletWidth && <SpecRow label="Link / Setting Width" value={`${product.braceletWidth} mm`} />}
-                    {product.braceletThickness && <SpecRow label="Setting Thickness" value={`${product.braceletThickness} mm`} />}
-                    {product.claspType && <SpecRow label="Clasp Type" value={product.claspType} />}
+                    {isBracelet && (
+                      <>
+                        {product.braceletLength && <SpecRow label="Bracelet Length" value={product.braceletLength} />}
+                        {product.braceletWidth && <SpecRow label="Link / Setting Width" value={`${product.braceletWidth} mm`} />}
+                        {product.braceletThickness && <SpecRow label="Setting Thickness" value={`${product.braceletThickness} mm`} />}
+                        {product.claspType && <SpecRow label="Clasp Type" value={product.claspType} />}
+                      </>
+                    )}
 
                     {/* Necklace Specifics */}
-                    {product.necklaceLength && <SpecRow label="Necklace Length" value={product.necklaceLength} />}
-                    {product.linkWidth && <SpecRow label="Motif / Link Width" value={`${product.linkWidth} mm`} />}
-                    {product.linkThickness && <SpecRow label="Motif / Link Thickness" value={`${product.linkThickness} mm`} />}
+                    {isNecklace && (
+                      <>
+                        {product.necklaceLength && <SpecRow label="Necklace Length" value={product.necklaceLength} />}
+                        {product.linkWidth && <SpecRow label="Motif / Link Width" value={`${product.linkWidth} mm`} />}
+                        {product.linkThickness && <SpecRow label="Motif / Link Thickness" value={`${product.linkThickness} mm`} />}
+                      </>
+                    )}
 
                     {/* Pendant Specifics */}
-                    {product.pendantHeight && <SpecRow label="Pendant Height" value={`${product.pendantHeight} mm`} />}
-                    {product.pendantWidth && <SpecRow label="Pendant Width" value={`${product.pendantWidth} mm`} />}
-                    {product.includesChain && product.includesChain !== "No" && <SpecRow label="Chain Included" value={product.includesChain} />}
+                    {isPendant && (
+                      <>
+                        {product.pendantHeight && <SpecRow label="Pendant Height" value={`${product.pendantHeight} mm`} />}
+                        {product.pendantWidth && <SpecRow label="Pendant Width" value={`${product.pendantWidth} mm`} />}
+                        {product.includesChain && product.includesChain !== "No" && <SpecRow label="Chain Included" value={product.includesChain} />}
+                      </>
+                    )}
 
                     {/* Bangle Specifics */}
-                    {product.bangleSize && <SpecRow label="Bangle Size" value={product.bangleSize} />}
-                    {product.innerDiameter && <SpecRow label="Inner Diameter" value={`${product.innerDiameter} mm`} />}
-                    {product.bangleWidth && <SpecRow label="Bangle Width" value={`${product.bangleWidth} mm`} />}
-                    {product.isOpenable && <SpecRow label="Closure Style" value={product.isOpenable} />}
+                    {isBangle && (
+                      <>
+                        {product.bangleSize && <SpecRow label="Bangle Size" value={product.bangleSize} />}
+                        {product.innerDiameter && <SpecRow label="Inner Diameter" value={`${product.innerDiameter} mm`} />}
+                        {product.bangleWidth && <SpecRow label="Bangle Width" value={`${product.bangleWidth} mm`} />}
+                        {product.isOpenable && <SpecRow label="Closure Style" value={product.isOpenable} />}
+                      </>
+                    )}
 
                     {/* Mangalsutra Specifics */}
-                    {product.mangalsutraLength && <SpecRow label="Mangalsutra Length" value={product.mangalsutraLength} />}
-                    {product.blackBeadsRows && <SpecRow label="Black Beads Style" value={product.blackBeadsRows} />}
+                    {isMangalsutra && (
+                      <>
+                        {product.mangalsutraLength && <SpecRow label="Mangalsutra Length" value={product.mangalsutraLength} />}
+                        {product.blackBeadsRows && <SpecRow label="Black Beads Style" value={product.blackBeadsRows} />}
+                      </>
+                    )}
 
                     {/* Custom / Dynamic Dimensions List */}
-                    {Array.isArray(product?.dimensionsList) && product.dimensionsList.filter(d => d.label || d.value).map((dim, i) => (
-                      <SpecRow key={i} label={dim.label} value={dim.value ? `${dim.value} ${(dim.unit || '').toUpperCase()}` : dim.value} />
-                    ))}
+                    {Array.isArray(product?.dimensionsList) && product.dimensionsList.map((dim, i) => {
+                      const lbl = (dim.label || '').trim();
+                      const val = (dim.value || '').trim();
+                      const unit = (dim.unit || '').trim().toUpperCase();
+
+                      if (!lbl && !val) return null;
+
+                      let displayLabel = lbl;
+                      let displayValue = val;
+
+                      if (lbl && val) {
+                        displayLabel = lbl;
+                        displayValue = unit && !val.toUpperCase().includes(unit) ? `${val} ${unit}` : val;
+                      } else if (lbl && !val) {
+                        displayLabel = "Dimensions";
+                        displayValue = lbl;
+                      } else if (!lbl && val) {
+                        displayLabel = "Dimensions";
+                        displayValue = unit && !val.toUpperCase().includes(unit) ? `${val} ${unit}` : val;
+                      }
+
+                      return <SpecRow key={`dim-${i}`} label={displayLabel} value={displayValue} />;
+                    })}
+
+                    {/* Additional Specifications */}
+                    {Array.isArray(product?.additionalSpecifications) && product.additionalSpecifications.map((spec, i) => {
+                      const lbl = (spec.label || '').trim();
+                      const val = (spec.value || '').trim();
+                      if (!lbl && !val) return null;
+                      return <SpecRow key={`add-spec-${i}`} label={lbl || "Specification"} value={val || lbl} />;
+                    })}
                   </Box>
                 </Accordion>
               )}
@@ -993,25 +1102,31 @@ export default function ProductDetails() {
               {/* Diamond Details */}
               {hasDiamonds && (
                 <Accordion title="Diamond Details" icon={<Star size={18} color="#3c7399" />}>
-                  {product.diamondDetails.filter(d => d.diamondType).map((dia, i) => (
-                    <Box key={i} sx={{ mb: i < product.diamondDetails.length - 1 ? 2 : 0 }}>
-                      {product.diamondDetails.length > 1 && (
-                        <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#3c7399", mb: 1, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                          Diamond {i + 1}
-                        </Typography>
-                      )}
-                      <SpecRow label="Type" value={dia.diamondType} />
-                      <SpecRow label="Size" value={dia.diamondSize} />
-                      <SpecRow label="Diameter" value={dia.diamondDiameter} />
-                      <SpecRow label="No. of Pieces" value={dia.pieces} />
-                      {showWeights && (
-                        <>
+                  {product.diamondDetails.filter(d => d.diamondType || d.diamondName || d.totalWeight).map((dia, i) => {
+                    const rawType = (dia.diamondType || '').trim();
+                    const resolvedType = (!rawType || rawType.toLowerCase() === 'natural diamond')
+                      ? 'Lab Grown Diamond'
+                      : rawType;
+
+                    return (
+                      <Box key={i} sx={{ mb: i < product.diamondDetails.length - 1 ? 2 : 0 }}>
+                        {product.diamondDetails.length > 1 && (
+                          <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#3c7399", mb: 1, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                            Diamond {i + 1}
+                          </Typography>
+                        )}
+                        <SpecRow label="Diamond Type" value={resolvedType} />
+                        <SpecRow label="Shape / Cut" value={dia.diamondName || dia.diamondSize} />
+                        {dia.diamondName && dia.diamondSize && <SpecRow label="Size" value={dia.diamondSize} />}
+                        <SpecRow label="Diameter" value={dia.diamondDiameter} />
+                        <SpecRow label="No. of Pieces" value={dia.pieces} />
+                        <SpecRow label="Total Weight" value={dia.totalWeight ? (String(dia.totalWeight).toUpperCase().includes('CT') ? dia.totalWeight : `${dia.totalWeight} Ct`) : null} />
+                        {showWeights && (
                           <SpecRow label="Weight / Piece" value={dia.weightPerPiece ? `${dia.weightPerPiece} Ct` : null} />
-                          <SpecRow label="Total Weight" value={dia.totalWeight ? `${dia.totalWeight} Ct` : null} />
-                        </>
-                      )}
-                    </Box>
-                  ))}
+                        )}
+                      </Box>
+                    );
+                  })}
                 </Accordion>
               )}
 

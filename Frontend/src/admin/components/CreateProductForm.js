@@ -84,7 +84,7 @@ const SectionHeader = ({ step, icon, title, description }) => (
 );
 
 const initialDimension = { label: '', value: '', unit: 'mm' };
-const initialDiamond = { diamondType: '', diamondName: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
+const initialDiamond = { diamondType: 'Lab Grown Diamond', diamondName: '', diamondDiameter: '', weightPerPiece: '', pieces: 1, totalWeight: '' };
 const initialMetal = { metalType: 'Gold', purity: '18K', finalWeight: '', unit: 'g' };
 const initialSpec = { label: '', value: '' };
 
@@ -128,8 +128,8 @@ const CreateProductForm = () => {
     chainWeight: '',
     chakiWeight: '',
     additionalSpecifications: [],
-    showDiamondDetails: false,
-    showMetalDetails: false,
+    showDiamondDetails: true,
+    showMetalDetails: true,
     showWeightDetails: false,
     // Category-specific CAD dimensions
     ringSize: '',
@@ -140,23 +140,23 @@ const CreateProductForm = () => {
     earringHeight: '',
     earringWidth: '',
     earringThickness: '',
-    backFinding: 'Screw Back',
+    backFinding: '',
     braceletLength: '',
     braceletWidth: '',
     braceletThickness: '',
-    claspType: 'Box Clasp with Dual Safety',
+    claspType: '',
     necklaceLength: '',
     linkWidth: '',
     linkThickness: '',
     pendantHeight: '',
     pendantWidth: '',
     pendantSize: '',
-    bangleSize: '2.4',
+    bangleSize: '',
     innerDiameter: '',
     bangleWidth: '',
-    isOpenable: 'No',
+    isOpenable: '',
     mangalsutraLength: '',
-    blackBeadsRows: 'Single Row',
+    blackBeadsRows: '',
   });
 
   const dispatch = useDispatch();
@@ -313,6 +313,17 @@ const CreateProductForm = () => {
 
     const uniqueColors = Array.from(new Set(productData.imageUrls.map((img) => img.color || 'yellow-gold')));
 
+    const prodType = (productData.secondLevelCategory || '').toLowerCase().trim();
+    const thirdType = (productData.thirdLevelCategory || '').toLowerCase().trim();
+
+    const isRing = prodType === 'rings' || thirdType.includes('ring');
+    const isEarring = prodType === 'earrings' || thirdType.includes('earring') || thirdType.includes('stud') || thirdType.includes('jhumka') || thirdType.includes('hoop');
+    const isBracelet = prodType === 'bracelets' || thirdType.includes('bracelet');
+    const isBangle = prodType === 'bangles' || thirdType.includes('bangle') || thirdType.includes('kada');
+    const isNecklace = ['necklaces', 'chains'].includes(prodType) || thirdType.includes('necklace') || thirdType.includes('chain') || thirdType.includes('choker');
+    const isPendant = ['pendants', 'lockets'].includes(prodType) || thirdType.includes('pendant') || thirdType.includes('locket');
+    const isMangalsutra = prodType === 'mangalsutra' || thirdType.includes('mangalsutra');
+
     const finalData = {
       ...productData,
       color: uniqueColors.length > 0 ? uniqueColors : ['yellow-gold'],
@@ -322,6 +333,31 @@ const CreateProductForm = () => {
       metalPurity: productData.metalDetails[0]?.purity || '18K',
       metalWeight: parseFloat(productData.metalDetails[0]?.finalWeight || 0),
       primaryStoneType: productData.diamondDetails[0]?.diamondType || 'Diamond',
+      // Clean non-applicable CAD fields to prevent dummy cross-category values
+      ringSize: isRing ? productData.ringSize : '',
+      topWidth: isRing ? productData.topWidth : '',
+      topThickness: isRing ? productData.topThickness : '',
+      shankWidth: isRing ? productData.shankWidth : '',
+      shankThickness: isRing ? productData.shankThickness : '',
+      earringHeight: isEarring ? productData.earringHeight : '',
+      earringWidth: isEarring ? productData.earringWidth : '',
+      earringThickness: isEarring ? productData.earringThickness : '',
+      backFinding: isEarring ? productData.backFinding : '',
+      braceletLength: isBracelet ? productData.braceletLength : '',
+      braceletWidth: isBracelet ? productData.braceletWidth : '',
+      braceletThickness: isBracelet ? productData.braceletThickness : '',
+      claspType: isBracelet ? productData.claspType : '',
+      necklaceLength: isNecklace ? productData.necklaceLength : '',
+      linkWidth: isNecklace ? productData.linkWidth : '',
+      linkThickness: isNecklace ? productData.linkThickness : '',
+      pendantHeight: isPendant ? productData.pendantHeight : '',
+      pendantWidth: isPendant ? productData.pendantWidth : '',
+      bangleSize: isBangle ? productData.bangleSize : '',
+      innerDiameter: isBangle ? productData.innerDiameter : '',
+      bangleWidth: isBangle ? productData.bangleWidth : '',
+      isOpenable: isBangle ? productData.isOpenable : '',
+      mangalsutraLength: isMangalsutra ? productData.mangalsutraLength : '',
+      blackBeadsRows: isMangalsutra ? productData.blackBeadsRows : '',
     };
 
     dispatch(createProduct(finalData));
@@ -357,8 +393,8 @@ const CreateProductForm = () => {
       chainWeight: '',
       chakiWeight: '',
       additionalSpecifications: [],
-      showDiamondDetails: false,
-      showMetalDetails: false,
+      showDiamondDetails: true,
+      showMetalDetails: true,
       showWeightDetails: false,
       // Category-specific CAD dimensions
       ringSize: '',
@@ -369,23 +405,23 @@ const CreateProductForm = () => {
       earringHeight: '',
       earringWidth: '',
       earringThickness: '',
-      backFinding: 'Screw Back',
+      backFinding: '',
       braceletLength: '',
       braceletWidth: '',
       braceletThickness: '',
-      claspType: 'Box Clasp with Dual Safety',
+      claspType: '',
       necklaceLength: '',
       linkWidth: '',
       linkThickness: '',
       pendantHeight: '',
       pendantWidth: '',
       pendantSize: '',
-      bangleSize: '2.4',
+      bangleSize: '',
       innerDiameter: '',
       bangleWidth: '',
-      isOpenable: 'No',
+      isOpenable: '',
       mangalsutraLength: '',
-      blackBeadsRows: 'Single Row',
+      blackBeadsRows: '',
     });
   };
 
@@ -1105,10 +1141,10 @@ const CreateProductForm = () => {
                       </Box>
                       <Grid container spacing={2}>
                         <Grid item xs={12} sm={4}>
-                          <StyledTextField label="Diamond Type" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth placeholder="e.g. Baguette, Round, Solitaire" />
+                          <StyledTextField label="Diamond Type (Origin / Role)" value={dia.diamondType} onChange={(e) => handleDiamondChange(idx, 'diamondType', e.target.value)} fullWidth placeholder="e.g. Lab Grown Diamond, Center Solitaire, Accent Stones" />
                         </Grid>
                         <Grid item xs={12} sm={4}>
-                          <StyledTextField label="Diamond Name / Size" value={dia.diamondName || dia.diamondSize || ''} onChange={(e) => handleDiamondChange(idx, 'diamondName', e.target.value)} fullWidth placeholder="e.g. Marquise, Round Brilliant, Solitaire" />
+                          <StyledTextField label="Diamond Shape / Cut" value={dia.diamondName || dia.diamondSize || ''} onChange={(e) => handleDiamondChange(idx, 'diamondName', e.target.value)} fullWidth placeholder="e.g. Round Brilliant, Marquise, Oval, Emerald, Pear" />
                         </Grid>
                         <Grid item xs={12} sm={4}>
                           <StyledTextField label="Diamond Diameter" value={dia.diamondDiameter} onChange={(e) => handleDiamondChange(idx, 'diamondDiameter', e.target.value)} fullWidth placeholder="e.g. 4.2 mm" />

@@ -5,9 +5,12 @@ import { motion } from 'framer-motion'
 import { Users, Package, ShoppingBag, ArrowUpRight, ArrowDownRight, Gem } from 'lucide-react'
 
 const MonthlyOverview = () => {
-    const { adminDashboard } = useSelector(store => store);
+    const { adminDashboard, products } = useSelector(store => store);
     const stats = adminDashboard?.stats;
-    const totalProducts = adminDashboard?.allProducts?.length || 0;
+    const rawProductsCount = products?.products?.totalProducts ?? (Array.isArray(products?.products?.content) ? products.products.content.length : 0);
+    const totalProducts = stats?.totalProducts !== undefined && stats?.totalProducts !== null
+        ? stats.totalProducts
+        : (adminDashboard?.allProducts?.length || rawProductsCount || 0);
 
     const salesData = [
         {

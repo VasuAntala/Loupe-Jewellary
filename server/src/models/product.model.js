@@ -156,8 +156,8 @@ const ProductSchema = new mongoose.Schema({
 
     // --- Customer Visibility Flags ---
     // Admin can toggle whether technical weight data appears on the customer page
-    showDiamondDetails: { type: Boolean, default: false },
-    showMetalDetails: { type: Boolean, default: false },
+    showDiamondDetails: { type: Boolean, default: true },
+    showMetalDetails: { type: Boolean, default: true },
     showWeightDetails: { type: Boolean, default: false },
 
     // --- Legacy / other fields ---

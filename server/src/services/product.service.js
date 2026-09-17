@@ -90,9 +90,9 @@ async function createProduct(reqData) {
         collectionName: reqData.collectionName,
         tags: reqData.tags || [],
         additionalSpecifications: reqData.additionalSpecifications || [],
-        showDiamondDetails: reqData.showDiamondDetails || false,
-        showMetalDetails: reqData.showMetalDetails || false,
-        showWeightDetails: reqData.showWeightDetails || false,
+        showDiamondDetails: reqData.showDiamondDetails !== undefined ? Boolean(reqData.showDiamondDetails) : true,
+        showMetalDetails: reqData.showMetalDetails !== undefined ? Boolean(reqData.showMetalDetails) : true,
+        showWeightDetails: reqData.showWeightDetails !== undefined ? Boolean(reqData.showWeightDetails) : false,
         videoUrl: reqData.videoUrl || (reqData.videoUrls?.[0]?.videoUrl || ''),
         videoPublicId: reqData.videoPublicId || (reqData.videoUrls?.[0]?.publicId || ''),
         videoUrls: Array.isArray(reqData.videoUrls) ? reqData.videoUrls : [],
@@ -363,7 +363,7 @@ async function getAllProducts(reqQuery) {
 
     const totalPages = Math.ceil(totalProducts / pageSize);
 
-    return { content: products, currentPage: pageNumber, totalPages };
+    return { content: products, currentPage: pageNumber, totalPages, totalProducts };
 }
 
 async function createMultipleProducts(products) {

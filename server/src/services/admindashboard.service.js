@@ -103,9 +103,20 @@ const getWeeklyStats = async () => {
     }
 }
 
+const getTotalProducts = async () => {
+    try {
+        const totalProducts = await Product.countDocuments();
+        return { totalProducts };
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 const getAllProducts = async () => {
     try {
-        const products = await Product.find().limit(5);
+        const products = await Product.find()
+            .populate("category")
+            .sort({ createdAt: -1 });
         return products;
     } catch (error) {
         throw new Error(error.message);
@@ -156,6 +167,7 @@ module.exports = {
     getTotalSales,
     getTotalOrders,
     getTotalCustomers,
+    getTotalProducts,
     gettotaldeliveredorders,
     getTotalCancelledOrders,
     getLatestOrders,

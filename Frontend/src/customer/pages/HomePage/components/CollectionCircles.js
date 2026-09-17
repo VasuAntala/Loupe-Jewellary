@@ -16,7 +16,7 @@ const categories = [
     {
         name: 'EARRINGS',
         image: '/product/earring-1.jpg',
-        hoverImage: '/product/collectioncircle_earring.png',
+        hoverImage: '/product/collectioncircle_earring1.png',
         id: 'earrings',
     },
     {
@@ -40,7 +40,7 @@ const categories = [
     {
         name: 'CHAINS',
         image: '/product/necklace-1.jpg',
-        hoverImage: '/product/model-chain.jpg',
+        hoverImage: '/product/collectioncircle_chain.png',
         id: 'chains',
     },
 ];

@@ -27,6 +27,15 @@ const getTotalCustomers = async (req, res) => {
     }
 }
 
+const getTotalProducts = async (req, res) => {
+    try {
+        const totalProducts = await dashboardService.getTotalProducts();
+        return res.status(200).send(totalProducts);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
 const gettotaldeliveredorders = async (req, res) => {
     try {
         const totaldeliveredorders = await dashboardService.gettotaldeliveredorders();
@@ -85,6 +94,7 @@ module.exports = {
     getTotalSales,
     getTotalOrders,
     getTotalCustomers,
+    getTotalProducts,
     gettotaldeliveredorders,
     getTotalCancelledOrders,
     getLatestOrders,

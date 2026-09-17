@@ -5,6 +5,7 @@ const adminDashboardController = require("../controller/admindashboard.controlle
 router.get("/totalSales", adminDashboardController.getTotalSales);
 router.get("/totalOrders", adminDashboardController.getTotalOrders);
 router.get("/totalCustomers", adminDashboardController.getTotalCustomers);
+router.get("/totalProducts", adminDashboardController.getTotalProducts);
 router.get("/totalDeliveredOrders", adminDashboardController.gettotaldeliveredorders);
 router.get("/totalCancelledOrders", adminDashboardController.getTotalCancelledOrders);
 router.get("/latestOrders", adminDashboardController.getLatestOrders);

@@ -203,8 +203,8 @@ export default function ProductDetails() {
   // ── Visibility & Data flags ──
   const hasDiamondEntries = Array.isArray(product?.diamondDetails) && product.diamondDetails.some(d => (d.diamondType && d.diamondType.trim()) || (d.diamondName && d.diamondName.trim()) || (d.totalWeight && String(d.totalWeight).trim()));
   const hasMetalEntries = Array.isArray(product?.metalDetails) && product.metalDetails.some(m => m.metalType && m.metalType.trim());
-  const showDiamonds = hasDiamondEntries;
-  const showMetals = hasMetalEntries;
+  const showDiamonds = (product?.showDiamondDetails !== false) && hasDiamondEntries;
+  const showMetals = (product?.showMetalDetails !== false) && hasMetalEntries;
   const showWeights = product?.showWeightDetails === true;
 
   const hasCategorySpecs = Boolean(

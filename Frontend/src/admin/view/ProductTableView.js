@@ -20,7 +20,7 @@ import { useDashboard } from "../components/AdminDashboard";
 
 const ProductsTableView = () => {
   const dispatch = useDispatch();
-  const { products } = useSelector((store) => store);
+  const { products, adminDashboard } = useSelector((store) => store);
   const { searchQuery } = useDashboard();
 
   useEffect(() => {
@@ -33,19 +33,25 @@ const ProductsTableView = () => {
       maxDiscount: 100,
       sort: "high_to_low",
       pageNumber: 1,
-      pageSize: 20,
+      pageSize: 50,
       occasion: [],
       type: [],
     };
     dispatch(findProducts(data));
   }, [dispatch]);
 
-  const allProducts = products.products?.content || [];
+  const allProducts = (Array.isArray(adminDashboard?.allProducts) && adminDashboard.allProducts.length > 0)
+    ? adminDashboard.allProducts
+    : (products.products?.content || []);
+
   const recentProducts = allProducts.filter((item) => {
     if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
     return (
-      item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      item.title?.toLowerCase().includes(query) ||
+      item.category?.name?.toLowerCase().includes(query) ||
+      item.secondLevelCategory?.toLowerCase().includes(query) ||
+      item.topLevelCategory?.toLowerCase().includes(query)
     );
   }).slice(0, 5);
 

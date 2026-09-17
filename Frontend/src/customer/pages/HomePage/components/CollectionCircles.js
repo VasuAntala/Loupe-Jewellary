@@ -9,14 +9,14 @@ import 'slick-carousel/slick/slick-theme.css';
 const categories = [
     {
         name: 'RINGS',
-        image: '/product/product4.jpeg',
-        hoverImage: '/product/model-ring.jpg',
+        image: '/product/collectioncircle_ringmain.jpg',
+        hoverImage: '/product/collectioncircle_ring.png',
         id: 'rings',
     },
     {
         name: 'EARRINGS',
         image: '/product/earring-1.jpg',
-        hoverImage: '/product/model-earring.jpg',
+        hoverImage: '/product/collectioncircle_earring.png',
         id: 'earrings',
     },
     {
@@ -27,14 +27,14 @@ const categories = [
     },
     {
         name: 'PENDANTS',
-        image: '/product/necklace-2.jpg',
-        hoverImage: '/product/model-pendant.jpg',
+        image: '/product/collectioncircle_pendent1.jpg',
+        hoverImage: '/product/collectioncircle_pendent.png',
         id: 'pendants',
     },
     {
         name: 'BRACELETS',
         image: '/product/bracelet-1.jpg',
-        hoverImage: '/product/model-bracelet.jpg',
+        hoverImage: '/product/collectioncircle_bracalet.png',
         id: 'bracelets',
     },
     {

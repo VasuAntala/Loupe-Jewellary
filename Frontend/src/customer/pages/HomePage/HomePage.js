@@ -118,16 +118,17 @@ const HomePage = () => {
         <ShopByOccasion />
       </section>
 
+      {/* 3. Main Best Sellers Section */}
+      <section className="reveal">
+        <BestSellerSection title="Best Sellers" products={displayBestSellers} />
+      </section>
+      
       {/* Bespoke & Custom Jewellery Section */}
       <section className="reveal">
         <CustomJewellerySection products={allProductsList} />
       </section>
 
 
-      {/* 3. Main Best Sellers Section */}
-      <section className="reveal">
-        <BestSellerSection title="Best Sellers" products={displayBestSellers} />
-      </section>
 
       {/* Style Stories - Lifestyle Grid */}
       <section className="reveal">

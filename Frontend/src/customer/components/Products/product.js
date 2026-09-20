@@ -276,7 +276,7 @@ export default function Product() {
 
   return (
     <div className="bg-[#fafafa] min-h-screen">
-      <main className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8 py-8 sm:py-8">
 
         {/* Editorial Header Section */}
         <div className="pt-8 sm:pt-16 pb-4 sm:pb-8 text-center">

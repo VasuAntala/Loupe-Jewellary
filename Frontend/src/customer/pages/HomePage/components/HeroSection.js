@@ -24,74 +24,68 @@ const HeroSection = () => {
                 }
             }}
         >
-            {/* Aspect-Ratio Stage Wrapper: Keeps image & text overlay perfectly locked together */}
-            <Box
-                sx={{
-                    position: 'relative',
-                    width: '100%',
-                    maxWidth: '1920px',
-                    aspectRatio: '1717 / 916',
-                    display: 'flex',
-                    alignItems: 'center',
-                }}
-            >
-                {/* Clean Background Banner Image (Jewellery on right, soft blue on left) */}
-                <Box
-                    component="img"
-                    src="/loupe_banner1.png"
-                    alt="B.Brother Loupe - Crafted for Life’s Brighter Moments"
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        objectPosition: 'center',
-                        display: 'block',
-                        pointerEvents: 'none',
-                    }}
-                />
-
-                {/* Left Side Content with Animated Entrance */}
-                <Box
-                    sx={{
-                        position: 'relative',
-                        zIndex: 2,
-                        width: { xs: '60%', sm: '54%', md: '50%', lg: '46%' },
-                        pl: { xs: '2%', sm: '3%', md: '3.5%', lg: '4%' },
-                        pr: { xs: '1%', sm: '2%' },
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'flex-start',
-                        userSelect: 'none',
-                    }}
+            {/* Background Images with AnimatePresence for Smooth Crossfades */}
+            <AnimatePresence initial={false}>
+                <motion.div
+                    key={current}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.2 }}
+                    className="absolute inset-0 z-0"
                 >
-                    {/* 1. Subtitle */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                        <Typography
-                            sx={{
-                                fontFamily: "'Outfit', sans-serif",
-                                fontSize: {
-                                    xs: 'clamp(0.48rem, 1.4vw, 0.65rem)',
-                                    sm: 'clamp(0.65rem, 1.3vw, 0.82rem)',
-                                    md: 'clamp(0.8rem, 1.1vw, 0.95rem)'
+                    <div
+                        className="w-full h-full bg-cover bg-center"
+                        style={{
+                            backgroundImage: `url("${slides[current].image}")`,
+                            filter: 'brightness(0.65)'
+                        }}
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                </motion.div>
+            </AnimatePresence>
+
+            {/* Slide Content with Staggered Element Transitions */}
+            <div className="relative z-10 h-full mx-auto max-w-[1400px] flex items-center px-6 lg:px-12">
+                <div className="max-w-[700px] w-full">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={current}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            variants={{
+                                hidden: { opacity: 0 },
+                                visible: {
+                                    opacity: 1,
+                                    transition: {
+                                        staggerChildren: 0.15
+                                    }
                                 },
-                                fontWeight: 700,
-                                letterSpacing: { xs: '0.16em', sm: '0.22em', md: '0.26em' },
-                                color: '#163b5f',
-                                textTransform: 'uppercase',
-                                mb: { xs: 0.3, sm: 0.8, md: 1.2 },
+                                exit: { opacity: 0, y: -15, transition: { duration: 0.3 } }
                             }}
                         >
-                            TIMELESS BEAUTY
-                        </Typography>
-                    </motion.div>
+                            {/* Overline Text */}
+                            <motion.div
+                                variants={{
+                                    hidden: { opacity: 0, y: 15 },
+                                    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+                                }}
+                            >
+                                <Typography
+                                    variant="overline"
+                                    sx={{
+                                        letterSpacing: 6,
+                                        fontWeight: 700,
+                                        color: '#3c7399',
+                                        fontSize: { xs: '0.75rem', md: '0.85rem' },
+                                        mb: 2,
+                                        display: 'block'
+                                    }}
+                                >
+                                    {slides[current].overline}
+                                </Typography>
+                            </motion.div>
 
                     {/* 2. Main Headline */}
                     <motion.div

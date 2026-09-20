@@ -248,6 +248,9 @@ async function getAllProducts(reqQuery) {
             'lariat': ['lariats', 'lariat'],
             'mangalsutra': ['mangalsutra', 'mangal-sutra', 'solitaire-mangalsutra', 'modern-mangalsutra'],
             'mangal-sutra': ['mangalsutra', 'mangal-sutra', 'solitaire-mangalsutra', 'modern-mangalsutra'],
+            'pearl-ring': ['pearl-ring', 'pearl-rings', 'pearl'],
+            'pearl-rings': ['pearl-ring', 'pearl-rings', 'pearl'],
+            'pearl': ['pearl', 'pearl-ring', 'pearl-rings'],
         };
 
         const targetCategories = CATEGORY_ALIASES[category] || [category];

@@ -122,8 +122,8 @@ const HomePage = () => {
       <section className="reveal">
         <BestSellerSection title="Best Sellers" products={displayBestSellers} />
       </section>
-      
-      {/* Bespoke & Custom Jewellery Section */}
+
+      {/* Bespoke & Custom Jewellery Sections */}
       <section className="reveal">
         <CustomJewellerySection products={allProductsList} />
       </section>

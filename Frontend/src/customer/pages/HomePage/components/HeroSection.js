@@ -38,7 +38,7 @@ const HeroSection = () => {
                 {/* Clean Background Banner Image (Jewellery on right, soft blue on left) */}
                 <Box
                     component="img"
-                    src="/Loupe_theme_banner.png"
+                    src="/loupe_banner1.png"
                     alt="B.Brother Loupe - Crafted for Life’s Brighter Moments"
                     sx={{
                         position: 'absolute',
